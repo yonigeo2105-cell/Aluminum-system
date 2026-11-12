@@ -612,6 +612,140 @@
             @page { size: A4 portrait; margin: 1.2cm; }
             body { background: white; height: auto; overflow: visible; }
         }
+    
+        html, body {
+            overscroll-behavior-y: contain;
+        }
+        /* תפריט צד יוקרתי (Side Navigation Drawer) */
+        .header-top-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 680px;
+            margin: 0 auto;
+            gap: 10px;
+        }
+        .btn-hamburger {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.4);
+            border-radius: 12px;
+            padding: 8px 13px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Rubik', sans-serif;
+            white-space: nowrap;
+        }
+        .btn-hamburger:active { transform: scale(0.97); }
+        .autosave-pill {
+            background: rgba(255,255,255,0.18);
+            color: #e6fffa;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 20px;
+            padding: 4px 10px;
+            font-size: 11.5px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        #sideDrawerOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 9500;
+            display: none;
+            backdrop-filter: blur(3px);
+        }
+        #sideDrawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 305px;
+            max-width: 85vw;
+            height: 100%;
+            background: #ffffff;
+            z-index: 9600;
+            box-shadow: -6px 0 28px rgba(0,0,0,0.25);
+            transform: translateX(105%);
+            transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        #sideDrawer.open {
+            transform: translateX(0);
+        }
+        .drawer-header {
+            background: linear-gradient(135deg, var(--primary) 0%, #002171 100%);
+            color: white;
+            padding: 22px 18px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .drawer-nav-list {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+        }
+        .drawer-nav-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid transparent;
+            border-radius: 12px;
+            background: transparent;
+            color: var(--text-dark);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: right;
+            font-family: 'Rubik', sans-serif;
+            transition: background 0.15s, border-color 0.15s;
+        }
+        .drawer-nav-item:hover, .drawer-nav-item.active {
+            background: var(--primary-soft);
+            color: var(--primary);
+            border-color: #90caf9;
+        }
+        .drawer-badge {
+            background: var(--primary);
+            color: white;
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+        .drawer-badge.warn {
+            background: #dd6b20;
+        }
+        .drawer-footer {
+            padding: 14px;
+            border-top: 1px solid var(--border);
+            background: #f8fafc;
+        }
+        /* התראת פולואפ בראש המסך */
+        #followupAlertBanner {
+            display: none;
+            background: #fffaf0;
+            border: 1px solid #fbd38d;
+            border-right: 4px solid #dd6b20;
+            border-radius: 14px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
     </style>
 </head>
 <body>
@@ -633,19 +767,71 @@
     </div>
 </div>
 
+<div id="sideDrawerOverlay" onclick="closeSideDrawer()"></div>
+<aside id="sideDrawer" aria-label="תפריט ראשי">
+    <div class="drawer-header">
+        <div>
+            <div style="font-size:20px; font-weight:800;">יהונתן אלומיניום</div>
+            <div style="font-size:12.5px; opacity:0.9; margin-top:2px;">מערכות אלומיניום מתקדמות</div>
+        </div>
+        <button type="button" onclick="closeSideDrawer()" style="background:rgba(255,255,255,0.2); color:white; border:none; border-radius:8px; padding:6px 10px; font-weight:700; cursor:pointer;">✖</button>
+    </div>
+    <div class="drawer-nav-list">
+        <button type="button" class="drawer-nav-item active" id="navBtnQuote" onclick="switchAppTab('quote')">
+            <span>📝 עריכת הצעת מחיר</span>
+        </button>
+        <button type="button" class="drawer-nav-item" id="navBtnNewQuote" onclick="closeSideDrawer(); startNewQuote();">
+            <span>➕ פתיחת הצעה חדשה</span>
+        </button>
+        <button type="button" class="drawer-nav-item" id="navBtnArchive" onclick="switchAppTab('archive')">
+            <span>📂 ארכיון הצעות ופולואפ</span>
+            <span class="drawer-badge warn" id="drawerFollowupBadge" style="display:none;">0</span>
+        </button>
+        <button type="button" class="drawer-nav-item" id="navBtnWorkLog" onclick="switchAppTab('worklog')">
+            <span>📅 יומן עבודה והתקנות</span>
+            <span class="drawer-badge" id="drawerWorkLogBadge" style="display:none;">0</span>
+        </button>
+        <button type="button" class="drawer-nav-item" id="navBtnFinance" onclick="switchAppTab('finance')">
+            <span>💰 יומן הוצאות והכנסות</span>
+        </button>
+        <button type="button" class="drawer-nav-item" id="navBtnMonthly" onclick="switchAppTab('monthly')">
+            <span>📊 דוח חודשי ורווחיות</span>
+        </button>
+        <button type="button" class="drawer-nav-item" id="navBtnSettings" onclick="switchAppTab('settings')">
+            <span>⚙️ הגדרות וגיבוי נתונים</span>
+        </button>
+    </div>
+    <div class="drawer-footer">
+        <button type="button" class="btn-login" style="background:#edf2f7; color:#2d3748; margin:0; font-size:13.5px; padding:10px;" onclick="lockAppManually()">🔒 נעל אפליקציה (דרוש קוד)</button>
+    </div>
+</aside>
+
 <header>
-    <h1>יהונתן אלומיניום</h1>
-    <p>מערכות אלומיניום מתקדמות</p>
+    <div class="header-top-row">
+        <button type="button" class="btn-hamburger" id="hamburgerBtn" style="display:none;" onclick="openSideDrawer()">☰ תפריט</button>
+        <div style="text-align:center; flex:1;">
+            <h1>יהונתן אלומיניום</h1>
+            <p>מערכות אלומיניום מתקדמות</p>
+        </div>
+        <span class="autosave-pill" id="autoSaveStatusPill" style="display:none;">✓ נשמר אוטומטית</span>
+    </div>
     <div class="header-toolbar" id="topToolbar" style="display:none;">
         <button type="button" class="btn-top-tool" style="background:rgba(47,133,90,0.88); border-color:#9ae6b4;" onclick="openWorkLogModal()">📅 יומן עבודה <span id="workLogCountBadge" style="background:white; color:#22543d; border-radius:10px; padding:1px 7px; font-size:11.5px; font-weight:800; display:none;">0</span></button>
         <button type="button" class="btn-top-tool" style="background:rgba(183,121,31,0.88); border-color:#fbd38d;" onclick="openFinanceModal()">💰 הוצאות והכנסות</button>
-        <button type="button" class="btn-top-tool" onclick="openArchiveModal()">📂 ארכיון הצעות</button>
-        <button type="button" class="btn-top-tool" onclick="loadDraft()">🔄 טען טיוטה אחרונה</button>
+        <button type="button" class="btn-top-tool" onclick="openArchiveModal()">📂 ארכיון ופולואפ <span id="topFollowupBadge" style="background:#dd6b20; color:white; border-radius:10px; padding:1px 7px; font-size:11.5px; font-weight:800; display:none;">0</span></button>
+        <button type="button" class="btn-top-tool" style="background:rgba(107,70,193,0.88); border-color:#d6bcfa;" onclick="openMonthlyReportModal()">📊 דוח חודשי</button>
         <button type="button" class="btn-top-tool" onclick="startNewQuote()">📄 הצעה חדשה</button>
     </div>
 </header>
 
 <div class="container" id="mainApp" style="display:none">
+    <div id="followupAlertBanner">
+        <div>
+            <div style="font-weight:800; color:#9c4221; font-size:14.5px;">🔔 תזכורת מעקב (Follow-up) להצעות פתוחות</div>
+            <div id="followupAlertText" style="font-size:13px; color:#2d3748; margin-top:2px;">יש הצעות מחיר שנשלחו ללקוחות וממתינות לחתימה.</div>
+        </div>
+        <button type="button" class="btn-mini-action" style="background:#dd6b20; color:white; border-color:#dd6b20;" onclick="openArchiveModal('followup')">צפה ושלח תזכורת בוואטסאפ ⬅</button>
+    </div>
     <div class="card">
         <div class="card-title" style="margin-bottom:12px;">👤 פרטי לקוח והצעה</div>
         <div class="row">
@@ -679,8 +865,12 @@
                 <input type="number" id="installationCost" placeholder="0" oninput="calculateAll(false)">
             </div>
             <div>
-                <label>הנחה מיוחדת (₪):</label>
-                <input type="number" id="discountCost" placeholder="0" oninput="calculateAll(false)">
+                <label>הנחה מיוחדת (%):</label>
+                <div style="position:relative;">
+                    <input type="number" id="discountPercent" placeholder="0%" min="0" max="100" step="0.5" oninput="calculateAll(false)" style="margin-bottom:4px;">
+                    <input type="hidden" id="discountCost" value="0">
+                    <div id="discountComputedHint" style="font-size:12px; color:var(--success); font-weight:700; min-height:16px;"></div>
+                </div>
             </div>
         </div>
         <label>הערות כלליות להצעה (יופיעו ב-PDF ובוואטסאפ):</label>
@@ -692,7 +882,7 @@
         <div class="result-body">
             <div class="price-line"><span>סה"כ מוצרים (<span id="itemsCountLabel">0</span> יח'):</span><span id="itemsSubtotal">0 ₪</span></div>
             <div class="price-line"><span>תוספות והתקנה:</span><span id="installSubtotal">0 ₪</span></div>
-            <div class="price-line" id="discountLine" style="display:none; color:var(--success);"><span>הנחה:</span><span id="discountSubtotal">-0 ₪</span></div>
+            <div class="price-line" id="discountLine" style="display:none; color:var(--success);"><span id="discountLabelText">הנחה:</span><span id="discountSubtotal">-0 ₪</span></div>
             <div class="price-line" style="border-top:1px solid #eee; padding-top:10px; font-weight:600;"><span>סה"כ לפני מע"מ:</span><span id="totalSub">0 ₪</span></div>
             <div class="price-line"><span>מע"מ (18%):</span><span id="totalVat">0 ₪</span></div>
             <div class="total-line"><span>סה"כ לתשלום:</span><span id="totalFinal">0 ₪</span></div>
@@ -753,12 +943,94 @@
     </div>
 </div>
 
-<!-- מודאל ארכיון הצעות מחיר -->
+<!-- מודאל ארכיון הצעות מחיר ומעקב פולואפ -->
 <div class="modal-overlay" id="archiveModal">
-    <div class="modal-content">
-        <h3 style="text-align:center;margin:0 0 12px 0;color:var(--primary)">📂 ארכיון הצעות מחיר שמורות</h3>
-        <div id="archiveListContainer" style="max-height:340px; overflow-y:auto; margin-bottom:12px;"></div>
+    <div class="modal-content wide-modal">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:12px; gap:8px; flex-wrap:wrap;">
+            <h3 style="margin:0; color:var(--primary)">📂 ארכיון הצעות מחיר ומעקב פולואפ</h3>
+            <button type="button" class="btn-mini-action" style="background:#e2e8f0;" onclick="closeModal('archiveModal')">חזרה להצעה ✖</button>
+        </div>
+        <div class="tab-pills" style="margin-bottom:12px;">
+            <button type="button" class="tab-pill active" id="archFilterAllBtn" onclick="setArchiveFilterMode('all')">כל ההצעות השמורות</button>
+            <button type="button" class="tab-pill" id="archFilterFollowupBtn" onclick="setArchiveFilterMode('followup')">🔔 ממתינות לפולואפ</button>
+        </div>
+        <div id="archiveListContainer" style="max-height:58vh; overflow-y:auto; margin-bottom:12px;"></div>
         <button type="button" class="btn-login" style="background:#e2e8f0; color:#1a202c;" onclick="closeModal('archiveModal')">סגור</button>
+    </div>
+</div>
+
+<!-- מודאל דוח חודשי חכם -->
+<div class="modal-overlay" id="monthlyReportModal">
+    <div class="modal-content wide-modal">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:12px; gap:8px; flex-wrap:wrap;">
+            <h3 style="margin:0; color:var(--primary)">📊 דוח חודשי חכם ומצב העסק</h3>
+            <div style="display:flex; gap:6px;">
+                <button type="button" class="btn-mini-action" onclick="printMonthlyExecutiveReport()">🖨️ הדפס דוח חודשי</button>
+                <button type="button" class="btn-mini-action" style="background:#e2e8f0;" onclick="closeModal('monthlyReportModal')">סגור ✖</button>
+            </div>
+        </div>
+        <div class="row" style="margin-bottom:12px; align-items:center;">
+            <div style="flex:1;">
+                <label>בחר חודש להצגה:</label>
+                <input type="month" id="execReportMonthInput" onchange="renderMonthlyExecutiveReport()" style="margin-bottom:0;">
+            </div>
+            <div style="flex:1;">
+                <label>סינון תקופה:</label>
+                <select id="execReportScope" onchange="renderMonthlyExecutiveReport()" style="margin-bottom:0;">
+                    <option value="month">החודש הנבחר בלבד</option>
+                    <option value="all">מצטבר (כל הזמנים)</option>
+                </select>
+            </div>
+        </div>
+        <div id="monthlyReportBody" style="max-height:68vh; overflow-y:auto;"></div>
+    </div>
+</div>
+
+<!-- מודאל סיום עבודה, תעודת אחריות ובקשת המלצה -->
+<div class="modal-overlay" id="jobCompletionModal">
+    <div class="modal-content">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:12px;">
+            <h3 style="margin:0; color:var(--success)">🎉 סיום עבודה, אחריות ובקשת המלצה</h3>
+            <button type="button" class="btn-mini-action" style="background:#e2e8f0;" onclick="closeModal('jobCompletionModal')">סגור ✖</button>
+        </div>
+        <div id="jobCompletionBody"></div>
+    </div>
+</div>
+
+<!-- מודאל הגדרות, אבטחה וגיבוי נתונים -->
+<div class="modal-overlay" id="settingsModal">
+    <div class="modal-content">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:12px;">
+            <h3 style="margin:0; color:var(--primary)">⚙️ הגדרות, גיבוי ואבטחה</h3>
+            <button type="button" class="btn-mini-action" style="background:#e2e8f0;" onclick="closeModal('settingsModal')">סגור ✖</button>
+        </div>
+        <div style="background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:14px;">
+            <div style="font-weight:700; color:var(--primary); margin-bottom:6px;">🔔 הגדרת תזכורת פולואפ אוטומטית</div>
+            <label style="font-size:13px;">הצג תזכורת מעקב להצעות שלא נחתמו אחרי (ימים):</label>
+            <select id="followupDaysSetting" onchange="saveFollowupDaysSetting(this.value)" style="margin-bottom:0;">
+                <option value="0">מיד (כל הצעה בארכיון שממתינה לחתימה)</option>
+                <option value="1">אחרי יום אחד</option>
+                <option value="2">אחרי יומיים (מומלץ)</option>
+                <option value="3">אחרי 3 ימים</option>
+                <option value="5">אחרי 5 ימים</option>
+            </select>
+        </div>
+        <div style="background:#f0fff4; border:1px solid #9ae6b4; border-radius:12px; padding:14px; margin-bottom:14px;">
+            <div style="font-weight:700; color:#22543d; margin-bottom:6px;">💾 גיבוי ושחזור מלא של כל נתוני האפליקציה</div>
+            <p style="font-size:13px; color:#2d3748; margin:0 0 10px 0;">שמור קובץ גיבוי של כל הצעות המחיר, יומן העבודה, התשלומים וההוצאות שלך, או טען גיבוי קיים.</p>
+            <div class="row">
+                <button type="button" class="btn-login" style="background:var(--success); margin:0; flex:1;" onclick="exportFullAppBackup()">⬇️ הורד קובץ גיבוי מלא</button>
+                <div style="flex:1; position:relative; overflow:hidden;">
+                    <button type="button" class="btn-login" style="background:var(--primary); margin:0; width:100%;">⬆️ שחזר מקובץ גיבוי</button>
+                    <input type="file" accept=".json,application/json" style="position:absolute; inset:0; opacity:0; cursor:pointer;" onchange="importFullAppBackup(this)">
+                </div>
+            </div>
+        </div>
+        <div style="background:#fff5f5; border:1px solid #fed7d7; border-radius:12px; padding:14px;">
+            <div style="font-weight:700; color:#c53030; margin-bottom:6px;">🔒 נעילת מסך יזומה</div>
+            <p style="font-size:13px; color:#2d3748; margin:0 0 10px 0;">האפליקציה שומרת את החיבור שלך ברענון דף כדי שלא תאבד מידע. אם תרצה לנעול את המסך בסיסמה כעת:</p>
+            <button type="button" class="btn-login" style="background:var(--danger); margin:0;" onclick="lockAppManually()">🔒 נעל אפליקציה כעת</button>
+        </div>
     </div>
 </div>
 
@@ -1226,6 +1498,53 @@
         safeSetStorage('quoteCounter', seq);
     }
 
+    let isRestoringLiveState = false;
+
+    function unlockAdminUI(shouldLoadDraft, isAutoRefreshUnlock = false) {
+        safeSetStorage('isYehonatanAdminDevice', 'true');
+        safeSetStorage('adminSessionLocked', 'false');
+        safeSetStorage('adminLoggedInAt', String(Date.now()));
+        startAdminOpenTabHeartbeat();
+        document.getElementById('loginError').style.display = 'none';
+        document.getElementById('loginScreen').style.opacity = '0';
+        const showAppFn = () => {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            document.getElementById('bottomNav').style.display = 'flex';
+            document.getElementById('topToolbar').style.display = 'flex';
+            const hbBtn = document.getElementById('hamburgerBtn');
+            if (hbBtn) hbBtn.style.display = 'inline-flex';
+            const asPill = document.getElementById('autoSaveStatusPill');
+            if (asPill) asPill.style.display = 'inline-block';
+
+            if (shouldLoadDraft) {
+                loadDraft();
+            } else if (isAutoRefreshUnlock) {
+                restoreLiveWorkingQuoteOnRefresh();
+            } else {
+                const liveRaw = safeGetStorage('myAlumLiveWorkingState');
+                if (liveRaw) {
+                    restoreLiveWorkingQuoteOnRefresh();
+                } else {
+                    calculateAll(false);
+                }
+            }
+            updateWorkLogBadge();
+            updateFollowupBadgesAndBanner();
+            if (window.pendingOpenWorkLogAfterLogin) {
+                const signedQNum = window.pendingOpenWorkLogAfterLogin;
+                window.pendingOpenWorkLogAfterLogin = null;
+                openWorkLogModal();
+                showToast(`הצעה #${signedQNum} החתומה הועברה אוטומטית ליומן העבודה ונמחקה מהארכיון!`);
+            }
+        };
+        if (isAutoRefreshUnlock) {
+            showAppFn();
+        } else {
+            setTimeout(showAppFn, 260);
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         const today = new Date();
         document.getElementById('quoteDate').valueAsDate = today;
@@ -1241,33 +1560,21 @@
         }
         initCanvasOnce();
         calculateAll(false);
+        setupLiveAutoSaveListeners();
+
+        // בדיקה אם זה לא קישור של לקוח ואם המשתמש כבר מחובר - פתיחה אוטומטית ללא בקשת קוד ברענון!
+        const params = new URLSearchParams(window.location.search);
+        const hashParams = new URLSearchParams((window.location.hash || '').replace(/^#\??/, ''));
+        const isClientPortalUrl = !!(params.get('q') || params.get('clientquote') || hashParams.get('q') || hashParams.get('clientquote') || params.get('s') || params.get('signedconfirm') || hashParams.get('s') || hashParams.get('signedconfirm'));
+        if (!isClientPortalUrl && safeGetStorage('isYehonatanAdminDevice') === 'true' && safeGetStorage('adminSessionLocked') !== 'true') {
+            unlockAdminUI(false, true);
+        }
     });
 
     function checkLogin(shouldLoadDraft) {
         const pwd = document.getElementById('passwordInput').value;
         if (pwd === '1234') {
-            safeSetStorage('isYehonatanAdminDevice', 'true');
-            safeSetStorage('adminLoggedInAt', String(Date.now()));
-            startAdminOpenTabHeartbeat();
-            document.getElementById('loginError').style.display = 'none';
-            document.getElementById('loginScreen').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('mainApp').style.display = 'block';
-                document.getElementById('bottomNav').style.display = 'flex';
-                document.getElementById('topToolbar').style.display = 'flex';
-                if (shouldLoadDraft) {
-                    loadDraft();
-                } else {
-                    calculateAll(false);
-                }
-                if (window.pendingOpenWorkLogAfterLogin) {
-                    const signedQNum = window.pendingOpenWorkLogAfterLogin;
-                    window.pendingOpenWorkLogAfterLogin = null;
-                    openWorkLogModal();
-                    showToast(`הצעה #${signedQNum} החתומה הועברה אוטומטית ליומן העבודה ונמחקה מהארכיון!`);
-                }
-            }, 300);
+            unlockAdminUI(shouldLoadDraft, false);
         } else {
             document.getElementById('loginError').style.display = 'block';
         }
@@ -1285,6 +1592,7 @@
         document.getElementById('quoteNumber').value = formatMonthQuoteNum(nextSeq, today);
         document.getElementById('installationCost').value = '';
         document.getElementById('discountCost').value = '';
+        if (document.getElementById('discountPercent')) document.getElementById('discountPercent').value = '';
         document.getElementById('generalNotes').value = '';
         window.currentQuoteSignatureData = null;
         window.editingWorkLogJobId = null;
@@ -1292,6 +1600,7 @@
         document.getElementById('itemsContainer').innerHTML = '';
         itemCount = 0;
         calculateAll(false);
+        saveLiveWorkingQuoteState();
     }
 
     function startNewQuote() {
@@ -1464,13 +1773,15 @@
             items.push(extractCardData(card));
         });
         return {
-            version: 2,
+            version: 3,
             savedAt: new Date().toLocaleString('he-IL'),
+            createdAtTs: Date.now(),
             client: document.getElementById('clientName').value,
             phone: document.getElementById('clientPhone').value,
             qDate: document.getElementById('quoteDate').value,
             qNum: document.getElementById('quoteNumber').value,
             install: document.getElementById('installationCost').value,
+            discountPercent: document.getElementById('discountPercent') ? document.getElementById('discountPercent').value : '',
             discount: document.getElementById('discountCost').value,
             notes: document.getElementById('generalNotes').value,
             totalText: document.getElementById('totalFinal').innerText,
@@ -1493,12 +1804,16 @@
         } catch (e) { archive = []; }
         const existingIdx = archive.findIndex(x => String(x.qNum) === String(data.qNum));
         if (existingIdx >= 0) {
+            if (archive[existingIdx].createdAtTs) data.createdAtTs = archive[existingIdx].createdAtTs;
+            if (archive[existingIdx].lastFollowupAt) data.lastFollowupAt = archive[existingIdx].lastFollowupAt;
             archive[existingIdx] = data;
         } else {
             archive.unshift(data);
-            if (archive.length > 35) archive.pop();
+            if (archive.length > 50) archive.pop();
         }
         safeSetStorage('myAlumQuotesArchive', JSON.stringify(archive));
+        safeSetStorage('myAlumLiveWorkingState', JSON.stringify(data));
+        updateFollowupBadgesAndBanner();
         return data;
     }
 
@@ -1525,6 +1840,25 @@
         document.getElementById('quoteNumber').value = String(rawQNum).includes('-') ? rawQNum : formatMonthQuoteNum(extractSeqFromQuoteNum(rawQNum), data.qDate);
         document.getElementById('installationCost').value = data.install || '';
         document.getElementById('discountCost').value = data.discount || '';
+        const pctEl = document.getElementById('discountPercent');
+        if (pctEl) {
+            if (data.discountPercent !== undefined && data.discountPercent !== '') {
+                pctEl.value = data.discountPercent;
+            } else if (data.discount && parseFloat(data.discount) > 0) {
+                let rawSum = 0;
+                if (Array.isArray(data.items)) {
+                    data.items.forEach(it => {
+                        const q = parseFloat(it.type === 'joker' ? it.qtyJoker : it.qty) || 1;
+                        const p = parseFloat(it.type === 'joker' ? it.priceJoker : it.price) || 0;
+                        rawSum += q * p;
+                    });
+                }
+                const baseForPct = rawSum + (parseFloat(data.install) || 0);
+                pctEl.value = baseForPct > 0 ? Math.round((parseFloat(data.discount) / baseForPct) * 1000) / 10 : '';
+            } else {
+                pctEl.value = '';
+            }
+        }
         document.getElementById('generalNotes').value = data.notes || '';
         window.currentQuoteSignatureData = data.signatureData || null;
         updateSignedIndicatorUI();
@@ -1560,30 +1894,149 @@
         }
     }
 
-    function openArchiveModal() {
+    let currentArchiveFilterMode = 'all';
+
+    function getQuoteAgeDays(q) {
+        if (!q) return 0;
+        let ts = q.createdAtTs || 0;
+        if (!ts && q.qDate) {
+            const parsed = new Date(q.qDate).getTime();
+            if (!isNaN(parsed)) ts = parsed;
+        }
+        if (!ts) return 0;
+        return Math.max(0, Math.floor((Date.now() - ts) / (1000 * 60 * 60 * 24)));
+    }
+
+    function getFollowupThresholdDays() {
+        const val = parseInt(safeGetStorage('followupDaysThreshold', '2'), 10);
+        return isNaN(val) ? 2 : val;
+    }
+
+    function saveFollowupDaysSetting(val) {
+        safeSetStorage('followupDaysThreshold', String(val));
+        updateFollowupBadgesAndBanner();
+        showToast('הגדרת תזכורת הפולואפ נשמרה');
+    }
+
+    function isQuoteNeedingFollowup(q) {
+        if (!q || q.signatureData) return false;
+        const threshold = getFollowupThresholdDays();
+        return getQuoteAgeDays(q) >= threshold;
+    }
+
+    function updateFollowupBadgesAndBanner() {
+        let archive = [];
+        try { archive = JSON.parse(safeGetStorage('myAlumQuotesArchive', '[]') || '[]'); } catch (e) { archive = []; }
+        const needing = archive.filter(isQuoteNeedingFollowup);
+        const count = needing.length;
+
+        const dBadge = document.getElementById('drawerFollowupBadge');
+        const tBadge = document.getElementById('topFollowupBadge');
+        const banner = document.getElementById('followupAlertBanner');
+        const bannerText = document.getElementById('followupAlertText');
+
+        if (dBadge) {
+            dBadge.innerText = count;
+            dBadge.style.display = count > 0 ? 'inline-block' : 'none';
+        }
+        if (tBadge) {
+            tBadge.innerText = count;
+            tBadge.style.display = count > 0 ? 'inline-block' : 'none';
+        }
+        if (banner && bannerText) {
+            if (count > 0) {
+                const names = needing.slice(0, 3).map(q => `${q.client || 'לקוח'} (#${q.qNum || 1})`).join(', ');
+                bannerText.innerText = `יש ${count} הצעות שממתינות לאישור לקוח (${names}${count > 3 ? ' ועוד' : ''}) — לחץ לשליחת הודעת מעקב בוואטסאפ.`;
+                banner.style.display = 'flex';
+            } else {
+                banner.style.display = 'none';
+            }
+        }
+    }
+
+    function setArchiveFilterMode(mode) {
+        currentArchiveFilterMode = mode;
+        const btnAll = document.getElementById('archFilterAllBtn');
+        const btnFu = document.getElementById('archFilterFollowupBtn');
+        if (btnAll) btnAll.classList.toggle('active', mode === 'all');
+        if (btnFu) btnFu.classList.toggle('active', mode === 'followup');
+        renderArchiveModalList();
+    }
+
+    function openArchiveModal(initialMode) {
+        if (initialMode === 'followup' || initialMode === 'all') {
+            currentArchiveFilterMode = initialMode;
+        }
+        const btnAll = document.getElementById('archFilterAllBtn');
+        const btnFu = document.getElementById('archFilterFollowupBtn');
+        if (btnAll) btnAll.classList.toggle('active', currentArchiveFilterMode === 'all');
+        if (btnFu) btnFu.classList.toggle('active', currentArchiveFilterMode === 'followup');
+        renderArchiveModalList();
+        document.getElementById('archiveModal').style.display = 'flex';
+    }
+
+    function renderArchiveModalList() {
         let archive = [];
         try {
             archive = JSON.parse(safeGetStorage('myAlumQuotesArchive', '[]') || '[]');
         } catch (e) { archive = []; }
+        updateFollowupBadgesAndBanner();
         const listEl = document.getElementById('archiveListContainer');
-        if (archive.length === 0) {
-            listEl.innerHTML = `<div style="text-align:center; padding:25px; color:var(--text-muted);">אין עדיין הצעות שמורות בארכיון.<br>לחץ על "💾 שמור הצעה" כדי לשמור הצעות כאן.</div>`;
-        } else {
-            listEl.innerHTML = archive.map((q, idx) => `
-                <div class="archive-item">
-                    <div class="archive-info">
-                        <div class="archive-title">הצעה #${q.qNum || 1} - ${q.client || 'לקוח ללא שם'}</div>
-                        <div class="archive-sub">${q.savedAt || ''} | ${(q.items ? q.items.length : 0)} מוצרים | ${q.totalText || ''}</div>
+        const indexed = archive.map((q, idx) => ({ q, idx })).filter(item => {
+            if (currentArchiveFilterMode === 'followup') return isQuoteNeedingFollowup(item.q);
+            return true;
+        });
+
+        if (indexed.length === 0) {
+            listEl.innerHTML = `<div style="text-align:center; padding:25px; color:var(--text-muted);">${currentArchiveFilterMode === 'followup' ? 'אין כרגע הצעות שממתינות לפולואפ לפי טווח הימים שהוגדר.' : 'אין עדיין הצעות שמורות בארכיון.<br>לחץ על "💾 שמור הצעה" כדי לשמור הצעות כאן.'}</div>`;
+            return;
+        }
+
+        listEl.innerHTML = indexed.map(({ q, idx }) => {
+            const ageDays = getQuoteAgeDays(q);
+            const ageText = ageDays === 0 ? 'היום' : (ageDays === 1 ? 'לפני יום' : `לפני ${ageDays} ימים`);
+            const needsFu = isQuoteNeedingFollowup(q);
+            return `
+                <div class="archive-item" style="flex-wrap:wrap; ${needsFu ? 'border-right:4px solid #dd6b20; background:#fffaf0;' : ''}">
+                    <div class="archive-info" style="min-width:190px;">
+                        <div class="archive-title">
+                            הצעה #${q.qNum || 1} - ${q.client || 'לקוח ללא שם'}
+                            <span class="status-badge" style="background:${needsFu ? '#feebc8' : '#e2e8f0'}; color:${needsFu ? '#9c4221' : '#2d3748'}; margin-right:6px;">⏱️ ${ageText}</span>
+                        </div>
+                        <div class="archive-sub">${q.savedAt || ''} | ${(q.items ? q.items.length : 0)} מוצרים | <strong>${q.totalText || ''}</strong> ${q.phone ? `| 📞 ${q.phone}` : ''}</div>
+                        ${q.lastFollowupAt ? `<div style="font-size:11.5px; color:#2f855a; margin-top:2px;">✓ נשלח פולואפ אחרון: ${q.lastFollowupAt}</div>` : ''}
                     </div>
                     <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                        <button type="button" class="btn-duplicate" style="background:#25D366; color:white; border-color:#25D366;" onclick="sendFollowupWhatsapp(${idx})">💬 פולואפ בוואטסאפ</button>
                         <button type="button" class="btn-duplicate" style="background:#f0fff4; color:#22543d; border-color:#9ae6b4;" onclick="convertArchiveQuoteToWorkLog(${idx})">📅 ליומן עבודה</button>
-                        <button type="button" class="btn-duplicate" onclick="loadFromArchive(${idx})">טען</button>
-                        <button type="button" class="btn-delete" onclick="deleteFromArchive(${idx})">מחק</button>
+                        <button type="button" class="btn-duplicate" onclick="loadFromArchive(${idx})">✏️ טען</button>
+                        <button type="button" class="btn-delete" onclick="deleteFromArchive(${idx})">🗑️</button>
                     </div>
                 </div>
-            `).join('');
+            `;
+        }).join('');
+    }
+
+    function sendFollowupWhatsapp(idx) {
+        let archive = [];
+        try { archive = JSON.parse(safeGetStorage('myAlumQuotesArchive', '[]') || '[]'); } catch (e) { archive = []; }
+        const q = archive[idx];
+        if (!q) return;
+        q.lastFollowupAt = new Date().toLocaleDateString('he-IL');
+        safeSetStorage('myAlumQuotesArchive', JSON.stringify(archive));
+        renderArchiveModalList();
+
+        const client = q.client || 'לקוח יקר';
+        const qNum = q.qNum || '1';
+        const total = q.totalText || '';
+        const rawPhone = (q.phone || '').replace(/\D/g, '');
+        let intlPhone = '';
+        if (rawPhone.length >= 9) {
+            intlPhone = rawPhone.startsWith('0') ? ('972' + rawPhone.slice(1)) : rawPhone;
         }
-        document.getElementById('archiveModal').style.display = 'flex';
+        const msg = `שלום ${client}, כאן יהונתן מ*יהונתן אלומיניום* 😊\nרציתי לוודא שקיבלת את הצעת המחיר מס' *${qNum}*${total ? ` (ע"ס ${total})` : ''} ולבדוק אם יש לך שאלות או התאמות שתרצה שנעשה במפרט.\nאשמח לעמוד לרשותך בכל שאלה!`;
+        const url = intlPhone ? `https://wa.me/${intlPhone}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+        window.open(url, '_blank');
     }
 
     function loadFromArchive(idx) {
@@ -2200,7 +2653,24 @@
             itemsSum += (q * p);
         });
         const install = parseFloat(document.getElementById('installationCost').value) || 0;
-        const discount = parseFloat(document.getElementById('discountCost').value) || 0;
+        const pctInputEl = document.getElementById('discountPercent');
+        const discountPct = pctInputEl ? Math.max(0, Math.min(100, parseFloat(pctInputEl.value) || 0)) : 0;
+        const grossBeforeDiscount = itemsSum + install;
+        let discount = 0;
+        if (discountPct > 0) {
+            discount = Math.round((grossBeforeDiscount * (discountPct / 100)) * 100) / 100;
+            const dCostEl = document.getElementById('discountCost');
+            if (dCostEl) dCostEl.value = String(discount);
+        } else {
+            const dCostEl = document.getElementById('discountCost');
+            if (dCostEl && pctInputEl) dCostEl.value = '0';
+            discount = parseFloat(document.getElementById('discountCost').value) || 0;
+        }
+        const hintEl = document.getElementById('discountComputedHint');
+        if (hintEl) {
+            hintEl.innerText = discount > 0 ? `שווה ערך ל-${discount.toLocaleString('he-IL')} ₪ הנחה (${discountPct}%)` : '';
+        }
+
         const totalSub = Math.max(0, itemsSum + install - discount);
         const vat = Math.round(totalSub * 0.18 * 100) / 100;
         const final = totalSub + vat;
@@ -2209,11 +2679,16 @@
         document.getElementById('itemsSubtotal').innerText = itemsSum.toLocaleString('he-IL') + " ₪";
         document.getElementById('installSubtotal').innerText = install.toLocaleString('he-IL') + " ₪";
         const discountLine = document.getElementById('discountLine');
+        const discountLabelText = document.getElementById('discountLabelText');
         if (discount > 0) {
             discountLine.style.display = 'flex';
+            if (discountLabelText) discountLabelText.innerText = discountPct > 0 ? `הנחה (${discountPct}%):` : 'הנחה:';
             document.getElementById('discountSubtotal').innerText = "-" + discount.toLocaleString('he-IL') + " ₪";
         } else {
             discountLine.style.display = 'none';
+        }
+        if (!isRestoringLiveState) {
+            scheduleLiveWorkingQuoteAutoSave();
         }
         document.getElementById('totalSub').innerText = totalSub.toLocaleString('he-IL') + " ₪";
         document.getElementById('totalVat').innerText = vat.toLocaleString('he-IL') + " ₪";
@@ -2414,8 +2889,9 @@
         const discount = parseFloat(document.getElementById('discountCost').value) || 0;
         const generalNotes = (document.getElementById('generalNotes').value || '').trim();
 
+        const discountPctWa = document.getElementById('discountPercent') ? (parseFloat(document.getElementById('discountPercent').value) || 0) : 0;
         if (install > 0) txt += `🛠️ הובלה, התקנה ופירוק: ${install.toLocaleString('he-IL')} ₪\n`;
-        if (discount > 0) txt += `🎁 הנחה מיוחדת: -${discount.toLocaleString('he-IL')} ₪\n`;
+        if (discount > 0) txt += `🎁 הנחה מיוחדת${discountPctWa > 0 ? ` (${discountPctWa}%)` : ''}: -${discount.toLocaleString('he-IL')} ₪\n`;
         if (generalNotes) txt += `📌 הערות: ${generalNotes}\n`;
 
         txt += `\nסה"כ לפני מע"מ: ${document.getElementById('totalSub').innerText}\n`;
@@ -2515,7 +2991,7 @@
                 <div style="float:left; width:320px; max-width:100%; margin-top:10px; background:#f8fafc !important; padding:14px; border:1px solid #cbd5e0; border-radius:10px; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
                     <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #e2e8f0; font-size:14px;"><span>סה"כ מוצרים:</span><span>${itemsSum.toLocaleString('he-IL')} ₪</span></div>
                     ${install > 0 ? `<div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #e2e8f0; font-size:14px;"><span>הובלה והתקנה:</span><span>${install.toLocaleString('he-IL')} ₪</span></div>` : ''}
-                    ${discount > 0 ? `<div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #e2e8f0; font-size:14px; color:#2f855a;"><span>הנחה:</span><span>-${discount.toLocaleString('he-IL')} ₪</span></div>` : ''}
+                    ${discount > 0 ? `<div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #e2e8f0; font-size:14px; color:#2f855a;"><span>הנחה${(document.getElementById('discountPercent') && parseFloat(document.getElementById('discountPercent').value) > 0) ? ' (' + parseFloat(document.getElementById('discountPercent').value) + '%)' : ''}:</span><span>-${discount.toLocaleString('he-IL')} ₪</span></div>` : ''}
                     <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #e2e8f0; font-size:14px; font-weight:600;"><span>סה"כ לפני מע"מ:</span><span>${totalBeforeVat.toLocaleString('he-IL')} ₪</span></div>
                     <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #e2e8f0; font-size:14px;"><span>מע"מ (18%):</span><span>${vat.toLocaleString('he-IL')} ₪</span></div>
                     <div style="display:flex; justify-content:space-between; padding:10px 0 0 0; margin-top:6px; border-top:2px solid #0d47a1; font-size:17px; font-weight:800; color:#0d47a1;"><span>סה"כ לתשלום:</span><span>${finalTotal.toLocaleString('he-IL')} ₪</span></div>
@@ -3368,14 +3844,16 @@
 
     function updateWorkLogBadge() {
         const badge = document.getElementById('workLogCountBadge');
-        if (!badge) return;
+        const dBadge = document.getElementById('drawerWorkLogBadge');
         const jobs = getWorkLogJobs();
         const activeCount = jobs.filter(j => j.status !== 'done').length;
-        if (activeCount > 0) {
+        if (badge) {
             badge.innerText = activeCount;
-            badge.style.display = 'inline-block';
-        } else {
-            badge.style.display = 'none';
+            badge.style.display = activeCount > 0 ? 'inline-block' : 'none';
+        }
+        if (dBadge) {
+            dBadge.innerText = activeCount;
+            dBadge.style.display = activeCount > 0 ? 'inline-block' : 'none';
         }
     }
 
@@ -3698,6 +4176,7 @@
                     <div class="quick-actions-bar" style="justify-content:space-between; margin-bottom:0; margin-top:10px;">
                         <div style="display:flex; gap:6px; flex-wrap:wrap;">
                             <button type="button" class="btn-mini-action" style="background:var(--primary); color:white; border-color:var(--primary);" onclick="openJobDetailModal('${j.id}')">📐 מידות ייצור, כרטיס מתקין ותשלומים</button>
+                            <button type="button" class="btn-mini-action" style="background:#f0fff4; color:#22543d; border-color:#68d391;" onclick="openJobCompletionModal('${j.id}')">🎉 סיום עבודה, אחריות והמלצה</button>
                             <button type="button" class="btn-mini-action" style="background:#fffaf0; color:#c05621; border-color:#fbd38d;" onclick="loadJobFromWorkLogForEdit('${j.id}')">✏️ טען לעריכה וחתימה מחדש</button>
                             ${j.phone ? `<a href="tel:${cleanPhone}" class="btn-mini-action">📞 חיוג</a>` : ''}
                             ${intlPhone ? `<a href="https://wa.me/${intlPhone}" target="_blank" class="btn-mini-action" style="background:#f0fff4; color:#22543d; border-color:#9ae6b4;">💬 וואטסאפ</a>` : ''}
@@ -4959,6 +5438,407 @@
             } catch (e) {}
         }
     });
+
+
+    // =========================================================================
+    // תוספות שלב 1: תפריט צד, שמירה אוטומטית חיה, סיום עבודה והמלצה, דוח חודשי וגיבוי
+    // =========================================================================
+    let _liveAutoSaveTimer = null;
+
+    function saveLiveWorkingQuoteState() {
+        if (isRestoringLiveState) return;
+        const mainApp = document.getElementById('mainApp');
+        if (!mainApp || mainApp.style.display === 'none') return;
+        try {
+            const data = serializeCurrentQuote();
+            safeSetStorage('myAlumLiveWorkingState', JSON.stringify(data));
+            safeSetStorage('myAlumDraft', JSON.stringify(data));
+            const pill = document.getElementById('autoSaveStatusPill');
+            if (pill) {
+                const nowStr = new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
+                pill.innerText = `✓ נשמר אוטומטית (${nowStr})`;
+            }
+        } catch (e) {}
+    }
+
+    function scheduleLiveWorkingQuoteAutoSave() {
+        if (isRestoringLiveState) return;
+        clearTimeout(_liveAutoSaveTimer);
+        _liveAutoSaveTimer = setTimeout(saveLiveWorkingQuoteState, 280);
+    }
+
+    function setupLiveAutoSaveListeners() {
+        const mainApp = document.getElementById('mainApp');
+        if (!mainApp) return;
+        mainApp.addEventListener('input', () => scheduleLiveWorkingQuoteAutoSave());
+        mainApp.addEventListener('change', () => scheduleLiveWorkingQuoteAutoSave());
+    }
+
+    function restoreLiveWorkingQuoteOnRefresh() {
+        const raw = safeGetStorage('myAlumLiveWorkingState') || safeGetStorage('myAlumDraft');
+        if (!raw) {
+            calculateAll(false);
+            return;
+        }
+        try {
+            isRestoringLiveState = true;
+            const data = JSON.parse(raw);
+            loadQuoteDataObject(data);
+        } catch (e) {
+            calculateAll(false);
+        } finally {
+            isRestoringLiveState = false;
+        }
+    }
+
+    // --- ניווט תפריט צד ולשוניות ---
+    function openSideDrawer() {
+        const overlay = document.getElementById('sideDrawerOverlay');
+        const drawer = document.getElementById('sideDrawer');
+        if (overlay) overlay.style.display = 'block';
+        if (drawer) setTimeout(() => drawer.classList.add('open'), 10);
+        updateWorkLogBadge();
+        updateFollowupBadgesAndBanner();
+    }
+
+    function closeSideDrawer() {
+        const overlay = document.getElementById('sideDrawerOverlay');
+        const drawer = document.getElementById('sideDrawer');
+        if (drawer) drawer.classList.remove('open');
+        setTimeout(() => { if (overlay) overlay.style.display = 'none'; }, 260);
+    }
+
+    function switchAppTab(tabName) {
+        closeSideDrawer();
+        ['archiveModal', 'workLogModal', 'workJobDetailModal', 'financeModal', 'monthlyReportModal', 'settingsModal', 'jobCompletionModal'].forEach(id => {
+            closeModal(id);
+        });
+        document.querySelectorAll('.drawer-nav-item').forEach(btn => btn.classList.remove('active'));
+
+        if (tabName === 'quote') {
+            const b = document.getElementById('navBtnQuote');
+            if (b) b.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else if (tabName === 'archive') {
+            const b = document.getElementById('navBtnArchive');
+            if (b) b.classList.add('active');
+            openArchiveModal('all');
+        } else if (tabName === 'worklog') {
+            const b = document.getElementById('navBtnWorkLog');
+            if (b) b.classList.add('active');
+            openWorkLogModal();
+        } else if (tabName === 'finance') {
+            const b = document.getElementById('navBtnFinance');
+            if (b) b.classList.add('active');
+            openFinanceModal();
+        } else if (tabName === 'monthly') {
+            const b = document.getElementById('navBtnMonthly');
+            if (b) b.classList.add('active');
+            openMonthlyReportModal();
+        } else if (tabName === 'settings') {
+            const b = document.getElementById('navBtnSettings');
+            if (b) b.classList.add('active');
+            openSettingsModal();
+        }
+    }
+
+    function lockAppManually() {
+        closeSideDrawer();
+        closeModal('settingsModal');
+        saveLiveWorkingQuoteState();
+        safeSetStorage('adminSessionLocked', 'true');
+        document.getElementById('passwordInput').value = '';
+        const loginEl = document.getElementById('loginScreen');
+        loginEl.style.display = 'flex';
+        setTimeout(() => { loginEl.style.opacity = '1'; }, 20);
+        showToast('האפליקציה ננעלה בהצלחה');
+    }
+
+    // --- כפתור סיום עבודה, תעודת אחריות ובקשת המלצה ---
+    function openJobCompletionModal(jobId) {
+        const jobs = getWorkLogJobs();
+        const job = jobs.find(j => j.id === jobId);
+        if (!job) return;
+        activeWorkJobId = jobId;
+
+        const client = job.client || 'לקוח יקר';
+        const defaultMsg = `שלום ${client} היקר/ה,\nתודה רבה שבחרת ב*יהונתן אלומיניום* לביצוע העבודה בביתך! 🛠️✨\nאנו מאחלים לכם הנאה מלאה, שקט ובידוד מושלם מהמוצרים החדשים לאורך שנים רבות.\n\nנשמח מאוד אם תוכלו לשלוח לנו משוב קצר על השירות או להמליץ עלינו לחברים ומכרים.\nתמיד לשירותכם,\n*יהונתן ג'ורג'י - יהונתן אלומיניום*\n📞 052-3068104`;
+
+        const body = document.getElementById('jobCompletionBody');
+        body.innerHTML = `
+            <div style="background:#f0fff4; border:1px solid #9ae6b4; border-radius:12px; padding:12px; margin-bottom:12px;">
+                <div style="font-weight:700; color:#22543d; margin-bottom:6px;">✅ סימון הפרויקט כהושלם (${job.client} - הצעה #${job.qNum})</div>
+                <p style="font-size:13px; color:#2d3748; margin:0 0 8px 0;">סטטוס נוכחי: <strong>${(STATUS_LABELS[job.status] || STATUS_LABELS.measure).text}</strong></p>
+                ${job.status !== 'done' ? `<button type="button" class="btn-login" style="background:var(--success); margin:0; padding:10px;" onclick="markJobCompletedNow('${job.id}')">✔️ סמן עבודה כ"הושלם ושולם"</button>` : `<div style="color:#22543d; font-weight:700; font-size:13.5px;">✓ העבודה כבר מסומנת כהושלמה!</div>`}
+            </div>
+
+            <div style="background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:12px; margin-bottom:12px;">
+                <label style="color:var(--primary);">💬 הודעת סיום עבודה ובקשת המלצה ללקוח בוואטסאפ:</label>
+                <textarea id="completionWhatsappText" rows="6" style="font-size:13.5px; line-height:1.45; margin-bottom:8px;">${defaultMsg}</textarea>
+                <button type="button" class="btn-login" style="background:var(--whatsapp); margin:0;" onclick="sendJobCompletionWhatsapp('${job.id}')">📲 שלח הודעת תודה ובקשת המלצה בוואטסאפ</button>
+            </div>
+
+            <div style="background:#ebf8ff; border:1px solid #90caf9; border-radius:12px; padding:12px;">
+                <div style="font-weight:700; color:var(--primary); margin-bottom:6px;">🛡️ תעודת אחריות ופרוטוקול מסירה ללקוח</div>
+                <p style="font-size:12.5px; color:#2d3748; margin:0 0 8px 0;">הפק מסמך PDF יוקרתי עם פירוט המוצרים שהותקנו ותעודת אחריות רשמית של יהונתן אלומיניום.</p>
+                <button type="button" class="btn-login" style="background:var(--primary); margin:0;" onclick="printWarrantyCertificate('${job.id}')">🖨️ הפק תעודת אחריות ומסירה (PDF)</button>
+            </div>
+        `;
+        document.getElementById('jobCompletionModal').style.display = 'flex';
+    }
+
+    function markJobCompletedNow(jobId) {
+        updateJobQuickField(jobId, 'status', 'done');
+        openJobCompletionModal(jobId);
+        showToast('העבודה סומנה כ"הושלם ושולם"!');
+    }
+
+    function sendJobCompletionWhatsapp(jobId) {
+        const jobs = getWorkLogJobs();
+        const job = jobs.find(j => j.id === jobId);
+        if (!job) return;
+        const msg = document.getElementById('completionWhatsappText').value;
+        const rawPhone = (job.phone || '').replace(/\D/g, '');
+        let intlPhone = '';
+        if (rawPhone.length >= 9) {
+            intlPhone = rawPhone.startsWith('0') ? ('972' + rawPhone.slice(1)) : rawPhone;
+        }
+        const url = intlPhone ? `https://wa.me/${intlPhone}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+        window.open(url, '_blank');
+    }
+
+    function printWarrantyCertificate(jobId) {
+        const jobs = getWorkLogJobs();
+        const job = jobs.find(j => j.id === jobId);
+        if (!job) return;
+        const todayStr = new Date().toLocaleDateString('he-IL');
+        const rowsHtml = (job.items || []).map((it, i) => `
+            <tr>
+                <td style="padding:8px; border:1px solid #cbd5e0; text-align:center; font-weight:700;">${i + 1}</td>
+                <td style="padding:8px; border:1px solid #cbd5e0;"><strong>${it.title}</strong><br><span style="font-size:12.5px;">${it.specs || ''}</span></td>
+                <td style="padding:8px; border:1px solid #cbd5e0; text-align:center;">${it.finalDims || it.quoteDims || '-'}</td>
+                <td style="padding:8px; border:1px solid #cbd5e0; text-align:center;">${it.qty || 1}</td>
+            </tr>
+        `).join('');
+
+        const htmlContent = `
+            <div style="font-family:'Rubik',sans-serif; direction:rtl; color:#1a202c; border:3px double #0d47a1; padding:24px; border-radius:12px;">
+                <div style="text-align:center; border-bottom:2px solid #0d47a1; padding-bottom:14px; margin-bottom:18px;">
+                    <h1 style="margin:0; color:#0d47a1; font-size:28px;">יהונתן אלומיניום - מערכות אלומיניום מתקדמות</h1>
+                    <h2 style="margin:6px 0 0; color:#2d3748; font-size:20px;">🛡️ תעודת אחריות ופרוטוקול מסירת עבודה</h2>
+                </div>
+                <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; background:#f8fafc; padding:12px; border-radius:8px; border:1px solid #cbd5e0; margin-bottom:18px; font-weight:700; font-size:14px;">
+                    <span>שם הלקוח: ${job.client}</span>
+                    <span>כתובת: ${job.address || '-'}</span>
+                    <span>מס' הזמנה: #${job.qNum}</span>
+                    <span>תאריך מסירה: ${todayStr}</span>
+                </div>
+                <p style="font-size:14px; line-height:1.6;">אנו מאשרים כי עבודות האלומיניום והזכוכית המפורטות להלן סופקו והותקנו בבית הלקוח בהתאם למפרט ההזמנה:</p>
+                <table style="width:100%; border-collapse:collapse; font-size:13.5px; margin-bottom:20px; text-align:right;">
+                    <thead>
+                        <tr style="background:#0d47a1; color:white;">
+                            <th style="padding:8px; border:1px solid #cbd5e0; width:7%;">#</th>
+                            <th style="padding:8px; border:1px solid #cbd5e0;">תיאור הפריט והמפרט</th>
+                            <th style="padding:8px; border:1px solid #cbd5e0; width:20%; text-align:center;">מידות (ס"מ)</th>
+                            <th style="padding:8px; border:1px solid #cbd5e0; width:10%; text-align:center;">כמות</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rowsHtml}</tbody>
+                </table>
+                <div style="background:#f0fff4; border:1px solid #9ae6b4; padding:12px 16px; border-radius:8px; font-size:13px; line-height:1.7; margin-bottom:26px;">
+                    <strong>תנאי האחריות והתחזוקה:</strong><br>
+                    • ניתנת אחריות מלאה על טיב ההתקנה, האיטום, הפרופילים והפרזול בכפוף לשימוש סביר ותקין.<br>
+                    • מומלץ לנקות את המסילות ופתחי הניקוז מאבק ולכלוך לפני עונת הגשמים ולהימנע משימוש בחומרים חריפים.<br>
+                    • האחריות אינה מכסה שבר זכוכית או נזק פיזי שנגרם משימוש בלתי סביר או כוח עליון.
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:30px; font-size:14px;">
+                    <div>
+                        <strong>בכבוד רב ובתודה על הבחירה,</strong><br>
+                        יהונתן ג'ורג'י — יהונתן אלומיניום | 052-3068104
+                    </div>
+                    <div style="text-align:center; min-width:200px;">
+                        <div style="border-bottom:1px solid #333; height:30px; margin-bottom:6px;"></div>
+                        <div>חתימת הלקוח לאישור קבלת העבודה</div>
+                    </div>
+                </div>
+            </div>
+        `;
+        closeModal('jobCompletionModal');
+        document.getElementById('printArea').innerHTML = htmlContent;
+        document.getElementById('printModalTitle').innerText = "תעודת אחריות ופרוטוקול מסירה (PDF)";
+        document.getElementById('printPreviewBody').innerHTML = htmlContent;
+        document.getElementById('printPreviewModal').style.display = 'flex';
+    }
+
+    // --- דוח חודשי חכם ומרוכז ---
+    function openMonthlyReportModal() {
+        const monthInp = document.getElementById('execReportMonthInput');
+        if (monthInp && !monthInp.value) {
+            monthInp.value = new Date().toISOString().slice(0, 7);
+        }
+        renderMonthlyExecutiveReport();
+        document.getElementById('monthlyReportModal').style.display = 'flex';
+    }
+
+    function renderMonthlyExecutiveReport() {
+        const monthVal = document.getElementById('execReportMonthInput') ? document.getElementById('execReportMonthInput').value : new Date().toISOString().slice(0, 7);
+        const scope = document.getElementById('execReportScope') ? document.getElementById('execReportScope').value : 'month';
+
+        let archive = [];
+        try { archive = JSON.parse(safeGetStorage('myAlumQuotesArchive', '[]') || '[]'); } catch (e) { archive = []; }
+        const jobs = getWorkLogJobs();
+        const finEntries = getFinanceEntries();
+
+        const matchMonth = (isoOrDateStr) => {
+            if (scope === 'all' || !monthVal) return true;
+            if (!isoOrDateStr) return false;
+            if (isoOrDateStr.startsWith(monthVal)) return true;
+            const parts = isoOrDateStr.split(',')[0].split('.');
+            if (parts.length === 3) {
+                const y = parts[2].trim();
+                const m = parts[1].trim().padStart(2, '0');
+                return `${y}-${m}` === monthVal;
+            }
+            return true;
+        };
+
+        const openQuotes = archive.filter(q => matchMonth(q.qDate || q.savedAt));
+        const scopedJobs = jobs.filter(j => matchMonth((j.rawQuoteData && j.rawQuoteData.qDate) || j.createdAt));
+        const scopedFin = finEntries.filter(e => matchMonth(e.date));
+
+        const totalQuotesSent = openQuotes.length + scopedJobs.length;
+        const closedDealsCount = scopedJobs.length;
+        const closeRate = totalQuotesSent > 0 ? Math.round((closedDealsCount / totalQuotesSent) * 100) : 0;
+
+        let totalIncome = 0;
+        let totalExpense = 0;
+        scopedFin.forEach(e => {
+            const amt = parseFloat(e.amount) || 0;
+            if (e.type === 'income') totalIncome += amt;
+            else totalExpense += amt;
+        });
+        const netProfit = totalIncome - totalExpense;
+
+        let pendingCollection = 0;
+        let activeJobsTotalDeals = 0;
+        scopedJobs.forEach(j => {
+            const deal = parseFloat(j.totalAmount) || 0;
+            const paid = getJobPaidSum(j);
+            activeJobsTotalDeals += deal;
+            if (j.status !== 'done') {
+                pendingCollection += Math.max(0, deal - paid);
+            }
+        });
+
+        const body = document.getElementById('monthlyReportBody');
+        if (!body) return;
+        body.innerHTML = `
+            <div class="fin-kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+                <div class="fin-kpi-card" style="background:#ebf8ff; border-color:#90caf9;">
+                    <div class="fin-kpi-title">עסקאות שנסגרו ביומן</div>
+                    <div class="fin-kpi-val" style="color:var(--primary);">${closedDealsCount} <span style="font-size:13px;">(${closeRate}% סגירה)</span></div>
+                </div>
+                <div class="fin-kpi-card" style="background:#f0fff4; border-color:#9ae6b4;">
+                    <div class="fin-kpi-title">הכנסות בפועל</div>
+                    <div class="fin-kpi-val" style="color:#22543d;">${totalIncome.toLocaleString('he-IL')} ₪</div>
+                </div>
+                <div class="fin-kpi-card" style="background:#fff5f5; border-color:#fed7d7;">
+                    <div class="fin-kpi-title">הוצאות שנרשמו</div>
+                    <div class="fin-kpi-val" style="color:#c53030;">${totalExpense.toLocaleString('he-IL')} ₪</div>
+                </div>
+                <div class="fin-kpi-card" style="background:#f0fff4; border-color:#68d391;">
+                    <div class="fin-kpi-title">רווח נקי בכיס</div>
+                    <div class="fin-kpi-val" style="color:${netProfit >= 0 ? '#22543d' : '#c53030'};">${netProfit.toLocaleString('he-IL')} ₪</div>
+                </div>
+                <div class="fin-kpi-card" style="background:#fffaf0; border-color:#fbd38d;">
+                    <div class="fin-kpi-title">יתרות לגבייה מלקוחות</div>
+                    <div class="fin-kpi-val" style="color:#c05621;">${pendingCollection.toLocaleString('he-IL')} ₪</div>
+                </div>
+                <div class="fin-kpi-card">
+                    <div class="fin-kpi-title">הצעות פתוחות בארכיון</div>
+                    <div class="fin-kpi-val" style="color:#4a5568;">${openQuotes.length}</div>
+                </div>
+            </div>
+
+            <div style="background:#fff; border:1px solid var(--border); border-radius:12px; padding:14px; margin-top:12px;">
+                <div style="font-weight:700; color:var(--primary); margin-bottom:8px;">📌 תמונת מצב מהירה לעסק:</div>
+                <div style="font-size:14px; line-height:1.7; color:var(--text-dark);">
+                    • <strong>היקף עסקאות ביומן העבודה:</strong> ${activeJobsTotalDeals.toLocaleString('he-IL')} ₪ (${closedDealsCount} פרויקטים).<br>
+                    • <strong>כסף שמחכה לגבייה מלקוחות פעילים:</strong> <span style="color:#c05621; font-weight:700;">${pendingCollection.toLocaleString('he-IL')} ₪</span>.<br>
+                    • <strong>הצעות שממתינות לאישור לקוח בארכיון:</strong> ${openQuotes.length} הצעות.
+                </div>
+            </div>
+        `;
+    }
+
+    function printMonthlyExecutiveReport() {
+        const bodyHtml = document.getElementById('monthlyReportBody').innerHTML;
+        const monthVal = document.getElementById('execReportMonthInput').value || 'כללי';
+        const htmlContent = `
+            <div style="font-family:'Rubik',sans-serif; direction:rtl; color:#1a202c;">
+                <h1 style="color:#0d47a1; text-align:center; border-bottom:3px solid #0d47a1; padding-bottom:12px;">יהונתן אלומיניום - דוח מנהלים חודשי (${monthVal})</h1>
+                ${bodyHtml}
+            </div>
+        `;
+        document.getElementById('printArea').innerHTML = htmlContent;
+        document.getElementById('printModalTitle').innerText = "דוח חודשי חכם (PDF)";
+        document.getElementById('printPreviewBody').innerHTML = htmlContent;
+        document.getElementById('printPreviewModal').style.display = 'flex';
+    }
+
+    // --- הגדרות וגיבוי מלא לקובץ ---
+    function openSettingsModal() {
+        const sel = document.getElementById('followupDaysSetting');
+        if (sel) sel.value = String(getFollowupThresholdDays());
+        document.getElementById('settingsModal').style.display = 'flex';
+    }
+
+    function exportFullAppBackup() {
+        const backupObj = {
+            exportedAt: new Date().toISOString(),
+            app: 'YehonatanAluminumPro',
+            quoteCounter: safeGetStorage('quoteCounter', '1'),
+            customAlumProfiles: safeGetStorage('customAlumProfiles', '[]'),
+            myAlumDraft: safeGetStorage('myAlumDraft', ''),
+            myAlumLiveWorkingState: safeGetStorage('myAlumLiveWorkingState', ''),
+            myAlumQuotesArchive: safeGetStorage('myAlumQuotesArchive', '[]'),
+            myAlumWorkLog: safeGetStorage('myAlumWorkLog', '[]'),
+            myAlumFinanceLog: safeGetStorage('myAlumFinanceLog', '[]'),
+            followupDaysThreshold: safeGetStorage('followupDaysThreshold', '2')
+        };
+        const blob = new Blob([JSON.stringify(backupObj, null, 2)], { type: 'application/json;charset=utf-8' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `Yehonatan_Aluminum_Backup_${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        showToast('קובץ הגיבוי המלא הורד למכשיר!');
+    }
+
+    function importFullAppBackup(inputEl) {
+        if (!inputEl.files || !inputEl.files[0]) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const b = JSON.parse(e.target.result);
+                if (b.quoteCounter) safeSetStorage('quoteCounter', b.quoteCounter);
+                if (b.customAlumProfiles) safeSetStorage('customAlumProfiles', b.customAlumProfiles);
+                if (b.myAlumDraft) safeSetStorage('myAlumDraft', b.myAlumDraft);
+                if (b.myAlumLiveWorkingState) safeSetStorage('myAlumLiveWorkingState', b.myAlumLiveWorkingState);
+                if (b.myAlumQuotesArchive) safeSetStorage('myAlumQuotesArchive', b.myAlumQuotesArchive);
+                if (b.myAlumWorkLog) safeSetStorage('myAlumWorkLog', b.myAlumWorkLog);
+                if (b.myAlumFinanceLog) safeSetStorage('myAlumFinanceLog', b.myAlumFinanceLog);
+                if (b.followupDaysThreshold) safeSetStorage('followupDaysThreshold', b.followupDaysThreshold);
+                updateWorkLogBadge();
+                updateFollowupBadgesAndBanner();
+                restoreLiveWorkingQuoteOnRefresh();
+                closeModal('settingsModal');
+                showToast('כל נתוני האפליקציה שוחזרו בהצלחה מהגיבוי!');
+            } catch (err) {
+                showToast('שגיאה בקריאת קובץ הגיבוי');
+            }
+        };
+        reader.readAsText(inputEl.files[0]);
+    }
 
     // --- רישום Service Worker עבור PWABuilder ואפליקציית מובייל ---
     if ('serviceWorker' in navigator) {
