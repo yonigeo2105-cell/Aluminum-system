@@ -746,6 +746,107 @@
             flex-wrap: wrap;
         }
 
+    
+        .app-tab-screen {
+            display: none;
+            animation: fadeInTab 0.18s ease-out;
+        }
+        .app-tab-screen.active {
+            display: block;
+        }
+        @keyframes fadeInTab {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .tab-screen-card {
+            background: var(--card);
+            border-radius: 18px;
+            padding: 18px;
+            margin-bottom: 18px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+        .tab-screen-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--primary-soft);
+            padding-bottom: 12px;
+            margin-bottom: 14px;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .tab-screen-header h2 {
+            margin: 0;
+            color: var(--primary);
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+    
+        .home-hero-screen {
+            min-height: calc(100vh - 140px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px 20px;
+            user-select: none;
+        }
+        .home-hero-logo-box {
+            width: 96px;
+            height: 96px;
+            border-radius: 26px;
+            background: linear-gradient(135deg, var(--primary) 0%, #1976d2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 12px 30px rgba(13, 71, 161, 0.25);
+            margin-bottom: 24px;
+            border: 3px solid #ffffff;
+        }
+        .home-hero-title {
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 0 0 10px 0;
+            letter-spacing: -0.5px;
+            line-height: 1.15;
+            text-shadow: 0 2px 10px rgba(13, 71, 161, 0.08);
+        }
+        .home-hero-subtitle {
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin: 0 0 28px 0;
+        }
+        .home-hero-divider {
+            width: 80px;
+            height: 5px;
+            background: linear-gradient(90deg, #ff6f00, var(--primary-light));
+            border-radius: 10px;
+            margin-bottom: 28px;
+        }
+        .home-hero-hint {
+            font-size: 14.5px;
+            color: #718096;
+            background: #ffffff;
+            padding: 12px 22px;
+            border-radius: 30px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .home-hero-hint:active {
+            transform: scale(0.97);
+        }
+
     </style>
 </head>
 <body>
@@ -777,11 +878,11 @@
         <button type="button" onclick="closeSideDrawer()" style="background:rgba(255,255,255,0.2); color:white; border:none; border-radius:8px; padding:6px 10px; font-weight:700; cursor:pointer;">✖</button>
     </div>
     <div class="drawer-nav-list">
-        <button type="button" class="drawer-nav-item active" id="navBtnQuote" onclick="switchAppTab('quote')">
-            <span>📝 עריכת הצעת מחיר</span>
+        <button type="button" class="drawer-nav-item active" id="navBtnHome" onclick="switchAppTab('home')">
+            <span>🏠 מסך ראשי</span>
         </button>
-        <button type="button" class="drawer-nav-item" id="navBtnNewQuote" onclick="closeSideDrawer(); startNewQuote();">
-            <span>➕ פתיחת הצעה חדשה</span>
+        <button type="button" class="drawer-nav-item" id="navBtnQuote" onclick="switchAppTab('quote')">
+            <span>📝 מערכת הצעות מחיר</span>
         </button>
         <button type="button" class="drawer-nav-item" id="navBtnArchive" onclick="switchAppTab('archive')">
             <span>📂 ארכיון הצעות ופולואפ</span>
@@ -815,16 +916,35 @@
         </div>
         <span class="autosave-pill" id="autoSaveStatusPill" style="display:none;">✓ נשמר אוטומטית</span>
     </div>
-    <div class="header-toolbar" id="topToolbar" style="display:none;">
-        <button type="button" class="btn-top-tool" style="background:rgba(47,133,90,0.88); border-color:#9ae6b4;" onclick="openWorkLogModal()">📅 יומן עבודה <span id="workLogCountBadge" style="background:white; color:#22543d; border-radius:10px; padding:1px 7px; font-size:11.5px; font-weight:800; display:none;">0</span></button>
-        <button type="button" class="btn-top-tool" style="background:rgba(183,121,31,0.88); border-color:#fbd38d;" onclick="openFinanceModal()">💰 הוצאות והכנסות</button>
-        <button type="button" class="btn-top-tool" onclick="openArchiveModal()">📂 ארכיון ופולואפ <span id="topFollowupBadge" style="background:#dd6b20; color:white; border-radius:10px; padding:1px 7px; font-size:11.5px; font-weight:800; display:none;">0</span></button>
-        <button type="button" class="btn-top-tool" style="background:rgba(107,70,193,0.88); border-color:#d6bcfa;" onclick="openMonthlyReportModal()">📊 דוח חודשי</button>
-        <button type="button" class="btn-top-tool" onclick="startNewQuote()">📄 הצעה חדשה</button>
-    </div>
+
 </header>
 
 <div class="container" id="mainApp" style="display:none">
+<div id="tabScreen-home" class="app-tab-screen active">
+    <div class="home-hero-screen">
+        <div class="home-hero-logo-box">
+            <svg width="54" height="54" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="6" y="6" width="52" height="52" rx="6" stroke="white" stroke-width="4"/>
+                <rect x="12" y="12" width="18" height="18" fill="#BBDEFB"/>
+                <rect x="34" y="12" width="18" height="18" fill="#BBDEFB"/>
+                <rect x="12" y="34" width="18" height="18" fill="#BBDEFB"/>
+                <rect x="34" y="34" width="18" height="18" fill="#BBDEFB"/>
+            </svg>
+        </div>
+        <h1 class="home-hero-title">יהונתן אלומיניום</h1>
+        <p class="home-hero-subtitle">מערכות אלומיניום מתקדמות</p>
+        <div class="home-hero-divider"></div>
+    </div>
+</div>
+
+<div id="tabScreen-quote" class="app-tab-screen">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; gap:8px; flex-wrap:wrap;">
+        <div style="font-weight:800; color:var(--primary); font-size:18px;">📝 מערכת הצעות מחיר</div>
+        <div style="display:flex; gap:8px; align-items:center;">
+            <button type="button" class="btn-mini-action" style="background:var(--primary); color:white; border-color:var(--primary); padding:8px 13px;" onclick="startNewQuote()">➕ פתיחת הצעה חדשה</button>
+            <button type="button" class="btn-mini-action" style="background:#e2e8f0;" onclick="switchAppTab('home')">🏠 מסך ראשי</button>
+        </div>
+    </div>
     <div id="followupAlertBanner">
         <div>
             <div style="font-weight:800; color:#9c4221; font-size:14.5px;">🔔 תזכורת מעקב (Follow-up) להצעות פתוחות</div>
@@ -895,169 +1015,30 @@
             </div>
         </div>
     </div>
-</div>
 
-<div class="bottom-actions" id="bottomNav" style="display:none">
-    <button type="button" class="btn-action btn-calc" onclick="calculateAll(true)">חשב סה"כ</button>
-    <button type="button" class="btn-action btn-pdf" onclick="printInvoice()">📄 הצעת מחיר (PDF)</button>
-    <button type="button" class="btn-action btn-sketches-pdf" onclick="printAllSketches()">📐 דף שרטוטים</button>
-</div>
+</div><!-- end tabScreen-quote -->
 
-<!-- מודאל תצוגת וואטסאפ -->
-<div class="modal-overlay" id="previewModal">
-    <div class="modal-content">
-        <h3 style="text-align:center;margin:0 0 12px 0;color:var(--primary)">טיוטת הודעה לוואטסאפ</h3>
-        <textarea id="previewText" style="width:100%; height:220px; font-family:inherit; border:1px solid #ccc; padding:10px; border-radius:10px; font-size:14px; line-height:1.45;"></textarea>
-        <div style="display:flex; gap:8px; margin-top:8px;">
-            <button type="button" class="btn-login" style="background:#e2e8f0; color:#1a202c; flex:1" onclick="closeModal('previewModal')">סגור</button>
-            <button type="button" class="btn-login" style="background:#4a5568; color:white; flex:1" onclick="copyWhatsappText()">📋 העתק טקסט</button>
-            <button type="button" class="btn-login" style="background:var(--whatsapp); flex:1.3" onclick="sendWhatsapp()">שלח בוואטסאפ</button>
-        </div>
-    </div>
-</div>
-
-<!-- מודאל לוח שרטוט ידני -->
-<div class="modal-overlay" id="drawingModal">
-    <div class="modal-content" style="max-width:500px">
-        <h3 style="text-align:center;margin:0 0 8px 0;color:var(--primary)">לוח שרטוט ידני</h3>
-        <p style="text-align:center;margin:0 0 10px 0;font-size:13px;color:var(--text-muted)">צייר באצבע או בעכבר על גבי הלוח</p>
-        <canvas id="drawingPad" width="600" height="380"></canvas>
-        <div class="row" style="margin-top:12px">
-             <button type="button" class="btn-login" style="background:var(--danger); flex:1" onclick="clearCanvas()">נקה לוח</button>
-             <button type="button" class="btn-login" style="background:var(--whatsapp); flex:1.3" onclick="saveDrawing()">שמור שרטוט</button>
-             <button type="button" class="btn-login" style="background:#cbd5e0; color:#1a202c; flex:1" onclick="closeDrawing()">ביטול</button>
-        </div>
-    </div>
-</div>
-
-<!-- מודאל הוספת פרופיל חדש (מחליף prompt) -->
-<div class="modal-overlay" id="addProfileModal">
-    <div class="modal-content" style="max-width:380px">
-        <h3 style="text-align:center;margin:0 0 12px 0;color:var(--primary)">הוספת סוג פרופיל חדש</h3>
-        <label>שם הפרופיל / הדגם:</label>
-        <input type="text" id="newProfileNameInput" placeholder="הזן שם פרופיל / דגם" onkeydown="if(event.key==='Enter') confirmAddProfile()">
-        <div class="row" style="margin-top:8px">
-            <button type="button" class="btn-login" style="background:#e2e8f0; color:#1a202c; flex:1" onclick="closeModal('addProfileModal')">ביטול</button>
-            <button type="button" class="btn-login" style="background:var(--primary); flex:1" onclick="confirmAddProfile()">➕ הוסף ושמור</button>
-        </div>
-    </div>
-</div>
-
-<!-- מודאל ארכיון הצעות מחיר ומעקב פולואפ -->
-<div class="modal-overlay" id="archiveModal">
-    <div class="modal-content wide-modal">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:12px; gap:8px; flex-wrap:wrap;">
-            <h3 style="margin:0; color:var(--primary)">📂 ארכיון הצעות מחיר ומעקב פולואפ</h3>
-            <button type="button" class="btn-mini-action" style="background:#e2e8f0;" onclick="closeModal('archiveModal')">חזרה להצעה ✖</button>
+<div id="tabScreen-archive" class="app-tab-screen">
+    <div class="tab-screen-card">
+        <div class="tab-screen-header">
+            <h2>📂 ארכיון הצעות מחיר ומעקב פולואפ</h2>
+            <button type="button" class="btn-mini-action" style="background:#e2e8f0;" onclick="switchAppTab('home')">🏠 מסך ראשי</button>
         </div>
         <div class="tab-pills" style="margin-bottom:12px;">
             <button type="button" class="tab-pill active" id="archFilterAllBtn" onclick="setArchiveFilterMode('all')">כל ההצעות השמורות</button>
             <button type="button" class="tab-pill" id="archFilterFollowupBtn" onclick="setArchiveFilterMode('followup')">🔔 ממתינות לפולואפ</button>
         </div>
-        <div id="archiveListContainer" style="max-height:58vh; overflow-y:auto; margin-bottom:12px;"></div>
-        <button type="button" class="btn-login" style="background:#e2e8f0; color:#1a202c;" onclick="closeModal('archiveModal')">סגור</button>
+        <div id="archiveListContainer"></div>
     </div>
 </div>
-
-<!-- מודאל דוח חודשי חכם -->
-<div class="modal-overlay" id="monthlyReportModal">
-    <div class="modal-content wide-modal">
+<div id="tabScreen-worklog" class="app-tab-screen">
+    <div class="tab-screen-card">
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:12px; gap:8px; flex-wrap:wrap;">
-            <h3 style="margin:0; color:var(--primary)">📊 דוח חודשי חכם ומצב העסק</h3>
-            <div style="display:flex; gap:6px;">
-                <button type="button" class="btn-mini-action" onclick="printMonthlyExecutiveReport()">🖨️ הדפס דוח חודשי</button>
-                <button type="button" class="btn-mini-action" style="background:#e2e8f0;" onclick="closeModal('monthlyReportModal')">סגור ✖</button>
-            </div>
-        </div>
-        <div class="row" style="margin-bottom:12px; align-items:center;">
-            <div style="flex:1;">
-                <label>בחר חודש להצגה:</label>
-                <input type="month" id="execReportMonthInput" onchange="renderMonthlyExecutiveReport()" style="margin-bottom:0;">
-            </div>
-            <div style="flex:1;">
-                <label>סינון תקופה:</label>
-                <select id="execReportScope" onchange="renderMonthlyExecutiveReport()" style="margin-bottom:0;">
-                    <option value="month">החודש הנבחר בלבד</option>
-                    <option value="all">מצטבר (כל הזמנים)</option>
-                </select>
-            </div>
-        </div>
-        <div id="monthlyReportBody" style="max-height:68vh; overflow-y:auto;"></div>
-    </div>
-</div>
-
-<!-- מודאל סיום עבודה, תעודת אחריות ובקשת המלצה -->
-<div class="modal-overlay" id="jobCompletionModal">
-    <div class="modal-content">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:12px;">
-            <h3 style="margin:0; color:var(--success)">🎉 סיום עבודה, אחריות ובקשת המלצה</h3>
-            <button type="button" class="btn-mini-action" style="background:#e2e8f0;" onclick="closeModal('jobCompletionModal')">סגור ✖</button>
-        </div>
-        <div id="jobCompletionBody"></div>
-    </div>
-</div>
-
-<!-- מודאל הגדרות, אבטחה וגיבוי נתונים -->
-<div class="modal-overlay" id="settingsModal">
-    <div class="modal-content">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:12px;">
-            <h3 style="margin:0; color:var(--primary)">⚙️ הגדרות, גיבוי ואבטחה</h3>
-            <button type="button" class="btn-mini-action" style="background:#e2e8f0;" onclick="closeModal('settingsModal')">סגור ✖</button>
-        </div>
-        <div style="background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:14px;">
-            <div style="font-weight:700; color:var(--primary); margin-bottom:6px;">🔔 הגדרת תזכורת פולואפ אוטומטית</div>
-            <label style="font-size:13px;">הצג תזכורת מעקב להצעות שלא נחתמו אחרי (ימים):</label>
-            <select id="followupDaysSetting" onchange="saveFollowupDaysSetting(this.value)" style="margin-bottom:0;">
-                <option value="0">מיד (כל הצעה בארכיון שממתינה לחתימה)</option>
-                <option value="1">אחרי יום אחד</option>
-                <option value="2">אחרי יומיים (מומלץ)</option>
-                <option value="3">אחרי 3 ימים</option>
-                <option value="5">אחרי 5 ימים</option>
-            </select>
-        </div>
-        <div style="background:#f0fff4; border:1px solid #9ae6b4; border-radius:12px; padding:14px; margin-bottom:14px;">
-            <div style="font-weight:700; color:#22543d; margin-bottom:6px;">💾 גיבוי ושחזור מלא של כל נתוני האפליקציה</div>
-            <p style="font-size:13px; color:#2d3748; margin:0 0 10px 0;">שמור קובץ גיבוי של כל הצעות המחיר, יומן העבודה, התשלומים וההוצאות שלך, או טען גיבוי קיים.</p>
-            <div class="row">
-                <button type="button" class="btn-login" style="background:var(--success); margin:0; flex:1;" onclick="exportFullAppBackup()">⬇️ הורד קובץ גיבוי מלא</button>
-                <div style="flex:1; position:relative; overflow:hidden;">
-                    <button type="button" class="btn-login" style="background:var(--primary); margin:0; width:100%;">⬆️ שחזר מקובץ גיבוי</button>
-                    <input type="file" accept=".json,application/json" style="position:absolute; inset:0; opacity:0; cursor:pointer;" onchange="importFullAppBackup(this)">
-                </div>
-            </div>
-        </div>
-        <div style="background:#fff5f5; border:1px solid #fed7d7; border-radius:12px; padding:14px;">
-            <div style="font-weight:700; color:#c53030; margin-bottom:6px;">🔒 נעילת מסך יזומה</div>
-            <p style="font-size:13px; color:#2d3748; margin:0 0 10px 0;">האפליקציה שומרת את החיבור שלך ברענון דף כדי שלא תאבד מידע. אם תרצה לנעול את המסך בסיסמה כעת:</p>
-            <button type="button" class="btn-login" style="background:var(--danger); margin:0;" onclick="lockAppManually()">🔒 נעל אפליקציה כעת</button>
-        </div>
-    </div>
-</div>
-
-<!-- מודאל תצוגת מסמך והדפסה ל-PDF -->
-<div class="modal-overlay" id="printPreviewModal">
-    <div class="modal-content wide-modal">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:14px; gap:10px; flex-wrap:wrap;">
-            <h3 style="margin:0; color:var(--primary)" id="printModalTitle">תצוגה מקדימה להדפסה / PDF</h3>
-            <div style="display:flex; gap:8px;">
-                <button type="button" class="btn-login" style="width:auto; padding:9px 16px; margin:0; background:var(--primary);" onclick="window.print()">🖨️ הדפס / שמור כ-PDF</button>
-                <button type="button" class="btn-login" style="width:auto; padding:9px 16px; margin:0; background:#e2e8f0; color:#1a202c;" onclick="closeModal('printPreviewModal')">סגור</button>
-            </div>
-        </div>
-        <div id="printPreviewBody" style="background:white; border:1px solid #e2e8f0; border-radius:10px; padding:16px; overflow-x:auto;"></div>
-    </div>
-</div>
-
-
-<!-- מודאל יומן עבודה ופרויקטים פעילים -->
-<div class="modal-overlay" id="workLogModal">
-    <div class="modal-content wide-modal">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:12px; gap:8px; flex-wrap:wrap;">
-            <h3 style="margin:0; color:var(--primary)">📅 יומן עבודה ופרויקטים</h3>
+            <h2>📅 יומן עבודה ופרויקטים</h2>
             <div style="display:flex; gap:6px; flex-wrap:wrap;">
                 <button type="button" class="btn-mini-action" style="background:var(--primary-soft); color:var(--primary); border-color:#90caf9;" onclick="toggleManualJobBox()">➕ הוסף עבודה ידנית</button>
                 <button type="button" class="btn-mini-action" onclick="printWorkLogReport()">🖨️ הדפס יומן עבודה</button>
-                <button type="button" class="btn-mini-action" style="background:#e2e8f0;" onclick="closeModal('workLogModal')">סגור ✖</button>
+                <button type="button" class="btn-mini-action" style="background:#e2e8f0;" onclick="switchAppTab('home')">🏠 מסך ראשי</button>
             </div>
         </div>
 
@@ -1115,34 +1096,18 @@
             </div>
         </div>
 
-        <div id="workLogListContainer" style="max-height:55vh; overflow-y:auto; padding-left:2px;"></div>
+        <div id="workLogListContainer"></div>
     </div>
 </div>
 
-<!-- מודאל ניהול עבודה פרטני: מידות סופיות, כרטיס מתקין ותשלומים -->
-<div class="modal-overlay" id="workJobDetailModal">
-    <div class="modal-content wide-modal">
+<div id="tabScreen-finance" class="app-tab-screen">
+    <div class="tab-screen-card">
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:12px; gap:8px; flex-wrap:wrap;">
-            <h3 style="margin:0; color:var(--primary)" id="wjdTitle">ניהול כרטיס עבודה</h3>
-            <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                <button type="button" class="btn-mini-action" style="background:#2d3748; color:white;" onclick="printInstallerWorkCard(false)">🖨️ כרטיס ייצור/מתקין (ללא מחירים)</button>
-                <button type="button" class="btn-mini-action" onclick="printInstallerWorkCard(true)">🖨️ כרטיס עבודה מלא</button>
-                <button type="button" class="btn-mini-action" style="background:#e2e8f0;" onclick="closeModal('workJobDetailModal')">חזרה ליומן ✖</button>
-            </div>
-        </div>
-        <div id="wjdBody" style="overflow-y:auto; max-height:74vh;"></div>
-    </div>
-</div>
-
-<!-- מודאל יומן הוצאות והכנסות -->
-<div class="modal-overlay" id="financeModal">
-    <div class="modal-content wide-modal">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:12px; gap:8px; flex-wrap:wrap;">
-            <h3 style="margin:0; color:var(--primary)">💰 יומן הוצאות והכנסות</h3>
+            <h2>💰 יומן הוצאות והכנסות</h2>
             <div style="display:flex; gap:6px; flex-wrap:wrap;">
                 <button type="button" class="btn-mini-action" style="background:#f0fff4; color:#22543d; border-color:#9ae6b4;" onclick="exportFinanceCSV()">📊 ייצוא לאקסל (CSV)</button>
                 <button type="button" class="btn-mini-action" onclick="printFinanceReport()">🖨️ הדפס דוח כספי (PDF)</button>
-                <button type="button" class="btn-mini-action" style="background:#e2e8f0;" onclick="closeModal('financeModal')">סגור ✖</button>
+                <button type="button" class="btn-mini-action" style="background:#e2e8f0;" onclick="switchAppTab('home')">🏠 מסך ראשי</button>
             </div>
         </div>
 
@@ -1243,8 +1208,160 @@
             <button type="button" class="tab-pill" id="finTabProjBtn" onclick="switchFinanceTab('projects')">🏗️ רווחיות לפי פרויקט ביומן העבודה</button>
         </div>
 
-        <div id="financeTransactionsContainer" style="max-height:38vh; overflow-y:auto;"></div>
-        <div id="financeProjectsContainer" style="max-height:38vh; overflow-y:auto; display:none;"></div>
+        <div id="financeTransactionsContainer"></div>
+        <div id="financeProjectsContainer" style="display:none;"></div>
+    </div>
+</div>
+
+
+<div id="tabScreen-monthly" class="app-tab-screen">
+    <div class="tab-screen-card">
+        <div class="tab-screen-header">
+            <h2>📊 דוח חודשי חכם ומצב העסק</h2>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                <button type="button" class="btn-mini-action" onclick="printMonthlyExecutiveReport()">🖨️ הדפס דוח חודשי</button>
+                <button type="button" class="btn-mini-action" style="background:#e2e8f0;" onclick="switchAppTab('home')">🏠 מסך ראשי</button>
+            </div>
+        </div>
+        <div class="row" style="margin-bottom:12px; align-items:center;">
+            <div style="flex:1;">
+                <label>בחר חודש להצגה:</label>
+                <input type="month" id="execReportMonthInput" onchange="renderMonthlyExecutiveReport()" style="margin-bottom:0;">
+            </div>
+            <div style="flex:1;">
+                <label>סינון תקופה:</label>
+                <select id="execReportScope" onchange="renderMonthlyExecutiveReport()" style="margin-bottom:0;">
+                    <option value="month">החודש הנבחר בלבד</option>
+                    <option value="all">מצטבר (כל הזמנים)</option>
+                </select>
+            </div>
+        </div>
+        <div id="monthlyReportBody"></div>
+    </div>
+</div>
+
+<div id="tabScreen-settings" class="app-tab-screen">
+    <div class="tab-screen-card">
+        <div class="tab-screen-header">
+            <h2>⚙️ הגדרות, גיבוי ואבטחה</h2>
+            <button type="button" class="btn-mini-action" style="background:#e2e8f0;" onclick="switchAppTab('home')">🏠 מסך ראשי</button>
+        </div>
+        <div style="background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:14px;">
+            <div style="font-weight:700; color:var(--primary); margin-bottom:6px;">🔔 הגדרת תזכורת פולואפ אוטומטית</div>
+            <label style="font-size:13px;">הצג תזכורת מעקב להצעות שלא נחתמו אחרי (ימים):</label>
+            <select id="followupDaysSetting" onchange="saveFollowupDaysSetting(this.value)" style="margin-bottom:0;">
+                <option value="0">מיד (כל הצעה בארכיון שממתינה לחתימה)</option>
+                <option value="1">אחרי יום אחד</option>
+                <option value="2">אחרי יומיים (מומלץ)</option>
+                <option value="3">אחרי 3 ימים</option>
+                <option value="5">אחרי 5 ימים</option>
+            </select>
+        </div>
+        <div style="background:#f0fff4; border:1px solid #9ae6b4; border-radius:12px; padding:14px; margin-bottom:14px;">
+            <div style="font-weight:700; color:#22543d; margin-bottom:6px;">💾 גיבוי ושחזור מלא של כל נתוני האפליקציה</div>
+            <p style="font-size:13px; color:#2d3748; margin:0 0 10px 0;">שמור קובץ גיבוי של כל הצעות המחיר, יומן העבודה, התשלומים וההוצאות שלך, או טען גיבוי קיים.</p>
+            <div class="row">
+                <button type="button" class="btn-login" style="background:var(--success); margin:0; flex:1;" onclick="exportFullAppBackup()">⬇️ הורד קובץ גיבוי מלא</button>
+                <div style="flex:1; position:relative; overflow:hidden;">
+                    <button type="button" class="btn-login" style="background:var(--primary); margin:0; width:100%;">⬆️ שחזר מקובץ גיבוי</button>
+                    <input type="file" accept=".json,application/json" style="position:absolute; inset:0; opacity:0; cursor:pointer;" onchange="importFullAppBackup(this)">
+                </div>
+            </div>
+        </div>
+        <div style="background:#fff5f5; border:1px solid #fed7d7; border-radius:12px; padding:14px;">
+            <div style="font-weight:700; color:#c53030; margin-bottom:6px;">🔒 נעילת מסך יזומה</div>
+            <p style="font-size:13px; color:#2d3748; margin:0 0 10px 0;">האפליקציה שומרת את החיבור שלך ברענון דף כדי שלא תאבד מידע. אם תרצה לנעול את המסך בסיסמה כעת:</p>
+            <button type="button" class="btn-login" style="background:var(--danger); margin:0;" onclick="lockAppManually()">🔒 נעל אפליקציה כעת</button>
+        </div>
+    </div>
+</div>
+
+</div><!-- end mainApp -->
+
+<div class="bottom-actions" id="bottomNav" style="display:none">
+    <button type="button" class="btn-action btn-calc" onclick="calculateAll(true)">חשב סה"כ</button>
+    <button type="button" class="btn-action btn-pdf" onclick="printInvoice()">📄 הצעת מחיר (PDF)</button>
+    <button type="button" class="btn-action btn-sketches-pdf" onclick="printAllSketches()">📐 דף שרטוטים</button>
+</div>
+
+<!-- מודאל תצוגת וואטסאפ -->
+<div class="modal-overlay" id="previewModal">
+    <div class="modal-content">
+        <h3 style="text-align:center;margin:0 0 12px 0;color:var(--primary)">טיוטת הודעה לוואטסאפ</h3>
+        <textarea id="previewText" style="width:100%; height:220px; font-family:inherit; border:1px solid #ccc; padding:10px; border-radius:10px; font-size:14px; line-height:1.45;"></textarea>
+        <div style="display:flex; gap:8px; margin-top:8px;">
+            <button type="button" class="btn-login" style="background:#e2e8f0; color:#1a202c; flex:1" onclick="closeModal('previewModal')">סגור</button>
+            <button type="button" class="btn-login" style="background:#4a5568; color:white; flex:1" onclick="copyWhatsappText()">📋 העתק טקסט</button>
+            <button type="button" class="btn-login" style="background:var(--whatsapp); flex:1.3" onclick="sendWhatsapp()">שלח בוואטסאפ</button>
+        </div>
+    </div>
+</div>
+
+<!-- מודאל לוח שרטוט ידני -->
+<div class="modal-overlay" id="drawingModal">
+    <div class="modal-content" style="max-width:500px">
+        <h3 style="text-align:center;margin:0 0 8px 0;color:var(--primary)">לוח שרטוט ידני</h3>
+        <p style="text-align:center;margin:0 0 10px 0;font-size:13px;color:var(--text-muted)">צייר באצבע או בעכבר על גבי הלוח</p>
+        <canvas id="drawingPad" width="600" height="380"></canvas>
+        <div class="row" style="margin-top:12px">
+             <button type="button" class="btn-login" style="background:var(--danger); flex:1" onclick="clearCanvas()">נקה לוח</button>
+             <button type="button" class="btn-login" style="background:var(--whatsapp); flex:1.3" onclick="saveDrawing()">שמור שרטוט</button>
+             <button type="button" class="btn-login" style="background:#cbd5e0; color:#1a202c; flex:1" onclick="closeDrawing()">ביטול</button>
+        </div>
+    </div>
+</div>
+
+<!-- מודאל הוספת פרופיל חדש (מחליף prompt) -->
+<div class="modal-overlay" id="addProfileModal">
+    <div class="modal-content" style="max-width:380px">
+        <h3 style="text-align:center;margin:0 0 12px 0;color:var(--primary)">הוספת סוג פרופיל חדש</h3>
+        <label>שם הפרופיל / הדגם:</label>
+        <input type="text" id="newProfileNameInput" placeholder="הזן שם פרופיל / דגם" onkeydown="if(event.key==='Enter') confirmAddProfile()">
+        <div class="row" style="margin-top:8px">
+            <button type="button" class="btn-login" style="background:#e2e8f0; color:#1a202c; flex:1" onclick="closeModal('addProfileModal')">ביטול</button>
+            <button type="button" class="btn-login" style="background:var(--primary); flex:1" onclick="confirmAddProfile()">➕ הוסף ושמור</button>
+        </div>
+    </div>
+</div>
+
+<!-- מודאל סיום עבודה, תעודת אחריות ובקשת המלצה -->
+<div class="modal-overlay" id="jobCompletionModal">
+    <div class="modal-content">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:12px;">
+            <h3 style="margin:0; color:var(--success)">🎉 סיום עבודה, אחריות ובקשת המלצה</h3>
+            <button type="button" class="btn-mini-action" style="background:#e2e8f0;" onclick="closeModal('jobCompletionModal')">סגור ✖</button>
+        </div>
+        <div id="jobCompletionBody"></div>
+    </div>
+</div>
+
+<!-- מודאל תצוגת מסמך והדפסה ל-PDF -->
+<div class="modal-overlay" id="printPreviewModal">
+    <div class="modal-content wide-modal">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:14px; gap:10px; flex-wrap:wrap;">
+            <h3 style="margin:0; color:var(--primary)" id="printModalTitle">תצוגה מקדימה להדפסה / PDF</h3>
+            <div style="display:flex; gap:8px;">
+                <button type="button" class="btn-login" style="width:auto; padding:9px 16px; margin:0; background:var(--primary);" onclick="window.print()">🖨️ הדפס / שמור כ-PDF</button>
+                <button type="button" class="btn-login" style="width:auto; padding:9px 16px; margin:0; background:#e2e8f0; color:#1a202c;" onclick="closeModal('printPreviewModal')">סגור</button>
+            </div>
+        </div>
+        <div id="printPreviewBody" style="background:white; border:1px solid #e2e8f0; border-radius:10px; padding:16px; overflow-x:auto;"></div>
+    </div>
+</div>
+
+
+<!-- מודאל ניהול עבודה פרטני: מידות סופיות, כרטיס מתקין ותשלומים -->
+<div class="modal-overlay" id="workJobDetailModal">
+    <div class="modal-content wide-modal">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:12px; gap:8px; flex-wrap:wrap;">
+            <h3 style="margin:0; color:var(--primary)" id="wjdTitle">ניהול כרטיס עבודה</h3>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                <button type="button" class="btn-mini-action" style="background:#2d3748; color:white;" onclick="printInstallerWorkCard(false)">🖨️ כרטיס ייצור/מתקין (ללא מחירים)</button>
+                <button type="button" class="btn-mini-action" onclick="printInstallerWorkCard(true)">🖨️ כרטיס עבודה מלא</button>
+                <button type="button" class="btn-mini-action" style="background:#e2e8f0;" onclick="closeModal('workJobDetailModal')">חזרה ליומן ✖</button>
+            </div>
+        </div>
+        <div id="wjdBody" style="overflow-y:auto; max-height:74vh;"></div>
     </div>
 </div>
 
@@ -1510,12 +1627,12 @@
         const showAppFn = () => {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
-            document.getElementById('bottomNav').style.display = 'flex';
-            document.getElementById('topToolbar').style.display = 'flex';
+            document.getElementById('bottomNav').style.display = (window.activeAppTab === 'quote') ? 'flex' : 'none';
+            /* topToolbar removed for clean tab UI */
             const hbBtn = document.getElementById('hamburgerBtn');
             if (hbBtn) hbBtn.style.display = 'inline-flex';
             const asPill = document.getElementById('autoSaveStatusPill');
-            if (asPill) asPill.style.display = 'inline-block';
+            if (asPill) asPill.style.display = (window.activeAppTab === 'quote') ? 'inline-block' : 'none';
 
             if (shouldLoadDraft) {
                 loadDraft();
@@ -1972,7 +2089,7 @@
         if (btnAll) btnAll.classList.toggle('active', currentArchiveFilterMode === 'all');
         if (btnFu) btnFu.classList.toggle('active', currentArchiveFilterMode === 'followup');
         renderArchiveModalList();
-        document.getElementById('archiveModal').style.display = 'flex';
+        switchAppTab('archive');
     }
 
     function renderArchiveModalList() {
@@ -2046,7 +2163,7 @@
         } catch (e) { archive = []; }
         if (archive[idx]) {
             loadQuoteDataObject(archive[idx]);
-            closeModal('archiveModal');
+            switchAppTab('quote');
             showToast(`נטענה הצעה #${archive[idx].qNum} (${archive[idx].client || 'לקוח'})`);
         }
     }
@@ -3945,7 +4062,7 @@
         const q = archive[idx];
         if (!q) return;
         loadQuoteDataObject(q);
-        closeModal('archiveModal');
+        switchAppTab('quote');
         convertCurrentQuoteToWorkLog();
     }
 
@@ -3982,15 +4099,13 @@
         window.currentQuoteSignatureData = null;
         updateSignedIndicatorUI();
         closeModal('workJobDetailModal');
-        closeModal('workLogModal');
+        switchAppTab('quote');
         window.scrollTo({ top: 0, behavior: 'smooth' });
         showToast(`הצעה #${job.qNum} (${job.client}) נטענה לעריכה וחתימה מחדש`);
     }
 
     function openWorkLogModal() {
-        updateWorkLogBadge();
-        renderWorkLogList();
-        document.getElementById('workLogModal').style.display = 'flex';
+        switchAppTab('worklog');
     }
 
     function toggleManualJobBox() {
@@ -4475,16 +4590,7 @@
     }
 
     function openFinanceModal() {
-        const todayIso = new Date().toISOString().split('T')[0];
-        const dateInp = document.getElementById('finEntryDate');
-        if (dateInp && !dateInp.value) dateInp.value = todayIso;
-
-        const monthInp = document.getElementById('finMonthFilter');
-        if (monthInp && !monthInp.value) monthInp.value = todayIso.slice(0, 7);
-
-        populateFinanceJobSelects();
-        renderFinanceView();
-        document.getElementById('financeModal').style.display = 'flex';
+        switchAppTab('finance');
     }
 
     function populateFinanceJobSelects() {
@@ -5111,7 +5217,7 @@
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('mainApp').style.display = 'none';
             document.getElementById('bottomNav').style.display = 'none';
-            document.getElementById('topToolbar').style.display = 'none';
+            /* topToolbar removed */
             const portal = document.getElementById('clientPortalScreen');
             portal.style.display = 'block';
 
@@ -5266,7 +5372,7 @@
                     document.getElementById('loginScreen').style.display = 'none';
                     document.getElementById('mainApp').style.display = 'none';
                     document.getElementById('bottomNav').style.display = 'none';
-                    document.getElementById('topToolbar').style.display = 'none';
+                    /* topToolbar removed */
                     const portal = document.getElementById('clientPortalScreen');
                     portal.style.display = 'block';
 
@@ -5320,7 +5426,7 @@
                         document.getElementById('loginScreen').style.display = 'none';
                         document.getElementById('mainApp').style.display = 'none';
                         document.getElementById('bottomNav').style.display = 'none';
-                        document.getElementById('topToolbar').style.display = 'none';
+                        /* topToolbar removed */
                         const portal = document.getElementById('clientPortalScreen');
                         portal.style.display = 'block';
                         document.getElementById('clientPortalSignSection').style.display = 'none';
@@ -5385,7 +5491,7 @@
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
         document.getElementById('bottomNav').style.display = 'flex';
-        document.getElementById('topToolbar').style.display = 'flex';
+        /* topToolbar removed for clean tab UI */
         calculateAll(false);
         openWorkLogModal();
         showToast(`הצעה #${qNum} החתומה הועברה אוטומטית ליומן העבודה ונמחקה מהארכיון!`);
@@ -5408,14 +5514,13 @@
     function handleLiveSignedQuoteSync(qNum, clientName) {
         if (!document.getElementById('mainApp') || document.getElementById('mainApp').style.display !== 'block') return;
         updateWorkLogBadge();
-        const wlModal = document.getElementById('workLogModal');
-        if (wlModal && wlModal.style.display === 'flex') {
+        if (window.activeAppTab === 'worklog') {
             renderWorkLogList();
         }
-        const archModal = document.getElementById('archiveModal');
-        if (archModal && archModal.style.display === 'flex') {
-            openArchiveModal();
+        if (window.activeAppTab === 'archive') {
+            renderArchiveModalList();
         }
+        updateFollowupBadgesAndBanner();
         showToast(`✅ הצעה #${qNum} (${clientName || 'לקוח'}) נחתמה והועברה אוטומטית ליומן העבודה!`);
     }
 
@@ -5508,43 +5613,71 @@
         setTimeout(() => { if (overlay) overlay.style.display = 'none'; }, 260);
     }
 
+    window.activeAppTab = 'home';
+
     function switchAppTab(tabName) {
         closeSideDrawer();
-        ['archiveModal', 'workLogModal', 'workJobDetailModal', 'financeModal', 'monthlyReportModal', 'settingsModal', 'jobCompletionModal'].forEach(id => {
-            closeModal(id);
-        });
-        document.querySelectorAll('.drawer-nav-item').forEach(btn => btn.classList.remove('active'));
+        ['workJobDetailModal', 'jobCompletionModal'].forEach(id => closeModal(id));
+        window.activeAppTab = tabName;
 
-        if (tabName === 'quote') {
-            const b = document.getElementById('navBtnQuote');
-            if (b) b.classList.add('active');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        } else if (tabName === 'archive') {
-            const b = document.getElementById('navBtnArchive');
-            if (b) b.classList.add('active');
-            openArchiveModal('all');
-        } else if (tabName === 'worklog') {
-            const b = document.getElementById('navBtnWorkLog');
-            if (b) b.classList.add('active');
-            openWorkLogModal();
-        } else if (tabName === 'finance') {
-            const b = document.getElementById('navBtnFinance');
-            if (b) b.classList.add('active');
-            openFinanceModal();
-        } else if (tabName === 'monthly') {
-            const b = document.getElementById('navBtnMonthly');
-            if (b) b.classList.add('active');
-            openMonthlyReportModal();
-        } else if (tabName === 'settings') {
-            const b = document.getElementById('navBtnSettings');
-            if (b) b.classList.add('active');
-            openSettingsModal();
+        document.querySelectorAll('.app-tab-screen').forEach(scr => scr.classList.remove('active'));
+        const targetScreen = document.getElementById('tabScreen-' + tabName);
+        if (targetScreen) targetScreen.classList.add('active');
+
+        document.querySelectorAll('.drawer-nav-item').forEach(btn => btn.classList.remove('active'));
+        const navMap = {
+            home: 'navBtnHome',
+            quote: 'navBtnQuote',
+            archive: 'navBtnArchive',
+            worklog: 'navBtnWorkLog',
+            finance: 'navBtnFinance',
+            monthly: 'navBtnMonthly',
+            settings: 'navBtnSettings'
+        };
+        const activeBtn = document.getElementById(navMap[tabName] || 'navBtnHome');
+        if (activeBtn) activeBtn.classList.add('active');
+
+        const bottomNav = document.getElementById('bottomNav');
+        if (bottomNav) {
+            bottomNav.style.display = (tabName === 'quote') ? 'flex' : 'none';
         }
+        const asPill = document.getElementById('autoSaveStatusPill');
+        if (asPill) {
+            asPill.style.display = (tabName === 'quote') ? 'inline-block' : 'none';
+        }
+
+        if (tabName === 'archive') {
+            const btnAll = document.getElementById('archFilterAllBtn');
+            const btnFu = document.getElementById('archFilterFollowupBtn');
+            if (btnAll) btnAll.classList.toggle('active', currentArchiveFilterMode === 'all');
+            if (btnFu) btnFu.classList.toggle('active', currentArchiveFilterMode === 'followup');
+            renderArchiveModalList();
+        } else if (tabName === 'worklog') {
+            updateWorkLogBadge();
+            renderWorkLogList();
+        } else if (tabName === 'finance') {
+            const todayIso = new Date().toISOString().split('T')[0];
+            const dateInp = document.getElementById('finEntryDate');
+            if (dateInp && !dateInp.value) dateInp.value = todayIso;
+            const monthInp = document.getElementById('finMonthFilter');
+            if (monthInp && !monthInp.value) monthInp.value = todayIso.slice(0, 7);
+            populateFinanceJobSelects();
+            renderFinanceView();
+        } else if (tabName === 'monthly') {
+            const monthInp = document.getElementById('execReportMonthInput');
+            if (monthInp && !monthInp.value) monthInp.value = new Date().toISOString().slice(0, 7);
+            renderMonthlyExecutiveReport();
+        } else if (tabName === 'settings') {
+            const sel = document.getElementById('followupDaysSetting');
+            if (sel) sel.value = String(getFollowupThresholdDays());
+        }
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function lockAppManually() {
         closeSideDrawer();
-        closeModal('settingsModal');
+        
         saveLiveWorkingQuoteState();
         safeSetStorage('adminSessionLocked', 'true');
         document.getElementById('passwordInput').value = '';
@@ -5677,7 +5810,7 @@
             monthInp.value = new Date().toISOString().slice(0, 7);
         }
         renderMonthlyExecutiveReport();
-        document.getElementById('monthlyReportModal').style.display = 'flex';
+        switchAppTab('monthly');
     }
 
     function renderMonthlyExecutiveReport() {
@@ -5790,7 +5923,7 @@
     function openSettingsModal() {
         const sel = document.getElementById('followupDaysSetting');
         if (sel) sel.value = String(getFollowupThresholdDays());
-        document.getElementById('settingsModal').style.display = 'flex';
+        switchAppTab('settings');
     }
 
     function exportFullAppBackup() {
@@ -5831,7 +5964,7 @@
                 updateWorkLogBadge();
                 updateFollowupBadgesAndBanner();
                 restoreLiveWorkingQuoteOnRefresh();
-                closeModal('settingsModal');
+                
                 showToast('כל נתוני האפליקציה שוחזרו בהצלחה מהגיבוי!');
             } catch (err) {
                 showToast('שגיאה בקריאת קובץ הגיבוי');
