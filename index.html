@@ -923,6 +923,10 @@
             <span>📅 יומן עבודה והתקנות</span>
             <span class="drawer-badge" id="drawerWorkLogBadge" style="display:none;">0</span>
         </button>
+        <button type="button" class="drawer-nav-item" id="navBtnSuppliers" onclick="switchAppTab('suppliers')">
+            <span>🚚 יומן ספקים והזמנת חומר</span>
+            <span class="drawer-badge warn" id="drawerSuppliersBadge" style="display:none;">0</span>
+        </button>
         <button type="button" class="drawer-nav-item" id="navBtnFinance" onclick="switchAppTab('finance')">
             <span>💰 יומן הוצאות והכנסות</span>
         </button>
@@ -1131,6 +1135,41 @@
     </div>
 </div>
 
+
+<div id="tabScreen-suppliers" class="app-tab-screen">
+    <div class="tab-screen-card">
+        <div class="tab-screen-header">
+            <h2>🚚 יומן ספקים ומעקב הזמנות חומר</h2>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                <button type="button" class="btn-mini-action" style="background:#e2e8f0;" onclick="switchAppTab('home')">🏠 מסך ראשי</button>
+            </div>
+        </div>
+        <div class="fin-kpi-grid" style="margin-bottom:14px;">
+            <div class="fin-kpi-card" style="background:#fff5f5; border-color:#fed7d7;">
+                <div class="fin-kpi-title">ממתין להזמנת חומר</div>
+                <div class="fin-kpi-val" id="supPendingCount" style="color:#c53030;">0</div>
+            </div>
+            <div class="fin-kpi-card" style="background:#ebf8ff; border-color:#90caf9;">
+                <div class="fin-kpi-title">בייצור / מצבעה / זכוכיות</div>
+                <div class="fin-kpi-val" id="supInProgressCount" style="color:var(--primary);">0</div>
+            </div>
+            <div class="fin-kpi-card" style="background:#f0fff4; border-color:#9ae6b4;">
+                <div class="fin-kpi-title">כל החומר במחסן (מוכן להתקנה)</div>
+                <div class="fin-kpi-val" id="supReadyCount" style="color:#22543d;">0</div>
+            </div>
+        </div>
+        <div class="row" style="margin-bottom:12px;">
+            <select id="supFilterSelect" onchange="renderSuppliersTrackerList()" style="margin-bottom:0;">
+                <option value="all_active">כל הפרויקטים הפעילים</option>
+                <option value="not_ordered">טרם הוזמן חומר</option>
+                <option value="ordered">הוזמן מהספק / במצבעה</option>
+                <option value="ready_warehouse">הכל במחסן מוכן להתקנה</option>
+            </select>
+        </div>
+        <div id="suppliersTrackerContainer"></div>
+    </div>
+</div>
+
 <div id="tabScreen-finance" class="app-tab-screen">
     <div class="tab-screen-card">
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:12px; gap:8px; flex-wrap:wrap;">
@@ -1228,6 +1267,19 @@
                 <div style="flex:1.4;">
                     <label>ספק / פירוט והערה:</label>
                     <input type="text" id="finEntryDesc" placeholder="שם ספק / פירוט עסקה" style="margin-bottom:8px;">
+                </div>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:8px; background:#fff; padding:8px 12px; border-radius:10px; border:1px dashed var(--border);">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <div style="position:relative; overflow:hidden; display:inline-block;">
+                        <button type="button" class="btn-mini-action" style="background:var(--primary-soft); color:var(--primary); border-color:#90caf9;">📸 צלם / צרף חשבונית או קבלה</button>
+                        <input type="file" id="finReceiptFileInput" accept="image/*" capture="environment" style="position:absolute; inset:0; opacity:0; cursor:pointer;" onchange="handleFinanceReceiptPhoto(this)">
+                    </div>
+                    <span id="finReceiptStatusText" style="font-size:12.5px; color:var(--text-muted);">ללא תמונת חשבונית מצורפת</span>
+                </div>
+                <div id="finReceiptPreviewBox" style="display:none; align-items:center; gap:6px;">
+                    <img id="finReceiptPreviewImg" style="height:42px; width:auto; border-radius:6px; border:1px solid #cbd5e0;">
+                    <button type="button" class="btn-delete" style="padding:4px 8px; font-size:11.5px;" onclick="clearPendingFinanceReceipt()">✖ הסר</button>
                 </div>
             </div>
             <button type="button" class="btn-login" style="margin-top:2px; padding:10px;" onclick="addFinanceEntry()">💾 הוסף תנועה ליומן</button>
@@ -1683,6 +1735,7 @@
                 }
             }
             updateWorkLogBadge();
+        if (typeof updateSuppliersBadge === 'function') updateSuppliersBadge();
             updateFollowupBadgesAndBanner();
             if (window.pendingOpenWorkLogAfterLogin) {
                 const signedQNum = window.pendingOpenWorkLogAfterLogin;
@@ -1804,8 +1857,12 @@
             divX: getVal('.div-x', '0'),
             divY: getVal('.div-y', '0'),
             // door
+            drLayout: getVal('.dr-layout', '1wing'),
+            drStyle: getVal('.dr-style', 'full_glass'),
             drTop: getVal('.dr-top', ''),
             drSide: getVal('.dr-side', ''),
+            drSideLeft: getVal('.dr-side-left', ''),
+            scrSystem: getVal('.scr-system', 'roll'),
             drCloser: getVal('.dr-closer', 'none'),
             // shutter
             shtBox: getVal('.sht-box', 'hidden'),
@@ -1911,8 +1968,12 @@
         setVal('.pkt-dir', d.pktDir);
         setVal('.div-x', d.divX);
         setVal('.div-y', d.divY);
+        setVal('.dr-layout', d.drLayout);
+        setVal('.dr-style', d.drStyle);
         setVal('.dr-top', d.drTop);
         setVal('.dr-side', d.drSide);
+        setVal('.dr-side-left', d.drSideLeft);
+        setVal('.scr-system', d.scrSystem);
         setVal('.dr-closer', d.drCloser);
         setVal('.sht-box', d.shtBox);
         setVal('.sht-slat', d.shtSlat);
@@ -2359,8 +2420,8 @@
                 <div class="glass-section">
                     <label>זכוכית:</label>
                     <div class="row">
-                        <select class="glass-type"></select>
-                        <select class="glass-finish"></select>
+                        <select class="glass-type" onchange="refreshLiveSketchIfOpen(this.closest('.card'))"></select>
+                        <select class="glass-finish" onchange="refreshLiveSketchIfOpen(this.closest('.card'))"></select>
                     </div>
                 </div>
 
@@ -2391,27 +2452,17 @@
                 
                 <div class="sketch-actions-row" style="flex-wrap:wrap;">
                     <button type="button" class="btn-preview-sketch" onclick="openSketchInMode(this, 'blueprint')">📐 שרטוט אדריכלי</button>
-                    <button type="button" class="btn-preview-sketch" style="background:#f0fff4; color:#22543d; border-color:#68d391;" onclick="openSketchInMode(this, 'realistic')">🎨 הדמיה צבעונית חיה</button>
-                    <button type="button" class="btn-preview-sketch" style="background:#faf5ff; color:#553c9a; border-color:#d6bcfa;" onclick="generateAiVisualForCard(this)">✨ הדמיית AI ללקוח</button>
+                    <button type="button" class="btn-preview-sketch" style="background:#f0fff4; color:#22543d; border-color:#68d391;" onclick="openSketchInMode(this, 'realistic')">🎨 הדמיה צבעונית חיה (בגוון שנבחר)</button>
                 </div>
                 <div class="live-sketch-box">
                     <div class="view-mode-pills" style="margin-bottom:8px;">
                         <button type="button" class="view-pill render-style-pill active" data-rstyle="blueprint" onclick="switchCardRenderStyle(this, 'blueprint')">📐 שרטוט אדריכלי (מידות)</button>
-                        <button type="button" class="view-pill render-style-pill" data-rstyle="realistic" onclick="switchCardRenderStyle(this, 'realistic')">🎨 הדמיה ריאליסטית בגוון הנבחר</button>
+                        <button type="button" class="view-pill render-style-pill" data-rstyle="realistic" onclick="switchCardRenderStyle(this, 'realistic')">🎨 הדמיה צבעונית חיה בגוון הנבחר</button>
                     </div>
                     <img class="live-sketch-img" alt="תצוגה מקדימה של השרטוט">
                     <div class="row" style="margin-top:8px; gap:6px;">
                         <button type="button" class="btn-download-sketch" onclick="generateSketch(this)">📥 הורד תמונה (PNG)</button>
                         <button type="button" class="btn-download-sketch" style="background:var(--whatsapp);" onclick="shareCardSketchToWhatsapp(this)">💬 שלח שרטוט/הדמיה ללקוח</button>
-                    </div>
-                </div>
-                <div class="ai-visual-box" style="display:none; margin-top:12px; background:#faf5ff; border:1px solid #d6bcfa; border-radius:12px; padding:12px; text-align:center;">
-                    <div style="font-weight:700; color:#553c9a; margin-bottom:6px; font-size:14px;">✨ הדמיית AI להמחשה ללקוח</div>
-                    <div class="ai-visual-status" style="font-size:13px; color:#4a5568; margin-bottom:8px;"></div>
-                    <img class="ai-visual-img" style="max-width:100%; border-radius:10px; border:1px solid #cbd5e0; display:none; margin:0 auto 8px auto;">
-                    <div class="row" style="gap:6px;">
-                        <button type="button" class="btn-mini-action" style="flex:1; justify-content:center; background:#553c9a; color:white;" onclick="downloadAiVisualImg(this)">📥 הורד הדמיית AI</button>
-                        <button type="button" class="btn-mini-action" style="flex:1; justify-content:center; background:var(--whatsapp); color:white;" onclick="shareAiVisualWhatsapp(this)">💬 שלח ללקוח בוואטסאפ</button>
                     </div>
                 </div>
             </div>
@@ -2680,6 +2731,14 @@
                         <option value="fix_left_wing">קבוע שמאל + כנף נפתחת ימין</option>
                     </select>
                 </div>
+                <div>
+                    <label>חלוקה בכנף (בלגי):</label>
+                    <select class="sl-div" onchange="refreshLiveSketchIfOpen(this.closest('.card'))">
+                        <option value="none">ללא חלוקה (זכוכית חלקה)</option>
+                        <option value="strips">פסים אופקיים</option>
+                        <option value="grid">קוביות (בלגי)</option>
+                    </select>
+                </div>
             </div>
             <div style="margin-top:4px;">
                 <label class="checkbox-row"><input type="checkbox" class="${type === 'tilt_turn' ? 'cb-net-pull' : 'cb-net'}" onchange="toggleNetTypeWrap(this); refreshLiveSketchIfOpen(this.closest('.card'))"> <span>כולל רשת (קבועה / נשלפת)</span></label>
@@ -2704,10 +2763,30 @@
             ${fixedPanelsControlsHtml}`;
         } else if (type === 'door') {
             html = `
-            <label>תוספות קבועים (ס"מ - השאר ריק אם אין):</label>
             <div class="row">
-                <div><input type="number" class="dr-top" placeholder="גובה קבוע עליון (ס״מ)" oninput="refreshLiveSketchIfOpen(this.closest('.card'))"></div>
-                <div><input type="number" class="dr-side" placeholder="רוחב קבוע צד (ס״מ)" oninput="refreshLiveSketchIfOpen(this.closest('.card'))"></div>
+                <div>
+                    <label>מבנה דלת:</label>
+                    <select class="dr-layout" onchange="refreshLiveSketchIfOpen(this.closest('.card'))">
+                        <option value="1wing">כנף אחת</option>
+                        <option value="1_5wing">כנף וחצי</option>
+                        <option value="2wing">דו-כנפית (2 כנפיים שוות)</option>
+                    </select>
+                </div>
+                <div>
+                    <label>עיצוב ומילוי דלת:</label>
+                    <select class="dr-style" onchange="refreshLiveSketchIfOpen(this.closest('.card'))">
+                        <option value="full_glass">זכוכית מלאה (לובי / ויטרינה)</option>
+                        <option value="half_panel">דלת שירות (חצי זכוכית / חצי פאנל-תריס)</option>
+                        <option value="solid_panel">פאנל אלומיניום אטום מעוצב</option>
+                        <option value="belgian_grid">חלוקה בלגית (קוביות)</option>
+                    </select>
+                </div>
+            </div>
+            <label>תוספות קבועים סביב הדלת (ס"מ - השאר ריק אם אין):</label>
+            <div class="row">
+                <div><input type="number" class="dr-top" placeholder="קבוע עליון (ס״מ)" oninput="refreshLiveSketchIfOpen(this.closest('.card'))"></div>
+                <div><input type="number" class="dr-side" placeholder="קבוע צד ימין (ס״מ)" oninput="refreshLiveSketchIfOpen(this.closest('.card'))"></div>
+                <div><input type="number" class="dr-side-left" placeholder="קבוע צד שמאל (ס״מ)" oninput="refreshLiveSketchIfOpen(this.closest('.card'))"></div>
             </div>
             <label>מחזיר שמן:</label>
             <select class="dr-closer" onchange="refreshLiveSketchIfOpen(this.closest('.card'))"><option value="none">ללא</option><option value="top">מחזיר שמן חיצוני עליון</option><option value="floor">משאבה רצפתית</option></select>`;
@@ -2794,6 +2873,27 @@
                 <button type="button" class="view-pill ${curMode==='plan'?'active':''}" data-mode="plan" onclick="setPergolaSketchMode(this, 'plan')">📐 מבט על (שדות וגג)</button>
                 <button type="button" class="view-pill ${curMode==='elevation'?'active':''}" data-mode="elevation" onclick="setPergolaSketchMode(this, 'elevation')">🏛️ מבט חזית ועמודים</button>
                 <button type="button" class="view-pill ${curMode==='both'?'active':''}" data-mode="both" onclick="setPergolaSketchMode(this, 'both')">✨ משולב (שניהם)</button>
+            </div>`;
+        } else if (type === 'screen_roll') {
+            html = `
+            <div class="row">
+                <div>
+                    <label>סוג מערכת רשת:</label>
+                    <select class="scr-system" onchange="refreshLiveSketchIfOpen(this.closest('.card'))">
+                        <option value="roll">רשת גלילה אנכית (קפיץ עליון)</option>
+                        <option value="plisse">רשת פליסה (הרמוניקה לאורך)</option>
+                        <option value="sliding">כנף רשת הזזה על מסילה</option>
+                        <option value="fixed">רשת קבועה / נשלפת</option>
+                    </select>
+                </div>
+                <div>
+                    <label>סוג בד הרשת:</label>
+                    <select class="net-type" onchange="refreshLiveSketchIfOpen(this.closest('.card'))">
+                        <option value="רשת שקופה (פיברגלס)">רשת שקופה (פיברגלס משודרגת)</option>
+                        <option value="רשת נגד בעלי חיים">רשת נגד בעלי חיים (עמידה במיוחד)</option>
+                        <option value="רשת אלומיניום תקנית">רשת אלומיניום תקנית</option>
+                    </select>
+                </div>
             </div>`;
         } else if (type === 'fence') {
             html = `
@@ -3184,15 +3284,26 @@
                 specsLines.push(`חלוקות: ${dx} עמודים לאורך, ${dy} קושרות לרוחב`);
             }
         } else if (type === 'door') {
+            const drLayoutEl = card.querySelector('.dr-layout');
+            const drStyleEl = card.querySelector('.dr-style');
             const topH = card.querySelector('.dr-top').value;
             const sideW = card.querySelector('.dr-side').value;
+            const sideLeftW = card.querySelector('.dr-side-left') ? card.querySelector('.dr-side-left').value : '';
             const closerEl = card.querySelector('.dr-closer');
             const closerVal = closerEl ? closerEl.value : 'none';
+            if (drLayoutEl && drStyleEl) {
+                specsLines.push(`מבנה דלת: ${drLayoutEl.options[drLayoutEl.selectedIndex].text} | עיצוב: ${drStyleEl.options[drStyleEl.selectedIndex].text}`);
+            }
             const doorParts = [];
             if (topH) doorParts.push(`קבוע עליון (${topH} ס"מ)`);
-            if (sideW) doorParts.push(`קבוע צד (${sideW} ס"מ)`);
+            if (sideW) doorParts.push(`קבוע צד ימין (${sideW} ס"מ)`);
+            if (sideLeftW) doorParts.push(`קבוע צד שמאל (${sideLeftW} ס"מ)`);
             if (closerVal !== 'none') doorParts.push(closerEl.options[closerEl.selectedIndex].text);
             if (doorParts.length) specsLines.push(`תוספות דלת: ${doorParts.join(', ')}`);
+        } else if (type === 'screen_roll') {
+            const scrSysEl = card.querySelector('.scr-system');
+            const netT = card.querySelector('.net-type') ? card.querySelector('.net-type').value : '';
+            if (scrSysEl) specsLines.push(`מערכת: ${scrSysEl.options[scrSysEl.selectedIndex].text}${netT ? ` | ${netT}` : ''}`);
         } else if (type === 'shutter') {
             const boxEl = card.querySelector('.sht-box');
             const slatEl = card.querySelector('.sht-slat');
@@ -3490,65 +3601,88 @@
 
     // --- פונקציות עזר לצבעי אלומיניום וזכוכית בהדמיה ריאליסטית ---
     function resolveAlumColorPalette(colorText) {
-        const t = String(colorText || '').trim();
-        if (/שחור|9005|איירון|פחם כהה/.test(t)) {
-            return { main: '#22262a', light: '#3e444c', border: '#111315', name: t || 'שחור מט' };
+        const t = String(colorText || '').trim().toLowerCase();
+        if (/שחור|9005|איירון|פחם כהה|black/.test(t)) {
+            return { main: '#1e2226', light: '#3a4149', border: '#0a0c0e', textOnMain: '#ffffff', name: colorText || 'שחור מט (9005)' };
         }
-        if (/שמנת|1013|קרם/.test(t)) {
-            return { main: '#efeadd', light: '#fbf9f2', border: '#b8b09c', name: t || 'לבן שמנת' };
+        if (/שמנת|1013|9001|קרם|פנינה|cream/.test(t)) {
+            return { main: '#eae3ce', light: '#f8f5ec', border: '#9c9278', textOnMain: '#1a202c', name: colorText || 'לבן שמנת (1013)' };
         }
-        if (/לבן|9016/.test(t)) {
-            return { main: '#f1f5f9', light: '#ffffff', border: '#94a3b8', name: t || 'לבן קלאסי' };
+        if (/לבן|9016|9010|white/.test(t)) {
+            return { main: '#f1f5f9', light: '#ffffff', border: '#64748b', textOnMain: '#1a202c', name: colorText || 'לבן קלאסי (9016)' };
         }
-        if (/עץ|אלון|אגוז/.test(t)) {
-            return { main: '#8b5a2b', light: '#a6713d', border: '#5c3a1a', name: t || 'דמוי עץ' };
+        if (/אלון|עץ בהיר|oak/.test(t)) {
+            return { main: '#b07840', light: '#c9935b', border: '#6e4720', textOnMain: '#ffffff', name: colorText || 'דמוי עץ אלון' };
         }
-        if (/ברונזה|חום/.test(t)) {
-            return { main: '#4e3b2c', light: '#6b5340', border: '#2e2218', name: t || 'ברונזה' };
+        if (/עץ|אגוז|טיק|מייפל|wood/.test(t)) {
+            return { main: '#7c4a21', light: '#9c6334', border: '#4a2a10', textOnMain: '#ffffff', name: colorText || 'דמוי עץ אגוז' };
         }
-        if (/כסוף|9006|אנודייז/.test(t)) {
-            return { main: '#a0aec0', light: '#cbd5e0', border: '#718096', name: t || 'כסוף' };
+        if (/ברונזה|חום|8014|8017|8019|נחושת/.test(t)) {
+            return { main: '#4f3826', light: '#6e5038', border: '#2b1d12', textOnMain: '#ffffff', name: colorText || 'ברונזה / חום' };
         }
-        // ברירת מחדל: אפור גרפיט / אנתרציט יוקרתי
-        return { main: '#3b424c', light: '#56606e', border: '#1e2329', name: t || 'אפור גרפיט' };
+        if (/כסוף|9006|9007|אנודייז|אלומיניום טבעי|אפור בהיר|7035|7040/.test(t)) {
+            return { main: '#a8b4c2', light: '#d1d9e2', border: '#5a6573', textOnMain: '#1a202c', name: colorText || 'כסוף / אפור בהיר (9006)' };
+        }
+        if (/זהב|שמפניה|gold/.test(t)) {
+            return { main: '#b7903c', light: '#d4af5a', border: '#785c1e', textOnMain: '#ffffff', name: colorText || 'זהב / שמפניה' };
+        }
+        if (/ירוק|6005|אקליפטוס/.test(t)) {
+            return { main: '#2d523c', light: '#427055', border: '#183022', textOnMain: '#ffffff', name: colorText || 'ירוק (6005)' };
+        }
+        if (/כחול|5010|5002|תכלת/.test(t)) {
+            return { main: '#1e4e79', light: '#2d6da3', border: '#0f2b45', textOnMain: '#ffffff', name: colorText || 'כחול' };
+        }
+        if (/אדום|בורדו|3005/.test(t)) {
+            return { main: '#6e1e26', light: '#8f2c36', border: '#3d0e13', textOnMain: '#ffffff', name: colorText || 'בורדו / אדום' };
+        }
+        if (/אבן|חול|בז|1015|1019/.test(t)) {
+            return { main: '#c4b79c', light: '#dcd2bd', border: '#7d725b', textOnMain: '#1a202c', name: colorText || 'אבן / חול' };
+        }
+        // ברירת מחדל: אפור גרפיט / אנתרציט (7016 / 7024)
+        return { main: '#3d4550', light: '#576270', border: '#1f242a', textOnMain: '#ffffff', name: colorText || 'אפור גרפיט (7016)' };
     }
 
     function fillRealisticGlass(ctx, x, y, w, h, finishText) {
         ctx.save();
         const f = String(finishText || '');
         const grad = ctx.createLinearGradient(x, y, x + w, y + h);
-        if (/חלבי|Matte|סבתא|צ'ינצ'ילה/.test(f)) {
-            grad.addColorStop(0, 'rgba(241, 245, 249, 0.92)');
-            grad.addColorStop(0.5, 'rgba(226, 232, 240, 0.88)');
-            grad.addColorStop(1, 'rgba(203, 213, 225, 0.92)');
-        } else if (/אנטי-סאן|Anti-Sun|אפור|שחור/.test(f)) {
-            grad.addColorStop(0, 'rgba(45, 55, 72, 0.72)');
-            grad.addColorStop(0.5, 'rgba(74, 85, 104, 0.58)');
-            grad.addColorStop(1, 'rgba(26, 32, 44, 0.76)');
+        if (/חלבי|Matte|סבתא|צ'ינצ'ילה|גרניט/.test(f)) {
+            grad.addColorStop(0, 'rgba(241, 245, 249, 0.94)');
+            grad.addColorStop(0.5, 'rgba(226, 232, 240, 0.90)');
+            grad.addColorStop(1, 'rgba(203, 213, 225, 0.94)');
+        } else if (/אנטי-סאן|Anti-Sun|אפור/.test(f)) {
+            grad.addColorStop(0, 'rgba(45, 55, 72, 0.76)');
+            grad.addColorStop(0.5, 'rgba(74, 85, 104, 0.62)');
+            grad.addColorStop(1, 'rgba(26, 32, 44, 0.80)');
         } else if (/חום|Bronze/.test(f)) {
-            grad.addColorStop(0, 'rgba(120, 82, 48, 0.55)');
-            grad.addColorStop(1, 'rgba(85, 56, 30, 0.65)');
+            grad.addColorStop(0, 'rgba(120, 82, 48, 0.62)');
+            grad.addColorStop(1, 'rgba(85, 56, 30, 0.72)');
+        } else if (/ירוק/.test(f)) {
+            grad.addColorStop(0, 'rgba(72, 145, 110, 0.48)');
+            grad.addColorStop(1, 'rgba(45, 105, 78, 0.58)');
+        } else if (/כחול/.test(f)) {
+            grad.addColorStop(0, 'rgba(56, 130, 210, 0.52)');
+            grad.addColorStop(1, 'rgba(30, 85, 160, 0.62)');
         } else if (/רפלקטיבי|מראה/.test(f)) {
-            grad.addColorStop(0, 'rgba(148, 163, 184, 0.82)');
-            grad.addColorStop(0.45, 'rgba(226, 232, 240, 0.92)');
-            grad.addColorStop(1, 'rgba(100, 116, 139, 0.85)');
+            grad.addColorStop(0, 'rgba(148, 163, 184, 0.85)');
+            grad.addColorStop(0.45, 'rgba(226, 232, 240, 0.94)');
+            grad.addColorStop(1, 'rgba(100, 116, 139, 0.88)');
         } else {
-            grad.addColorStop(0, 'rgba(186, 230, 253, 0.52)');
-            grad.addColorStop(0.45, 'rgba(224, 242, 254, 0.35)');
-            grad.addColorStop(1, 'rgba(147, 197, 253, 0.55)');
+            grad.addColorStop(0, 'rgba(186, 230, 253, 0.55)');
+            grad.addColorStop(0.45, 'rgba(224, 242, 254, 0.38)');
+            grad.addColorStop(1, 'rgba(147, 197, 253, 0.58)');
         }
         ctx.fillStyle = grad;
         ctx.fillRect(x, y, w, h);
 
-        // קווי השתקפות אלכסוניים עדינים של זכוכית אמיתית
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.55)';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.62)';
         ctx.lineWidth = 3;
         ctx.beginPath();
         const gl = Math.min(w, h) * 0.28;
-        ctx.moveTo(x + w * 0.18, y + h * 0.18 + gl);
-        ctx.lineTo(x + w * 0.18 + gl, y + h * 0.18);
-        ctx.moveTo(x + w * 0.24, y + h * 0.24 + gl * 0.7);
-        ctx.lineTo(x + w * 0.24 + gl * 0.7, y + h * 0.24);
+        ctx.moveTo(x + w * 0.16, y + h * 0.16 + gl);
+        ctx.lineTo(x + w * 0.16 + gl, y + h * 0.16);
+        ctx.moveTo(x + w * 0.22, y + h * 0.22 + gl * 0.7);
+        ctx.lineTo(x + w * 0.22 + gl * 0.7, y + h * 0.22);
         ctx.stroke();
         ctx.restore();
     }
@@ -3560,20 +3694,58 @@
             ctx.strokeRect(x, y, w, h);
             return;
         }
+        const t = Math.max(8, thickness * 1.45);
         ctx.save();
         ctx.fillStyle = pal.main;
         ctx.strokeStyle = pal.border;
-        ctx.lineWidth = 2;
-        // Top bar
-        ctx.fillRect(x, y, w, thickness);
-        // Bottom bar
-        ctx.fillRect(x, y + h - thickness, w, thickness);
-        // Left bar
-        ctx.fillRect(x, y, thickness, h);
-        // Right bar
-        ctx.fillRect(x + w - thickness, y, thickness, h);
+        ctx.lineWidth = 2.2;
+        // ארבע דפנות פרופיל האלומיניום בצבע מלא ובולט
+        ctx.fillRect(x, y, w, t);
+        ctx.fillRect(x, y + h - t, w, t);
+        ctx.fillRect(x, y, t, h);
+        ctx.fillRect(x + w - t, y, t, h);
+        // קו הברקה תלת-ממדי עדין על הפרופיל
+        ctx.strokeStyle = pal.light;
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(x + 2, y + 2, Math.max(2, w - 4), Math.max(2, h - 4));
+        // מסגרת חיצונית ופנימית חדה
+        ctx.strokeStyle = pal.border;
+        ctx.lineWidth = 2.2;
         ctx.strokeRect(x, y, w, h);
-        ctx.strokeRect(x + thickness, y + thickness, Math.max(2, w - thickness * 2), Math.max(2, h - thickness * 2));
+        ctx.strokeRect(x + t, y + t, Math.max(2, w - t * 2), Math.max(2, h - t * 2));
+        ctx.restore();
+    }
+
+    function drawLouversInRect(ctx, x, y, w, h, pal, isRealistic) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(x, y, w, h);
+        ctx.clip();
+        const step = 15;
+        for (let ly = y; ly < y + h; ly += step) {
+            ctx.fillStyle = isRealistic ? ((Math.floor((ly - y) / step) % 2 === 0) ? pal.main : pal.light) : "#e2e8f0";
+            ctx.fillRect(x, ly, w, step - 2);
+            ctx.strokeStyle = isRealistic ? pal.border : "#718096";
+            ctx.lineWidth = 1.2;
+            ctx.strokeRect(x, ly, w, step - 2);
+        }
+        ctx.restore();
+    }
+
+    function drawDecorativeDivisions(ctx, sx, sy, sw, sh, slDiv, pal, isRealistic) {
+        if (!slDiv || slDiv === 'none') return;
+        ctx.save();
+        ctx.fillStyle = isRealistic ? pal.main : "#4a5568";
+        ctx.strokeStyle = isRealistic ? pal.border : "#2d3748";
+        const barT = isRealistic ? 7 : 3;
+        for (let r = 1; r <= 2; r++) {
+            const py = sy + (sh / 3) * r - barT / 2;
+            ctx.fillRect(sx, py, sw, barT);
+        }
+        if (slDiv === 'grid') {
+            const px = sx + sw / 2 - barT / 2;
+            ctx.fillRect(px, sy, barT, sh);
+        }
         ctx.restore();
     }
 
@@ -3582,9 +3754,9 @@
         ctx.beginPath();
         ctx.rect(x, y, w, h);
         ctx.clip();
-        ctx.strokeStyle = "rgba(74, 85, 104, 0.22)";
+        ctx.strokeStyle = "rgba(45, 55, 72, 0.25)";
         ctx.lineWidth = 1;
-        const step = 12;
+        const step = 11;
         for (let gx = x; gx < x + w; gx += step) {
             ctx.beginPath(); ctx.moveTo(gx, y); ctx.lineTo(gx, y + h); ctx.stroke();
         }
@@ -3618,7 +3790,7 @@
         refreshLiveSketchIfOpen(card);
     }
 
-    // --- מנוע השרטוטים האדריכליים וההדמיות המשודרג (שלב 2) ---
+    // --- מנוע השרטוטים האדריכליים וההדמיות המלא (כל 14 המוצרים) ---
     function createSketchCanvas(card, forceStyleMode) {
         const typeSelect = card.querySelector('.item-type');
         const type = typeSelect.value;
@@ -3637,17 +3809,28 @@
         cnv.height = 920;
         const c = cnv.getContext('2d');
 
-        // רקע: לבן אדריכלי בשרטוט, או קיר מעוצב עם תאורה בהדמיה ריאליסטית
         if (isRealistic) {
             const bgGrad = c.createLinearGradient(0, 0, 0, 920);
             bgGrad.addColorStop(0, "#f8fafc");
-            bgGrad.addColorStop(0.78, "#edf2f7");
-            bgGrad.addColorStop(1, "#e2e8f0");
+            bgGrad.addColorStop(0.76, "#e2e8f0");
+            bgGrad.addColorStop(1, "#cbd5e0");
             c.fillStyle = bgGrad;
             c.fillRect(0, 0, 1200, 920);
-            // פס רצפה עדין
             c.fillStyle = "#cbd5e0";
-            c.fillRect(0, 770, 1200, 150);
+            c.fillRect(0, 775, 1200, 145);
+
+            // תגית דוגמת גוון חיה בצד שמאל למעלה
+            c.save();
+            c.fillStyle = pal.main;
+            c.strokeStyle = pal.border;
+            c.lineWidth = 2.5;
+            c.fillRect(70, 32, 42, 42);
+            c.strokeRect(70, 32, 42, 42);
+            c.fillStyle = "#1a202c";
+            c.font = "bold 16px Rubik, Arial";
+            c.textAlign = "left";
+            c.fillText(`גוון פרופיל: ${pal.name}`, 122, 58);
+            c.restore();
         } else {
             c.fillStyle = "white";
             c.fillRect(0, 0, 1200, 920);
@@ -3656,14 +3839,14 @@
         c.fillStyle = "#0d47a1";
         c.font = "bold 34px Rubik, Arial";
         c.textAlign = "center";
-        c.fillText(isRealistic ? "יהונתן אלומיניום - הדמיה ריאליסטית ומפרט" : "יהונתן אלומיניום - שרטוט אדריכלי", 600, 48);
+        c.fillText(isRealistic ? "יהונתן אלומיניום - הדמיה צבעונית חיה" : "יהונתן אלומיניום - שרטוט אדריכלי", 600, 48);
 
         const client = document.getElementById('clientName').value || "לקוח";
         c.fillStyle = "#333";
         c.font = "21px Rubik, Arial";
         c.fillText(`לקוח: ${client} | תאריך: ${new Date().toLocaleDateString('he-IL')}${roomLoc ? ` | מיקום: ${roomLoc}` : ''}`, 600, 82);
 
-        let subtitle = `${typeName} | דגם: ${profile}${colorShade ? ` | גוון: ${colorShade}` : ''}`;
+        let subtitle = `${typeName} | דגם: ${profile} | גוון: ${pal.name}`;
         const cbMono = card.querySelector('.cb-monoblock');
         const hasMonoblock = !!(cbMono && cbMono.checked);
         let monoH = 0;
@@ -3681,7 +3864,7 @@
         c.lineWidth = 2;
         c.beginPath(); c.moveTo(70, 132); c.lineTo(1130, 132); c.stroke();
 
-        // --- פרגולה: תומכת בחלוקה לשדות (1..5), כמות עמודים, קירוי סנטף ותאורת LED ---
+        // --- 1. פרגולה ---
         if (type === 'pergola') {
             const w = parseFloat(card.querySelector('.w-input').value) || 400;
             const depth = parseFloat(card.querySelector('.h-input').value) || 300;
@@ -3765,9 +3948,9 @@
 
         if (isRealistic) {
             c.save();
-            c.shadowColor = "rgba(0,0,0,0.22)";
-            c.shadowBlur = 22;
-            c.shadowOffsetY = 8;
+            c.shadowColor = "rgba(0,0,0,0.28)";
+            c.shadowBlur = 24;
+            c.shadowOffsetY = 10;
             c.fillStyle = "#fff";
             c.fillRect(startX, startY, dw, dh);
             c.restore();
@@ -3776,13 +3959,13 @@
         c.strokeStyle = isRealistic ? pal.border : "#1a202c";
         c.lineWidth = 3;
 
-        // --- ציור ארגז תריס עליון בחלון (מונובלוק / סמוי / חיצוני) ---
+        // --- ציור ארגז תריס עליון בחלון ---
         if (hasMonoblock) {
             const boxRatio = Math.min(0.26, Math.max(0.14, monoH / Math.max(h, 60)));
             const boxPxH = dh * boxRatio;
             c.save();
-            if (monoBoxType === 'פנימי סמוי') {
-                c.fillStyle = isRealistic ? "#f1f5f9" : "#f7fafc";
+            if (monoBoxType === 'פנימי סמוי' && !isRealistic) {
+                c.fillStyle = "#f7fafc";
                 c.fillRect(startX, startY, dw, boxPxH);
                 c.setLineDash([8, 6]);
                 c.strokeStyle = "#4a5568";
@@ -3790,14 +3973,15 @@
             } else {
                 c.fillStyle = isRealistic ? pal.main : "#edf2f7";
                 c.fillRect(startX, startY, dw, boxPxH);
+                c.strokeStyle = isRealistic ? pal.border : "#1a202c";
                 c.strokeRect(startX, startY, dw, boxPxH);
                 c.strokeStyle = isRealistic ? pal.light : "#a0aec0";
-                c.lineWidth = 1;
+                c.lineWidth = 1.5;
                 for (let y = 8; y < boxPxH; y += 8) {
                     c.beginPath(); c.moveTo(startX, startY + y); c.lineTo(startX + dw, startY + y); c.stroke();
                 }
             }
-            c.fillStyle = (isRealistic && monoBoxType !== 'פנימי סמוי') ? "#ffffff" : "#2d3748";
+            c.fillStyle = isRealistic ? pal.textOnMain : "#2d3748";
             c.font = "bold 16px Rubik, Arial";
             c.fillText(`ארגז ${monoBoxType} (${monoH} ס"מ)`, startX + dw / 2, startY + boxPxH / 2 + 6);
             c.restore();
@@ -3806,7 +3990,7 @@
             dh -= boxPxH;
         }
 
-        // --- מקלחונים (כולל התצורות החדשות: 2 קבועים+2 דלתות, קבוע+דלת+קבוע, אמבטיון) ---
+        // --- 2. מקלחונים ---
         if (type === 'shower') {
             const conf = card.querySelector('.shower-config').value;
             const hwColor = card.querySelector('.hardware-color').value;
@@ -3817,7 +4001,7 @@
 
             fillRealisticGlass(c, startX, startY, dw, dh, glassFinish);
             c.strokeStyle = frameColor;
-            c.lineWidth = 3.5;
+            c.lineWidth = isRealistic ? 5.5 : 3.5;
 
             if (conf === 'front') {
                 c.strokeRect(startX, startY, dw, dh);
@@ -3866,7 +4050,6 @@
                     drawTriangle(c, startX + fW, startY, dW, dh, 'right');
                     drawShowerHandle(c, startX + fW + 22, startY + dh / 2, handleType, frameColor);
                 } else if (layout === 'bath_screen') {
-                    // אמבטיון: דופן אמבטיה תחתונה + קבוע וכנף מתקפלת
                     const fixW = dw * 0.42;
                     c.beginPath(); c.moveTo(startX + fixW, startY); c.lineTo(startX + fixW, startY + dh); c.stroke();
                     c.fillStyle = "#2d3748"; c.font = "bold 17px Rubik, Arial";
@@ -3880,7 +4063,7 @@
                     c.fillText("קבוע", startX + dw * 0.25, startY + 35);
                 }
                 if (hasStab) {
-                    c.save(); c.lineWidth = 5; c.strokeStyle = frameColor;
+                    c.save(); c.lineWidth = 6; c.strokeStyle = frameColor;
                     c.beginPath(); c.moveTo(startX, startY + 18); c.lineTo(startX + dw, startY + 18); c.stroke();
                     c.restore();
                 }
@@ -3909,7 +4092,7 @@
                 drawCornerShowerSide(c, rightX, startY, pxR, dh, typeR, 'right', handleType, frameColor);
 
                 if (hasStab) {
-                    c.save(); c.lineWidth = 4; c.strokeStyle = frameColor;
+                    c.save(); c.lineWidth = 5; c.strokeStyle = frameColor;
                     c.beginPath(); c.moveTo(startX, startY + 16); c.lineTo(startX + dw, startY + 16); c.stroke();
                     c.restore();
                 }
@@ -3920,7 +4103,7 @@
             return cnv;
         }
 
-        // --- קבוע / ויטרינה קבועה ---
+        // --- 3. קבוע / ויטרינה קבועה ---
         if (type === 'fixed' || type === 'showcase') {
             const pixHRight = (hRight / h) * dh;
             const pixHLeft = (hLeft / h) * dh;
@@ -3936,7 +4119,7 @@
 
             const cols = parseInt(card.querySelector('.div-x').value, 10) || 0;
             const rows = parseInt(card.querySelector('.div-y').value, 10) || 0;
-            c.lineWidth = isRealistic ? 7 : 3;
+            c.lineWidth = isRealistic ? 10 : 3;
             c.strokeStyle = isRealistic ? pal.main : "#2d3748";
             if (cols > 0) {
                 const colW = dw / (cols + 1);
@@ -3952,7 +4135,7 @@
             }
             c.restore();
 
-            c.lineWidth = isRealistic ? 9 : 4;
+            c.lineWidth = isRealistic ? 14 : 4;
             c.strokeStyle = isRealistic ? pal.main : "#1a202c";
             c.beginPath();
             c.moveTo(startX, startY + dh);
@@ -3970,7 +4153,7 @@
             return cnv;
         }
 
-        // --- חישוב קבועים משולבים בחלונות (קבוע תחתון / עליון / צד ימין / צד שמאל) ---
+        // --- קבועים משולבים בחלונות (קבוע תחתון / עליון / צד ימין / צד שמאל) ---
         const fixBotCm = parseFloat(card.querySelector('.fix-bottom-cm') ? card.querySelector('.fix-bottom-cm').value : '') || 0;
         const fixTopCm = parseFloat(card.querySelector('.fix-top-cm') ? card.querySelector('.fix-top-cm').value : '') || 0;
         const fixRightCm = parseFloat(card.querySelector('.fix-right-cm') ? card.querySelector('.fix-right-cm').value : '') || 0;
@@ -3980,7 +4163,7 @@
             if (fixTopCm > 0) {
                 const topPx = Math.min(dh * 0.34, Math.max(46, (fixTopCm / Math.max(h, 100)) * dh));
                 fillRealisticGlass(c, startX, startY, dw, topPx, glassFinish);
-                draw3DFrameRect(c, startX, startY, dw, topPx, 7, pal, isRealistic);
+                draw3DFrameRect(c, startX, startY, dw, topPx, 8, pal, isRealistic);
                 c.fillStyle = "#1a202c"; c.font = "bold 16px Rubik, Arial";
                 c.fillText(`קבוע עליון (${fixTopCm} ס"מ)`, startX + dw / 2, startY + topPx / 2 + 6);
                 drawVertDim(c, origStartX - 48, startY, startY + topPx, `עליון: ${fixTopCm}`, 'left', '#2b6cb0');
@@ -3991,7 +4174,7 @@
                 const botPx = Math.min(dh * 0.42, Math.max(52, (fixBotCm / Math.max(h, 100)) * dh));
                 const botY = startY + dh - botPx;
                 fillRealisticGlass(c, startX, botY, dw, botPx, glassFinish);
-                draw3DFrameRect(c, startX, botY, dw, botPx, 7, pal, isRealistic);
+                draw3DFrameRect(c, startX, botY, dw, botPx, 8, pal, isRealistic);
                 c.fillStyle = "#1a202c"; c.font = "bold 16px Rubik, Arial";
                 c.fillText(`קבוע תחתון (${fixBotCm} ס"מ)`, startX + dw / 2, botY + botPx / 2 + 6);
                 drawVertDim(c, origStartX - 48, botY, botY + botPx, `תחתון: ${fixBotCm}`, 'left', '#2b6cb0');
@@ -4000,7 +4183,7 @@
             if (fixLeftCm > 0) {
                 const leftPx = Math.min(dw * 0.34, Math.max(54, (fixLeftCm / Math.max(w, 100)) * dw));
                 fillRealisticGlass(c, startX, startY, leftPx, dh, glassFinish);
-                draw3DFrameRect(c, startX, startY, leftPx, dh, 7, pal, isRealistic);
+                draw3DFrameRect(c, startX, startY, leftPx, dh, 8, pal, isRealistic);
                 c.fillStyle = "#1a202c"; c.font = "bold 15px Rubik, Arial";
                 c.fillText(`קבוע (${fixLeftCm})`, startX + leftPx / 2, startY + dh / 2 + 5);
                 startX += leftPx;
@@ -4010,7 +4193,7 @@
                 const rightPx = Math.min(dw * 0.34, Math.max(54, (fixRightCm / Math.max(w, 100)) * dw));
                 const rightX = startX + dw - rightPx;
                 fillRealisticGlass(c, rightX, startY, rightPx, dh, glassFinish);
-                draw3DFrameRect(c, rightX, startY, rightPx, dh, 7, pal, isRealistic);
+                draw3DFrameRect(c, rightX, startY, rightPx, dh, 8, pal, isRealistic);
                 c.fillStyle = "#1a202c"; c.font = "bold 15px Rubik, Arial";
                 c.fillText(`קבוע (${fixRightCm})`, rightX + rightPx / 2, startY + dh / 2 + 5);
                 dw -= rightPx;
@@ -4018,104 +4201,151 @@
         }
 
         const hasNet = !!((card.querySelector('.cb-net') && card.querySelector('.cb-net').checked) || (card.querySelector('.cb-net-pull') && card.querySelector('.cb-net-pull').checked) || type === 'screen_roll');
+        const hasSlatBlind = !!(card.querySelector('.cb-slat-blind') && card.querySelector('.cb-slat-blind').checked);
+        const slDiv = card.querySelector('.sl-div') ? card.querySelector('.sl-div').value : 'none';
 
+        // --- 4. חלון הזזה ---
         if (type === 'sliding') {
             fillRealisticGlass(c, startX, startY, dw, dh, glassFinish);
             if (hasNet) drawMeshPattern(c, startX, startY, dw, dh);
-            draw3DFrameRect(c, startX, startY, dw, dh, 9, pal, isRealistic);
+            draw3DFrameRect(c, startX, startY, dw, dh, 10, pal, isRealistic);
 
             const sashes = Math.max(2, Math.min(6, parseInt(card.querySelector('.sl-sashes').value, 10) || 2));
             const slMeeting = card.querySelector('.sl-meeting') ? card.querySelector('.sl-meeting').value : 'side';
-            const slDiv = card.querySelector('.sl-div').value;
             const sashW = dw / sashes;
             for (let i = 0; i < sashes; i++) {
-                const sx = startX + i * sashW + 6;
-                const sy = startY + 6;
-                const sw = sashW - 12;
-                const sh = dh - 12;
-                draw3DFrameRect(c, sx, sy, sw, sh, 6, pal, isRealistic);
+                const sx = startX + i * sashW + 7;
+                const sy = startY + 7;
+                const sw = sashW - 14;
+                const sh = dh - 14;
 
-                if (slDiv === 'strips' || slDiv === 'grid') {
-                    c.save();
-                    c.strokeStyle = isRealistic ? pal.main : "#4a5568";
-                    c.lineWidth = isRealistic ? 4 : 2;
-                    for (let r = 1; r <= 2; r++) {
-                        c.beginPath(); c.moveTo(sx, sy + (sh / 3) * r); c.lineTo(sx + sw, sy + (sh / 3) * r); c.stroke();
-                    }
-                    if (slDiv === 'grid') {
-                        c.beginPath(); c.moveTo(sx + sw / 2, sy); c.lineTo(sx + sw / 2, sy + sh); c.stroke();
-                    }
-                    c.restore();
+                // אם סומן "תריס שלבים הזזה" - נצייר שלבי תריס בחלק מהכנף/הכנפיים להמחשה ברורה
+                if (hasSlatBlind) {
+                    drawLouversInRect(c, sx + 6, sy + 6, sw - 12, sh * 0.42, pal, isRealistic);
                 }
+                drawDecorativeDivisions(c, sx, sy, sw, sh, slDiv, pal, isRealistic);
+                draw3DFrameRect(c, sx, sy, sw, sh, 7, pal, isRealistic);
+
                 let arrowDir = (i % 2 === 0) ? 'right' : 'left';
                 if (slMeeting === 'center' && sashes >= 2) {
                     arrowDir = (i < sashes / 2) ? 'left' : 'right';
                 }
-                drawArrow(c, sx + sw / 2, sy + sh / 2, arrowDir);
+                drawArrow(c, sx + sw / 2, sy + sh * 0.65, arrowDir);
             }
         } else if (type === 'pocket') {
+            // --- 5. חלון כיס ---
+            const pktComp = card.querySelector('.pkt-comp') ? card.querySelector('.pkt-comp').value : 'זכוכית בלבד';
             fillRealisticGlass(c, startX, startY, dw, dh, glassFinish);
+            if (pktComp.includes('רשת')) drawMeshPattern(c, startX, startY, dw, dh);
+            if (pktComp.includes('תריס')) drawLouversInRect(c, startX + 10, startY + 10, dw * 0.36, dh - 20, pal, isRealistic);
+
             c.save();
             c.setLineDash([8, 8]);
-            c.fillStyle = "#f7fafc";
+            c.fillStyle = isRealistic ? "#e2e8f0" : "#f7fafc";
+            c.strokeStyle = isRealistic ? pal.border : "#2d3748";
             if (pktDir === 'right') {
                 c.fillRect(startX + dw, startY, pktW, dh);
                 c.strokeRect(startX + dw, startY, pktW, dh);
                 drawArrow(c, startX + dw / 2, startY + dh / 2, 'right');
-                c.fillStyle = "#4a5568"; c.font = "bold 16px Rubik, Arial";
-                c.fillText("כיס", startX + dw + pktW / 2, startY + dh / 2);
+                c.fillStyle = "#2d3748"; c.font = "bold 16px Rubik, Arial";
+                c.fillText("כיס בקיר", startX + dw + pktW / 2, startY + dh / 2);
             } else {
                 c.fillRect(startX - pktW, startY, pktW, dh);
                 c.strokeRect(startX - pktW, startY, pktW, dh);
                 drawArrow(c, startX + dw / 2, startY + dh / 2, 'left');
-                c.fillStyle = "#4a5568"; c.font = "bold 16px Rubik, Arial";
-                c.fillText("כיס", startX - pktW / 2, startY + dh / 2);
+                c.fillStyle = "#2d3748"; c.font = "bold 16px Rubik, Arial";
+                c.fillText("כיס בקיר", startX - pktW / 2, startY + dh / 2);
             }
             c.restore();
-            draw3DFrameRect(c, startX, startY, dw, dh, 9, pal, isRealistic);
-            draw3DFrameRect(c, startX + 8, startY + 8, dw - 16, dh - 16, 6, pal, isRealistic);
+            draw3DFrameRect(c, startX, startY, dw, dh, 10, pal, isRealistic);
+            draw3DFrameRect(c, startX + 8, startY + 8, dw - 16, dh - 16, 7, pal, isRealistic);
         } else if (['hinge', 'tilt_turn', 'door'].includes(type)) {
+            // --- 6. חלונות ציר, דריי-קיפ ודלתות ---
             fillRealisticGlass(c, startX, startY, dw, dh, glassFinish);
             if (hasNet) drawMeshPattern(c, startX, startY, dw, dh);
-            draw3DFrameRect(c, startX, startY, dw, dh, 9, pal, isRealistic);
+            draw3DFrameRect(c, startX, startY, dw, dh, 10, pal, isRealistic);
 
             let leafX = startX, leafY = startY, leafW = dw, leafH = dh;
             if (type === 'door') {
                 const topCm = parseFloat(card.querySelector('.dr-top').value) || 0;
                 const sideCm = parseFloat(card.querySelector('.dr-side').value) || 0;
+                const sideLeftCm = parseFloat(card.querySelector('.dr-side-left') ? card.querySelector('.dr-side-left').value : '') || 0;
+                const drLayout = card.querySelector('.dr-layout') ? card.querySelector('.dr-layout').value : '1wing';
+                const drStyle = card.querySelector('.dr-style') ? card.querySelector('.dr-style').value : 'full_glass';
+
                 if (topCm > 0) {
-                    const topPx = Math.min(dh * 0.3, (topCm / Math.max(h, 180)) * dh);
-                    draw3DFrameRect(c, startX, startY, dw, topPx, 6, pal, isRealistic);
-                    c.fillStyle = "#1a202c"; c.font = "bold 16px Rubik, Arial";
+                    const topPx = Math.min(dh * 0.28, (topCm / Math.max(h, 180)) * dh);
+                    draw3DFrameRect(c, startX, startY, dw, topPx, 7, pal, isRealistic);
+                    c.fillStyle = "#1a202c"; c.font = "bold 15px Rubik, Arial";
                     c.fillText(`קבוע עליון (${topCm})`, startX + dw / 2, startY + topPx / 2 + 5);
                     leafY += topPx; leafH -= topPx;
                 }
+                if (sideLeftCm > 0) {
+                    const sideLPx = Math.min(leafW * 0.30, (sideLeftCm / Math.max(w, 100)) * dw);
+                    draw3DFrameRect(c, leafX, leafY, sideLPx, leafH, 7, pal, isRealistic);
+                    c.fillStyle = "#1a202c"; c.font = "bold 14px Rubik, Arial";
+                    c.fillText(`קבוע (${sideLeftCm})`, leafX + sideLPx / 2, leafY + leafH / 2);
+                    leafX += sideLPx; leafW -= sideLPx;
+                }
                 if (sideCm > 0) {
-                    const sidePx = Math.min(dw * 0.35, (sideCm / Math.max(w, 100)) * dw);
-                    draw3DFrameRect(c, startX + dw - sidePx, leafY, sidePx, leafH, 6, pal, isRealistic);
-                    c.fillStyle = "#1a202c"; c.font = "bold 15px Rubik, Arial";
-                    c.fillText(`קבוע (${sideCm})`, startX + dw - sidePx / 2, leafY + leafH / 2);
+                    const sidePx = Math.min(leafW * 0.32, (sideCm / Math.max(w, 100)) * dw);
+                    draw3DFrameRect(c, leafX + leafW - sidePx, leafY, sidePx, leafH, 7, pal, isRealistic);
+                    c.fillStyle = "#1a202c"; c.font = "bold 14px Rubik, Arial";
+                    c.fillText(`קבוע (${sideCm})`, leafX + leafW - sidePx / 2, leafY + leafH / 2);
                     leafW -= sidePx;
                 }
+
+                const drawDoorLeafContent = (lx, ly, lw, lh, openSide, showHandle) => {
+                    if (drStyle === 'solid_panel') {
+                        c.fillStyle = isRealistic ? pal.main : "#cbd5e0";
+                        c.fillRect(lx + 6, ly + 6, lw - 12, lh - 12);
+                        // פסי ניקל דקורטיביים בדלת כניסה
+                        c.strokeStyle = "#e2e8f0"; c.lineWidth = 3;
+                        for (let p = 1; p <= 4; p++) {
+                            const py = ly + (lh / 5) * p;
+                            c.beginPath(); c.moveTo(lx + 18, py); c.lineTo(lx + lw - 18, py); c.stroke();
+                        }
+                    } else if (drStyle === 'half_panel') {
+                        drawLouversInRect(c, lx + 8, ly + lh * 0.52, lw - 16, lh * 0.48 - 8, pal, isRealistic);
+                        c.fillStyle = isRealistic ? pal.main : "#2d3748";
+                        c.fillRect(lx + 6, ly + lh * 0.50, lw - 12, 8);
+                    } else if (drStyle === 'belgian_grid') {
+                        drawDecorativeDivisions(c, lx + 6, ly + 6, lw - 12, lh - 12, 'grid', pal, isRealistic);
+                    }
+                    draw3DFrameRect(c, lx + 4, ly + 4, lw - 8, lh - 8, 8, pal, isRealistic);
+                    drawTriangle(c, lx, ly, lw, lh, openSide);
+                    if (showHandle) {
+                        c.save();
+                        c.beginPath(); c.lineWidth = 6; c.strokeStyle = "#ff6f00";
+                        const hx = (openSide === 'right') ? (lx + 22) : (lx + lw - 22);
+                        c.moveTo(hx, ly + lh * 0.42); c.lineTo(hx, ly + lh * 0.58);
+                        c.stroke();
+                        c.restore();
+                    }
+                };
+
                 const dir = card.querySelector('.open-dir').value;
-                draw3DFrameRect(c, leafX + 6, leafY + 6, leafW - 12, leafH - 12, 7, pal, isRealistic);
-                drawTriangle(c, leafX, leafY, leafW, leafH, dir);
-                c.save();
-                c.beginPath(); c.lineWidth = 5; c.strokeStyle = "#0d47a1";
-                if (dir === 'right') {
-                    c.moveTo(leafX + 18, leafY + leafH / 2); c.lineTo(leafX + 46, leafY + leafH / 2);
+                if (drLayout === '2wing') {
+                    const hw = leafW / 2;
+                    drawDoorLeafContent(leafX, leafY, hw, leafH, 'left', true);
+                    drawDoorLeafContent(leafX + hw, leafY, hw, leafH, 'right', true);
+                } else if (drLayout === '1_5wing') {
+                    const smallW = leafW * 0.34;
+                    const bigW = leafW - smallW;
+                    drawDoorLeafContent(leafX, leafY, smallW, leafH, 'left', false);
+                    drawDoorLeafContent(leafX + smallW, leafY, bigW, leafH, 'right', true);
                 } else {
-                    c.moveTo(leafX + leafW - 18, leafY + leafH / 2); c.lineTo(leafX + leafW - 46, leafY + leafH / 2);
+                    drawDoorLeafContent(leafX, leafY, leafW, leafH, dir, true);
                 }
-                c.stroke();
-                c.restore();
             } else {
                 const hingeLayout = card.querySelector('.hinge-layout') ? card.querySelector('.hinge-layout').value : '1wing';
                 const dir = card.querySelector('.open-dir').value;
                 if (hingeLayout === '2wing') {
                     const halfW = leafW / 2;
-                    draw3DFrameRect(c, leafX + 6, leafY + 6, halfW - 8, leafH - 12, 6, pal, isRealistic);
-                    draw3DFrameRect(c, leafX + halfW + 2, leafY + 6, halfW - 8, leafH - 12, 6, pal, isRealistic);
+                    drawDecorativeDivisions(c, leafX + 6, leafY + 6, halfW - 8, leafH - 12, slDiv, pal, isRealistic);
+                    drawDecorativeDivisions(c, leafX + halfW + 2, leafY + 6, halfW - 8, leafH - 12, slDiv, pal, isRealistic);
+                    draw3DFrameRect(c, leafX + 6, leafY + 6, halfW - 8, leafH - 12, 7, pal, isRealistic);
+                    draw3DFrameRect(c, leafX + halfW + 2, leafY + 6, halfW - 8, leafH - 12, 7, pal, isRealistic);
                     drawTriangle(c, leafX, leafY, halfW, leafH, 'left');
                     drawTriangle(c, leafX + halfW, leafY, halfW, leafH, 'right');
                     if (type === 'tilt_turn') {
@@ -4123,22 +4353,27 @@
                     }
                 } else if (hingeLayout === 'fix_right_wing') {
                     const halfW = leafW / 2;
-                    draw3DFrameRect(c, leafX + 6, leafY + 6, halfW - 8, leafH - 12, 6, pal, isRealistic);
-                    draw3DFrameRect(c, leafX + halfW + 2, leafY + 6, halfW - 8, leafH - 12, 6, pal, isRealistic);
+                    drawDecorativeDivisions(c, leafX + 6, leafY + 6, halfW - 8, leafH - 12, slDiv, pal, isRealistic);
+                    drawDecorativeDivisions(c, leafX + halfW + 2, leafY + 6, halfW - 8, leafH - 12, slDiv, pal, isRealistic);
+                    draw3DFrameRect(c, leafX + 6, leafY + 6, halfW - 8, leafH - 12, 7, pal, isRealistic);
+                    draw3DFrameRect(c, leafX + halfW + 2, leafY + 6, halfW - 8, leafH - 12, 7, pal, isRealistic);
                     drawTriangle(c, leafX, leafY, halfW, leafH, 'left');
                     if (type === 'tilt_turn') drawTriangle(c, leafX, leafY, halfW, leafH, 'top');
                     c.fillStyle = "#1a202c"; c.font = "bold 17px Rubik, Arial";
                     c.fillText("קבוע", leafX + halfW + halfW / 2, leafY + leafH / 2);
                 } else if (hingeLayout === 'fix_left_wing') {
                     const halfW = leafW / 2;
-                    draw3DFrameRect(c, leafX + 6, leafY + 6, halfW - 8, leafH - 12, 6, pal, isRealistic);
-                    draw3DFrameRect(c, leafX + halfW + 2, leafY + 6, halfW - 8, leafH - 12, 6, pal, isRealistic);
+                    drawDecorativeDivisions(c, leafX + 6, leafY + 6, halfW - 8, leafH - 12, slDiv, pal, isRealistic);
+                    drawDecorativeDivisions(c, leafX + halfW + 2, leafY + 6, halfW - 8, leafH - 12, slDiv, pal, isRealistic);
+                    draw3DFrameRect(c, leafX + 6, leafY + 6, halfW - 8, leafH - 12, 7, pal, isRealistic);
+                    draw3DFrameRect(c, leafX + halfW + 2, leafY + 6, halfW - 8, leafH - 12, 7, pal, isRealistic);
                     c.fillStyle = "#1a202c"; c.font = "bold 17px Rubik, Arial";
                     c.fillText("קבוע", leafX + halfW / 2, leafY + leafH / 2);
                     drawTriangle(c, leafX + halfW, leafY, halfW, leafH, 'right');
                     if (type === 'tilt_turn') drawTriangle(c, leafX + halfW, leafY, halfW, leafH, 'top');
                 } else {
-                    draw3DFrameRect(c, leafX + 8, leafY + 8, leafW - 16, leafH - 16, 6, pal, isRealistic);
+                    drawDecorativeDivisions(c, leafX + 8, leafY + 8, leafW - 16, leafH - 16, slDiv, pal, isRealistic);
+                    draw3DFrameRect(c, leafX + 8, leafY + 8, leafW - 16, leafH - 16, 7, pal, isRealistic);
                     drawTriangle(c, leafX, leafY, leafW, leafH, dir);
                     if (type === 'tilt_turn') drawTriangle(c, leafX, leafY, leafW, leafH, 'top');
                 }
@@ -4146,17 +4381,53 @@
         } else if (type === 'kipp') {
             fillRealisticGlass(c, startX, startY, dw, dh, glassFinish);
             if (hasNet) drawMeshPattern(c, startX, startY, dw, dh);
-            draw3DFrameRect(c, startX, startY, dw, dh, 9, pal, isRealistic);
-            draw3DFrameRect(c, startX + 8, startY + 8, dw - 16, dh - 16, 6, pal, isRealistic);
+            drawDecorativeDivisions(c, startX + 8, startY + 8, dw - 16, dh - 16, slDiv, pal, isRealistic);
+            draw3DFrameRect(c, startX, startY, dw, dh, 10, pal, isRealistic);
+            draw3DFrameRect(c, startX + 8, startY + 8, dw - 16, dh - 16, 7, pal, isRealistic);
             drawTriangle(c, startX, startY, dw, dh, 'top');
+        } else if (type === 'screen_roll') {
+            // --- 7. רשתות (גלילה / פליסה / הזזה / קבועה) ---
+            const scrSys = card.querySelector('.scr-system') ? card.querySelector('.scr-system').value : 'roll';
+            c.fillStyle = "rgba(241, 245, 249, 0.55)";
+            c.fillRect(startX, startY, dw, dh);
+            drawMeshPattern(c, startX + 10, startY + 10, dw - 20, dh - 20);
+
+            if (scrSys === 'roll') {
+                const topBoxH = Math.max(28, dh * 0.11);
+                c.fillStyle = isRealistic ? pal.main : "#cbd5e0";
+                c.fillRect(startX, startY, dw, topBoxH);
+                c.fillStyle = isRealistic ? pal.textOnMain : "#1a202c";
+                c.font = "bold 15px Rubik, Arial";
+                c.fillText("בית רשת גלילה עליון", startX + dw / 2, startY + topBoxH / 2 + 5);
+                // חץ משיכה מטה
+                c.save(); c.strokeStyle = "#0d47a1"; c.lineWidth = 3;
+                c.beginPath();
+                c.moveTo(startX + dw / 2, startY + dh * 0.35);
+                c.lineTo(startX + dw / 2, startY + dh * 0.65);
+                c.lineTo(startX + dw / 2 - 10, startY + dh * 0.65 - 12);
+                c.moveTo(startX + dw / 2, startY + dh * 0.65);
+                c.lineTo(startX + dw / 2 + 10, startY + dh * 0.65 - 12);
+                c.stroke(); c.restore();
+            } else if (scrSys === 'plisse') {
+                c.save(); c.strokeStyle = "rgba(74, 85, 104, 0.45)"; c.lineWidth = 1.5; c.setLineDash([6, 4]);
+                for (let px = startX + 24; px < startX + dw - 20; px += 22) {
+                    c.beginPath(); c.moveTo(px, startY + 10); c.lineTo(px, startY + dh - 10); c.stroke();
+                }
+                c.restore();
+                drawArrow(c, startX + dw / 2, startY + dh / 2, 'right');
+            } else if (scrSys === 'sliding') {
+                drawArrow(c, startX + dw / 2, startY + dh / 2, 'right');
+            }
+            draw3DFrameRect(c, startX, startY, dw, dh, 10, pal, isRealistic);
         } else if (type === 'shutter') {
+            // --- 8. תריסים ---
             const isHidden = card.querySelector('.sht-box').value === 'hidden';
             const boxH = dh * 0.16;
             const bodyY = startY + boxH;
             const bodyH = dh - boxH;
 
             c.save();
-            if (isHidden) {
+            if (isHidden && !isRealistic) {
                 c.setLineDash([6, 6]);
                 c.fillStyle = "#f7fafc";
                 c.fillRect(startX, startY, dw, boxH);
@@ -4168,17 +4439,10 @@
             }
             c.restore();
 
-            c.strokeRect(startX, bodyY, dw, bodyH);
-            c.save();
-            c.beginPath(); c.rect(startX, bodyY, dw, bodyH); c.clip();
-            const slatStep = Math.max(14, Math.min(24, bodyH / 14));
-            for (let y = 0; y < bodyH; y += slatStep) {
-                c.fillStyle = isRealistic ? ((Math.floor(y / slatStep) % 2 === 0) ? pal.main : pal.light) : ((Math.floor(y / slatStep) % 2 === 0) ? "#edf2f7" : "#e2e8f0");
-                c.fillRect(startX, bodyY + y, dw, slatStep - 2);
-                c.strokeRect(startX, bodyY + y, dw, slatStep - 2);
-            }
-            c.restore();
+            drawLouversInRect(c, startX + 6, bodyY, dw - 12, bodyH, pal, isRealistic);
+            draw3DFrameRect(c, startX, startY, dw, dh, 9, pal, isRealistic);
         } else if (type === 'fence') {
+            // --- 9. גדרות ושערים ---
             const fKind = card.querySelector('.fence-kind') ? card.querySelector('.fence-kind').value : 'fence_only';
             const fFields = Math.max(1, parseInt(card.querySelector('.fence-fields') ? card.querySelector('.fence-fields').value : '1', 10) || 1);
             const fDir = card.querySelector('.fence-dir') ? card.querySelector('.fence-dir').value : 'horizontal';
@@ -4210,14 +4474,12 @@
                 c.lineWidth = 3;
                 c.strokeRect(fx, startY, fw, dh);
 
-                // עמודי גדר
                 c.fillStyle = isRealistic ? pal.border : "#2d3748";
-                c.fillRect(fx - 5, startY - 6, 10, dh + 12);
+                c.fillRect(fx - 6, startY - 6, 12, dh + 12);
                 if (fIdx === fFields - 1) {
-                    c.fillRect(fx + fw - 5, startY - 6, 10, dh + 12);
+                    c.fillRect(fx + fw - 6, startY - 6, 12, dh + 12);
                 }
 
-                // סימון שער אם נבחר
                 const isGateField = (fKind === 'pedestrian_gate') || (fKind === 'fence_with_gate' && fIdx === 0);
                 if (isGateField) {
                     drawTriangle(c, fx, startY, fw, dh, 'right');
@@ -4239,8 +4501,8 @@
         } else {
             fillRealisticGlass(c, startX, startY, dw, dh, glassFinish);
             if (hasNet) drawMeshPattern(c, startX, startY, dw, dh);
-            draw3DFrameRect(c, startX, startY, dw, dh, 9, pal, isRealistic);
-            draw3DFrameRect(c, startX + 8, startY + 8, dw - 16, dh - 16, 6, pal, isRealistic);
+            draw3DFrameRect(c, startX, startY, dw, dh, 10, pal, isRealistic);
+            draw3DFrameRect(c, startX + 8, startY + 8, dw - 16, dh - 16, 7, pal, isRealistic);
         }
 
         const rightEdgeForDim = (type === 'pocket' && pktDir === 'right') ? (origStartX + origDw + pktW) : (origStartX + origDw);
@@ -4280,26 +4542,23 @@
         const sx = boxX + (boxW - dw) / 2;
         const sy = boxY + 25 + (maxH - dh) / 2;
 
-        // קיר המבנה
         ctx.fillStyle = "#cbd5e0";
         ctx.fillRect(sx - 20, sy - 16, dw + 40, 14);
         ctx.fillStyle = "#2d3748";
         ctx.font = "bold 14px Rubik, Arial";
         ctx.fillText("קיר המבנה", sx + dw / 2, sy - 4);
 
-        // רקע גג / קירוי סנטף
         if (roofCover !== 'none') {
-            ctx.fillStyle = "rgba(186, 230, 253, 0.42)";
+            ctx.fillStyle = "rgba(186, 230, 253, 0.45)";
         } else {
             ctx.fillStyle = isRealistic ? "#f1f5f9" : "#f8fafc";
         }
         ctx.fillRect(sx, sy, dw, dh);
 
-        // רפפות הצללה
         ctx.save();
         ctx.beginPath(); ctx.rect(sx + 8, sy + 8, dw - 16, dh - 16); ctx.clip();
         ctx.strokeStyle = isRealistic ? pal.main : "#4a5568";
-        ctx.lineWidth = isRealistic ? 4 : 3;
+        ctx.lineWidth = isRealistic ? 5.5 : 3;
         const step = 18;
         if (prgDir === 'width' || prgDir === 'grid') {
             for (let y = sy + 14; y < sy + dh - 8; y += step) {
@@ -4313,13 +4572,12 @@
         }
         ctx.restore();
 
-        // קורות חלוקה לשדות (מזחלות ביניים) + מידת רוחב לכל שדה!
         const fieldPxW = dw / fields;
         const fieldCmW = Math.round((wCm / fields) * 10) / 10;
         for (let i = 1; i < fields; i++) {
             const bx = sx + i * fieldPxW;
             ctx.fillStyle = isRealistic ? pal.main : "#1a202c";
-            ctx.fillRect(bx - 4, sy, 8, dh);
+            ctx.fillRect(bx - 5, sy, 10, dh);
         }
         if (fields > 1) {
             for (let i = 0; i < fields; i++) {
@@ -4329,31 +4587,26 @@
             }
         }
 
-        // תאורת LED שקועה בקורות
         if (ledVal !== 'none') {
             ctx.save();
             ctx.fillStyle = "#f6ad55";
             for (let i = 0; i <= fields; i++) {
                 const lx = sx + i * fieldPxW;
                 for (let ly = sy + dh * 0.25; ly < sy + dh * 0.85; ly += dh * 0.28) {
-                    ctx.beginPath(); ctx.arc(lx, ly, 5, 0, Math.PI * 2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(lx, ly, 5.5, 0, Math.PI * 2); ctx.fill();
                 }
             }
             ctx.restore();
         }
 
-        // מסגרת היקפית של הפרגולה
-        ctx.lineWidth = 6;
-        ctx.strokeStyle = isRealistic ? pal.main : "#1a202c";
-        ctx.strokeRect(sx, sy, dw, dh);
+        draw3DFrameRect(ctx, sx, sy, dw, dh, 8, pal, isRealistic);
 
-        // עמודים במבט על לפי מספר העמודים שנבחר
         if (isStand) {
             ctx.fillStyle = isRealistic ? pal.border : "#0d47a1";
             for (let p = 0; p < postsCnt; p++) {
                 const ratio = (postsCnt === 1) ? 0.5 : (p / (postsCnt - 1));
-                const px = sx + ratio * (dw - 20);
-                ctx.fillRect(px, sy + dh - 18, 20, 20);
+                const px = sx + ratio * (dw - 22);
+                ctx.fillRect(px, sy + dh - 20, 22, 22);
             }
         }
 
@@ -4401,27 +4654,23 @@
         }
         const sx = boxX + (boxW - dw) / 2;
         const sy = boxY + 30 + (maxH - dh) / 2;
-        const beamH = Math.max(28, dh * 0.14);
+        const beamH = Math.max(30, dh * 0.15);
 
-        // קו רצפה
         ctx.strokeStyle = "#718096";
         ctx.lineWidth = 3;
         ctx.beginPath(); ctx.moveTo(sx - 25, sy + dh); ctx.lineTo(sx + dw + 25, sy + dh); ctx.stroke();
 
-        // קירוי סנטף מעל הקורה אם נבחר
         if (roofCover !== 'none') {
-            ctx.fillStyle = "rgba(56, 189, 248, 0.35)";
-            ctx.fillRect(sx, sy - 8, dw, 8);
+            ctx.fillStyle = "rgba(56, 189, 248, 0.42)";
+            ctx.fillRect(sx, sy - 9, dw, 9);
         }
 
-        // קורת חזית ראשית
         ctx.fillStyle = isRealistic ? pal.main : "#e2e8f0";
         ctx.fillRect(sx, sy, dw, beamH);
         ctx.strokeStyle = isRealistic ? pal.border : "#1a202c";
         ctx.lineWidth = 4;
         ctx.strokeRect(sx, sy, dw, beamH);
 
-        // סימון חלוקת שדות על קורת החזית
         const fieldPxW = dw / fields;
         for (let i = 1; i < fields; i++) {
             const bx = sx + i * fieldPxW;
@@ -4429,25 +4678,28 @@
         }
 
         ctx.strokeStyle = isRealistic ? pal.light : "#4a5568";
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 2.5;
         for (let x = sx + 14; x < sx + dw - 10; x += 16) {
             ctx.beginPath(); ctx.moveTo(x, sy + 5); ctx.lineTo(x - 4, sy + beamH - 5); ctx.stroke();
         }
 
         if (isStand) {
-            const postW = Math.max(14, dw * 0.042);
+            const postW = Math.max(16, dw * 0.046);
             ctx.fillStyle = isRealistic ? pal.main : "#2d3748";
+            ctx.strokeStyle = isRealistic ? pal.border : "#1a202c";
+            ctx.lineWidth = 2;
             for (let p = 0; p < postsCnt; p++) {
                 const ratio = (postsCnt === 1) ? 0.5 : (p / (postsCnt - 1));
                 const px = sx + ratio * (dw - postW);
                 ctx.fillRect(px, sy + beamH, postW, dh - beamH);
+                ctx.strokeRect(px, sy + beamH, postW, dh - beamH);
             }
             drawVertDim(ctx, sx + dw + 42, sy, sy + dh, `גובה: ${postHCm} ס"מ`, 'right');
         } else {
             ctx.fillStyle = "#cbd5e0";
             ctx.fillRect(sx - 18, sy - 35, 18, dh + 35);
             ctx.strokeStyle = "#0d47a1";
-            ctx.lineWidth = 3;
+            ctx.lineWidth = 3.5;
             ctx.beginPath();
             ctx.moveTo(sx, sy - 30);
             ctx.lineTo(sx + dw * 0.78, sy);
@@ -4505,119 +4757,6 @@
                 drawTriangle(ctx, x, y, w - fixW, h, 'right');
             }
         }
-    }
-
-    // --- כפתור הדמיית AI ושיתוף שרטוטים/הדמיות ללקוח ---
-    function generateAiVisualForCard(btn) {
-        const card = btn.closest('.card');
-        if (!card) return;
-        const aiBox = card.querySelector('.ai-visual-box');
-        const statusEl = card.querySelector('.ai-visual-status');
-        const imgEl = card.querySelector('.ai-visual-img');
-        if (!aiBox || !statusEl || !imgEl) return;
-
-        aiBox.style.display = 'block';
-        statusEl.innerText = '⏳ מייצר הדמיה אדריכלית ריאליסטית ללקוח...';
-
-        // קודם כל מייצרים מיד הדמיה ריאליסטית צבעונית בחדות גבוהה (עובדת ב-100% גם ללא אינטרנט וללא עלות)
-        const realisticCnv = createSketchCanvas(card, 'realistic');
-        const fallbackDataUrl = realisticCnv.toDataURL('image/png');
-        imgEl.src = fallbackDataUrl;
-        imgEl.style.display = 'block';
-
-        // בנוסף מנסים לשלוף הדמיית AI פוטו-ריאליסטית מהענן אם יש חיבור רשת
-        const info = getItemFullDetails(card);
-        const type = card.querySelector('.item-type').value;
-        const color = card.querySelector('.color-shade') ? (card.querySelector('.color-shade').value || 'black matte') : 'black matte';
-        const room = card.querySelector('.room-location') ? (card.querySelector('.room-location').value || 'modern luxury home') : 'modern luxury home';
-
-        const typeEnMap = {
-            sliding: 'modern aluminum sliding window',
-            pocket: 'architectural aluminum pocket window',
-            hinge: 'modern aluminum casement window',
-            kipp: 'modern aluminum awning hopper window',
-            tilt_turn: 'modern aluminum tilt and turn window',
-            fixed: 'large architectural fixed aluminum picture window',
-            showcase: 'luxury floor-to-ceiling aluminum glass showcase storefront window',
-            door: 'luxury modern aluminum entrance door with glass',
-            shutter: 'modern electric aluminum roller shutter window',
-            screen_roll: 'modern aluminum window with fine mesh screen',
-            pergola: 'luxury modern outdoor aluminum louvered pergola on patio',
-            fence: 'modern horizontal slat aluminum privacy fence and gate',
-            shower: 'luxury frameless tempered glass shower enclosure in modern bathroom'
-        };
-        const baseDesc = typeEnMap[type] || 'modern architectural aluminum window';
-        const prompt = encodeURIComponent(`Photorealistic architectural interior/exterior photography of ${baseDesc}, color ${color}, in ${room}, Israeli modern architecture, natural daylight, 8k resolution`);
-        const seed = Math.floor(Math.random() * 90000) + 10000;
-        const cloudAiUrl = `https://image.pollinations.ai/prompt/${prompt}?width=1024&height=768&nologo=true&seed=${seed}`;
-
-        const probeImg = new Image();
-        probeImg.crossOrigin = "anonymous";
-        let resolved = false;
-        const timer = setTimeout(() => {
-            if (!resolved) {
-                resolved = true;
-                statusEl.innerText = `✓ הופקה הדמיה ריאליסטית מותאמת למפרט (${info.title})`;
-            }
-        }, 5500);
-
-        probeImg.onload = () => {
-            if (resolved) return;
-            resolved = true;
-            clearTimeout(timer);
-            // משלבים כותרת ממותגת של יהונתן אלומיניום על גבי הדמיית ה-AI
-            try {
-                const outCnv = document.createElement('canvas');
-                outCnv.width = 1024;
-                outCnv.height = 820;
-                const ctx = outCnv.getContext('2d');
-                ctx.fillStyle = '#0d47a1';
-                ctx.fillRect(0, 0, 1024, 68);
-                ctx.fillStyle = '#ffffff';
-                ctx.font = 'bold 26px Rubik, Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText(`יהונתן אלומיניום — הדמיית AI להמחשה: ${info.title} (${info.dimsText} ס"מ)`, 512, 43);
-                ctx.drawImage(probeImg, 0, 68, 1024, 752);
-                imgEl.src = outCnv.toDataURL('image/jpeg', 0.92);
-            } catch (e) {
-                imgEl.src = cloudAiUrl;
-            }
-            statusEl.innerText = `✨ הופקה הדמיית AI פוטו-ריאליסטית עבור: ${info.title}`;
-        };
-        probeImg.onerror = () => {
-            if (resolved) return;
-            resolved = true;
-            clearTimeout(timer);
-            statusEl.innerText = `✓ הופקה הדמיה ריאליסטית צבעונית מותאמת למפרט (${info.title})`;
-        };
-        probeImg.src = cloudAiUrl;
-    }
-
-    function downloadAiVisualImg(btn) {
-        const card = btn.closest('.card');
-        const imgEl = card.querySelector('.ai-visual-img');
-        if (!imgEl || !imgEl.src) return;
-        const client = document.getElementById('clientName').value || 'לקוח';
-        const a = document.createElement('a');
-        a.download = `AI_Visual_${client}.png`;
-        a.href = imgEl.src;
-        a.click();
-        showToast('ההדמיה הורדה למכשיר!');
-    }
-
-    function shareAiVisualWhatsapp(btn) {
-        const card = btn.closest('.card');
-        const info = getItemFullDetails(card);
-        const client = document.getElementById('clientName').value || 'לקוח יקר';
-        const rawPhone = (document.getElementById('clientPhone').value || '').replace(/\D/g, '');
-        let intlPhone = '';
-        if (rawPhone.length >= 9) {
-            intlPhone = rawPhone.startsWith('0') ? ('972' + rawPhone.slice(1)) : rawPhone;
-        }
-        downloadAiVisualImg(btn);
-        const msg = `שלום ${client},\nמצורפת הדמיה להמחשת *${info.title}* (${info.dimsText} ס"מ)\nמפרט: ${info.specsLines.join(' | ')}\n*יהונתן אלומיניום* 🛠️✨`;
-        const url = intlPhone ? `https://wa.me/${intlPhone}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`;
-        window.open(url, '_blank');
     }
 
     function shareCardSketchToWhatsapp(btn) {
@@ -4786,6 +4925,7 @@
     function saveWorkLogJobs(jobs) {
         safeSetStorage('myAlumWorkLog', JSON.stringify(jobs));
         updateWorkLogBadge();
+        if (typeof updateSuppliersBadge === 'function') updateSuppliersBadge();
     }
 
     function updateWorkLogBadge() {
@@ -4855,6 +4995,11 @@
             newJob.targetDate = prev.targetDate || '';
             newJob.status = prev.status || 'measure';
             newJob.fieldNotes = prev.fieldNotes || '';
+            newJob.matStatus = prev.matStatus || 'not_ordered';
+            newJob.supplierName = prev.supplierName || '';
+            newJob.supplierOrderNum = prev.supplierOrderNum || '';
+            newJob.supplierEta = prev.supplierEta || '';
+            newJob.supplierChecklist = prev.supplierChecklist || { profiles: false, glass: false, shutters: false, hardware: false };
             if (Array.isArray(prev.items) && Array.isArray(newJob.items)) {
                 newJob.items.forEach((it, i) => {
                     if (prev.items[i] && prev.items[i].prodNote && !it.prodNote) {
@@ -5210,7 +5355,13 @@
                     <span style="color:${balance > 0 ? 'var(--danger)' : '#22543d'}; font-weight:800;">יתרה לתשלום: ${balance.toLocaleString('he-IL')} ₪</span>
                 </div>
                 ${paymentsHtml}
-                <div class="row" style="margin-top:10px;">
+                <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; margin-bottom:8px;">
+                    <button type="button" class="btn-mini-action" style="background:#fff; color:var(--primary); border-color:#90caf9;" onclick="fillStagedPayment(${Math.round(total * 0.3)}, 'מקדמה (30%)')">⚡ מילוי מקדמה 30% (${Math.round(total * 0.3).toLocaleString('he-IL')} ₪)</button>
+                    <button type="button" class="btn-mini-action" style="background:#fff; color:var(--primary); border-color:#90caf9;" onclick="fillStagedPayment(${Math.round(total * 0.5)}, 'תשלום ביניים (50%)')">⚡ תשלום ביניים 50% (${Math.round(total * 0.5).toLocaleString('he-IL')} ₪)</button>
+                    <button type="button" class="btn-mini-action" style="background:#fff; color:#22543d; border-color:#9ae6b4;" onclick="fillStagedPayment(${balance}, 'גמר חשבון')">⚡ יתרת גמר חשבון (${balance.toLocaleString('he-IL')} ₪)</button>
+                    ${balance > 0 ? `<button type="button" class="btn-mini-action" style="background:var(--whatsapp); color:white; border-color:var(--whatsapp);" onclick="sendPaymentReminderWhatsapp('${job.id}')">💬 שלח תזכורת תשלום בוואטסאפ</button>` : ''}
+                </div>
+                <div class="row" style="margin-top:6px;">
                     <div style="flex:0.9;"><label style="font-size:12px;">סכום שהתקבל (₪):</label><input type="number" id="newJobPayAmount" placeholder="${balance > 0 ? balance : 0}" style="padding:9px; margin-bottom:0;"></div>
                     <div style="flex:1;"><label style="font-size:12px;">תאריך תשלום:</label><input type="date" id="newJobPayDate" value="${todayIso}" style="padding:9px; margin-bottom:0;"></div>
                     <div style="flex:1;"><label style="font-size:12px;">אמצעי תשלום:</label>
@@ -5475,12 +5626,14 @@
             jobLabel,
             amount,
             date,
-            desc
+            desc,
+            receiptImg: window._pendingFinReceiptDataUrl || ''
         });
         saveFinanceEntries(entries);
 
         document.getElementById('finEntryAmount').value = '';
         document.getElementById('finEntryDesc').value = '';
+        clearPendingFinanceReceipt();
         renderFinanceView();
         showToast(type === 'expense' ? "ההוצאה נרשמה ביומן" : "ההכנסה נרשמה ביומן");
     }
@@ -5563,7 +5716,8 @@
                                 תאריך: ${e.date ? new Date(e.date).toLocaleDateString('he-IL') : ''} ${e.desc ? `| ${e.desc}` : ''}
                             </div>
                         </div>
-                        <div style="display:flex; align-items:center; gap:10px;">
+                        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                            ${e.receiptImg ? `<button type="button" class="btn-mini-action" style="background:#ebf8ff; color:var(--primary); border-color:#90caf9;" onclick="viewReceiptImageModal('${e.id}')">🖼️ חשבונית</button>` : ''}
                             <span style="font-size:16px; font-weight:800; color:${isInc ? '#22543d' : '#c53030'};">${isInc ? '+' : '-'}${(parseFloat(e.amount)||0).toLocaleString('he-IL')} ₪</span>
                             <button type="button" class="btn-delete" onclick="deleteFinanceEntry('${e.id}')">🗑️</button>
                         </div>
@@ -6036,6 +6190,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         updateWorkLogBadge();
+        if (typeof updateSuppliersBadge === 'function') updateSuppliersBadge();
         const params = new URLSearchParams(window.location.search);
         const hashParams = new URLSearchParams((window.location.hash || '').replace(/^#\??/, ''));
         const clientQuoteParam = params.get('q') || params.get('clientquote') || hashParams.get('q') || hashParams.get('clientquote');
@@ -6343,6 +6498,7 @@
     function handleLiveSignedQuoteSync(qNum, clientName) {
         if (!document.getElementById('mainApp') || document.getElementById('mainApp').style.display !== 'block') return;
         updateWorkLogBadge();
+        if (typeof updateSuppliersBadge === 'function') updateSuppliersBadge();
         if (window.activeAppTab === 'worklog') {
             renderWorkLogList();
         }
@@ -6432,6 +6588,7 @@
         if (overlay) overlay.style.display = 'block';
         if (drawer) setTimeout(() => drawer.classList.add('open'), 10);
         updateWorkLogBadge();
+        if (typeof updateSuppliersBadge === 'function') updateSuppliersBadge();
         updateFollowupBadgesAndBanner();
     }
 
@@ -6459,6 +6616,7 @@
             quote: 'navBtnQuote',
             archive: 'navBtnArchive',
             worklog: 'navBtnWorkLog',
+            suppliers: 'navBtnSuppliers',
             finance: 'navBtnFinance',
             monthly: 'navBtnMonthly',
             settings: 'navBtnSettings'
@@ -6483,7 +6641,10 @@
             renderArchiveModalList();
         } else if (tabName === 'worklog') {
             updateWorkLogBadge();
+        if (typeof updateSuppliersBadge === 'function') updateSuppliersBadge();
             renderWorkLogList();
+        } else if (tabName === 'suppliers') {
+            renderSuppliersTrackerList();
         } else if (tabName === 'finance') {
             const todayIso = new Date().toISOString().split('T')[0];
             const dateInp = document.getElementById('finEntryDate');
@@ -6791,6 +6952,7 @@
                 if (b.myAlumFinanceLog) safeSetStorage('myAlumFinanceLog', b.myAlumFinanceLog);
                 if (b.followupDaysThreshold) safeSetStorage('followupDaysThreshold', b.followupDaysThreshold);
                 updateWorkLogBadge();
+        if (typeof updateSuppliersBadge === 'function') updateSuppliersBadge();
                 updateFollowupBadgesAndBanner();
                 restoreLiveWorkingQuoteOnRefresh();
                 
@@ -6800,6 +6962,281 @@
             }
         };
         reader.readAsText(inputEl.files[0]);
+    }
+
+
+    // =========================================================================
+    // שלב 3: יומן ספקים והזמנות חומר, צילום חשבוניות הוצאה ומעקב שלבי גבייה
+    // =========================================================================
+    window._pendingFinReceiptDataUrl = '';
+
+    function handleFinanceReceiptPhoto(inputEl) {
+        if (!inputEl.files || !inputEl.files[0]) return;
+        const file = inputEl.files[0];
+        const statusEl = document.getElementById('finReceiptStatusText');
+        if (statusEl) statusEl.innerText = '⏳ מכווץ ושומר תמונת חשבונית...';
+
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const img = new Image();
+            img.onload = () => {
+                const maxDim = 950;
+                let w = img.width, h = img.height;
+                if (w > maxDim || h > maxDim) {
+                    if (w > h) { h = Math.round(h * (maxDim / w)); w = maxDim; }
+                    else { w = Math.round(w * (maxDim / h)); h = maxDim; }
+                }
+                const cnv = document.createElement('canvas');
+                cnv.width = w;
+                cnv.height = h;
+                const ctx = cnv.getContext('2d');
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, w, h);
+                ctx.drawImage(img, 0, 0, w, h);
+                const compressedDataUrl = cnv.toDataURL('image/jpeg', 0.72);
+                window._pendingFinReceiptDataUrl = compressedDataUrl;
+
+                const prevBox = document.getElementById('finReceiptPreviewBox');
+                const prevImg = document.getElementById('finReceiptPreviewImg');
+                if (prevImg) prevImg.src = compressedDataUrl;
+                if (prevBox) prevBox.style.display = 'flex';
+                if (statusEl) statusEl.innerText = '✓ חשבונית צורפה ומוכנה לשמירה';
+            };
+            img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function clearPendingFinanceReceipt() {
+        window._pendingFinReceiptDataUrl = '';
+        const inp = document.getElementById('finReceiptFileInput');
+        if (inp) inp.value = '';
+        const prevBox = document.getElementById('finReceiptPreviewBox');
+        if (prevBox) prevBox.style.display = 'none';
+        const statusEl = document.getElementById('finReceiptStatusText');
+        if (statusEl) statusEl.innerText = 'ללא תמונת חשבונית מצורפת';
+    }
+
+    function viewReceiptImageModal(entryId) {
+        const entries = getFinanceEntries();
+        const entry = entries.find(e => e.id === entryId);
+        if (!entry || !entry.receiptImg) return;
+        const htmlContent = `
+            <div style="font-family:'Rubik',sans-serif; direction:rtl; text-align:center; color:#1a202c;">
+                <h2 style="color:#0d47a1; margin:0 0 8px 0;">צילום חשבונית / קבלה — ${entry.category || ''}</h2>
+                <p style="margin:0 0 12px 0; font-size:14px;">ספק/פירוט: <strong>${entry.desc || '-'}</strong> | סכום: <strong>${(parseFloat(entry.amount)||0).toLocaleString('he-IL')} ₪</strong> | תאריך: ${entry.date || ''}</p>
+                <img src="${entry.receiptImg}" style="max-width:100%; max-height:70vh; border-radius:10px; border:1px solid #cbd5e0;">
+            </div>
+        `;
+        document.getElementById('printArea').innerHTML = htmlContent;
+        document.getElementById('printModalTitle').innerText = "צפייה והדפסת חשבונית הוצאה";
+        document.getElementById('printPreviewBody').innerHTML = htmlContent;
+        document.getElementById('printPreviewModal').style.display = 'flex';
+    }
+
+    function fillStagedPayment(amountVal, noteLabel) {
+        const amtInp = document.getElementById('newJobPayAmount');
+        const noteInp = document.getElementById('newJobPayNote');
+        if (amtInp) amtInp.value = Math.max(0, amountVal);
+        if (noteInp) noteInp.value = noteLabel;
+    }
+
+    function sendPaymentReminderWhatsapp(jobId) {
+        const jobs = getWorkLogJobs();
+        const job = jobs.find(j => j.id === jobId);
+        if (!job) return;
+        const total = parseFloat(job.totalAmount) || 0;
+        const paid = getJobPaidSum(job);
+        const balance = Math.max(0, total - paid);
+        const rawPhone = (job.phone || '').replace(/\D/g, '');
+        let intlPhone = '';
+        if (rawPhone.length >= 9) {
+            intlPhone = rawPhone.startsWith('0') ? ('972' + rawPhone.slice(1)) : rawPhone;
+        }
+        const msg = `שלום ${job.client || 'לקוח יקר'},\nתזכורת מנומסת מ*יהונתן אלומיניום* לגבי הזמנה מס' *#${job.qNum}*.\nסה"כ עסקה: ${total.toLocaleString('he-IL')} ₪ | שולם עד כה: ${paid.toLocaleString('he-IL')} ₪.\n*יתרה לתשלום: ${balance.toLocaleString('he-IL')} ₪*.\nתודה רבה ויום מצוין!`;
+        const url = intlPhone ? `https://wa.me/${intlPhone}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+        window.open(url, '_blank');
+    }
+
+    // --- יומן ספקים ומעקב הזמנות חומר ---
+    const MAT_STATUS_LABELS = {
+        not_ordered:     { text: 'טרם הוזמן חומר', bg: '#fff5f5', color: '#c53030', border: '#feb2b2' },
+        ordered:         { text: 'הוזמן פרופיל מהספק', bg: '#ebf8ff', color: '#0d47a1', border: '#90caf9' },
+        paint:           { text: 'במצבעה (צביעת פרופילים)', bg: '#faf5ff', color: '#553c9a', border: '#d6bcfa' },
+        glass_ordered:   { text: 'זכוכיות ותריסים הוזמנו', bg: '#fffaf0', color: '#c05621', border: '#fbd38d' },
+        ready_warehouse: { text: 'הכל במחסן — מוכן להתקנה!', bg: '#f0fff4', color: '#22543d', border: '#9ae6b4' }
+    };
+
+    function updateSuppliersBadge() {
+        const jobs = getWorkLogJobs().filter(j => j.status !== 'done');
+        const pendingOrder = jobs.filter(j => !j.matStatus || j.matStatus === 'not_ordered').length;
+        const badge = document.getElementById('drawerSuppliersBadge');
+        if (badge) {
+            badge.innerText = pendingOrder;
+            badge.style.display = pendingOrder > 0 ? 'inline-block' : 'none';
+        }
+    }
+
+    function renderSuppliersTrackerList() {
+        updateSuppliersBadge();
+        const jobs = getWorkLogJobs().filter(j => j.status !== 'done');
+        const filterVal = document.getElementById('supFilterSelect') ? document.getElementById('supFilterSelect').value : 'all_active';
+
+        let pendingCnt = 0, inProgCnt = 0, readyCnt = 0;
+        jobs.forEach(j => {
+            const st = j.matStatus || 'not_ordered';
+            if (st === 'not_ordered') pendingCnt++;
+            else if (st === 'ready_warehouse') readyCnt++;
+            else inProgCnt++;
+        });
+
+        const elP = document.getElementById('supPendingCount');
+        const elI = document.getElementById('supInProgressCount');
+        const elR = document.getElementById('supReadyCount');
+        if (elP) elP.innerText = pendingCnt;
+        if (elI) elI.innerText = inProgCnt;
+        if (elR) elR.innerText = readyCnt;
+
+        const filtered = jobs.filter(j => {
+            const st = j.matStatus || 'not_ordered';
+            if (filterVal === 'not_ordered') return st === 'not_ordered';
+            if (filterVal === 'ordered') return ['ordered', 'paint', 'glass_ordered'].includes(st);
+            if (filterVal === 'ready_warehouse') return st === 'ready_warehouse';
+            return true;
+        });
+
+        const container = document.getElementById('suppliersTrackerContainer');
+        if (!container) return;
+
+        if (filtered.length === 0) {
+            container.innerHTML = `<div style="text-align:center; padding:28px; color:var(--text-muted); background:#f8fafc; border-radius:12px; border:1px dashed var(--border);">אין פרויקטים פעילים בקטגוריה זו כרגע.</div>`;
+            return;
+        }
+
+        container.innerHTML = filtered.map(j => {
+            const stKey = j.matStatus || 'not_ordered';
+            const stInfo = MAT_STATUS_LABELS[stKey] || MAT_STATUS_LABELS.not_ordered;
+            const chk = j.supplierChecklist || { profiles: false, glass: false, shutters: false, hardware: false };
+
+            return `
+                <div class="worklog-card">
+                    <div class="worklog-header">
+                        <div>
+                            <div style="font-size:16px; font-weight:800; color:var(--primary);">
+                                ${j.client || 'לקוח'} <span style="font-size:13px; color:var(--text-muted);">(הצעה #${j.qNum})</span>
+                            </div>
+                            <div style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">
+                                ${(j.items ? j.items.length : 0)} מפתחים בפרויקט ${j.targetDate ? `| 📅 יעד התקנה: ${new Date(j.targetDate).toLocaleDateString('he-IL')}` : ''}
+                            </div>
+                        </div>
+                        <span class="status-badge" style="background:${stInfo.bg}; color:${stInfo.color}; border:1px solid ${stInfo.border};">${stInfo.text}</span>
+                    </div>
+
+                    <div class="row" style="margin-bottom:8px;">
+                        <div style="flex:1.2;">
+                            <label style="font-size:12px;">סטטוס הזמנת חומר:</label>
+                            <select onchange="updateJobSupplierField('${j.id}', 'matStatus', this.value)" style="padding:8px; font-size:13.5px; margin-bottom:0;">
+                                <option value="not_ordered" ${stKey==='not_ordered'?'selected':''}>טרם הוזמן חומר</option>
+                                <option value="ordered" ${stKey==='ordered'?'selected':''}>הוזמן פרופיל מהספק</option>
+                                <option value="paint" ${stKey==='paint'?'selected':''}>במצבעה (צביעה)</option>
+                                <option value="glass_ordered" ${stKey==='glass_ordered'?'selected':''}>זכוכיות ותריסים הוזמנו</option>
+                                <option value="ready_warehouse" ${stKey==='ready_warehouse'?'selected':''}>הכל במחסן — מוכן להתקנה!</option>
+                            </select>
+                        </div>
+                        <div style="flex:1.1;">
+                            <label style="font-size:12px;">שם ספק / מחסן אלומיניום:</label>
+                            <input type="text" value="${(j.supplierName || '').replace(/"/g, '&quot;')}" placeholder="שם ספק / זגג..." onchange="updateJobSupplierField('${j.id}', 'supplierName', this.value)" style="padding:8px; font-size:13.5px; margin-bottom:0;">
+                        </div>
+                        <div style="flex:0.9;">
+                            <label style="font-size:12px;">צפי הגעת חומר:</label>
+                            <input type="date" value="${j.supplierEta || ''}" onchange="updateJobSupplierField('${j.id}', 'supplierEta', this.value)" style="padding:8px; font-size:13.5px; margin-bottom:0;">
+                        </div>
+                    </div>
+
+                    <div style="display:flex; gap:12px; flex-wrap:wrap; background:#f8fafc; padding:8px 12px; border-radius:10px; border:1px solid #e2e8f0; margin-bottom:10px; font-size:13px;">
+                        <span style="font-weight:700; color:var(--primary);">צ'ק-ליסט הגעת חומר:</span>
+                        <label style="display:inline-flex; align-items:center; gap:5px; margin:0; cursor:pointer;"><input type="checkbox" ${chk.profiles?'checked':''} onchange="toggleSupplierChecklistItem('${j.id}', 'profiles', this.checked)" style="width:16px; height:16px; margin:0;"> פרופילים</label>
+                        <label style="display:inline-flex; align-items:center; gap:5px; margin:0; cursor:pointer;"><input type="checkbox" ${chk.glass?'checked':''} onchange="toggleSupplierChecklistItem('${j.id}', 'glass', this.checked)" style="width:16px; height:16px; margin:0;"> זכוכיות</label>
+                        <label style="display:inline-flex; align-items:center; gap:5px; margin:0; cursor:pointer;"><input type="checkbox" ${chk.shutters?'checked':''} onchange="toggleSupplierChecklistItem('${j.id}', 'shutters', this.checked)" style="width:16px; height:16px; margin:0;"> תריסים ומנועים</label>
+                        <label style="display:inline-flex; align-items:center; gap:5px; margin:0; cursor:pointer;"><input type="checkbox" ${chk.hardware?'checked':''} onchange="toggleSupplierChecklistItem('${j.id}', 'hardware', this.checked)" style="width:16px; height:16px; margin:0;"> רשתות ופרזול</label>
+                    </div>
+
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button type="button" class="btn-mini-action" style="background:var(--primary); color:white; border-color:var(--primary);" onclick="printSupplierOrderSheet('${j.id}')">📄 הפק דף ריכוז מפתחים לספק / לזגג (ללא מחירים)</button>
+                        <button type="button" class="btn-mini-action" onclick="openJobDetailModal('${j.id}')">📐 עדכן מידות סופיות לייצור</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function updateJobSupplierField(jobId, field, val) {
+        const jobs = getWorkLogJobs();
+        const job = jobs.find(j => j.id === jobId);
+        if (!job) return;
+        job[field] = val;
+        if (field === 'matStatus' && val === 'ready_warehouse' && job.status === 'prod') {
+            job.status = 'ready';
+        }
+        saveWorkLogJobs(jobs);
+        renderSuppliersTrackerList();
+        showToast('נתוני הזמנת החומר עודכנו');
+    }
+
+    function toggleSupplierChecklistItem(jobId, key, isChecked) {
+        const jobs = getWorkLogJobs();
+        const job = jobs.find(j => j.id === jobId);
+        if (!job) return;
+        if (!job.supplierChecklist) {
+            job.supplierChecklist = { profiles: false, glass: false, shutters: false, hardware: false };
+        }
+        job.supplierChecklist[key] = !!isChecked;
+        saveWorkLogJobs(jobs);
+        showToast('צ׳ק-ליסט החומר עודכן');
+    }
+
+    function printSupplierOrderSheet(jobId) {
+        const jobs = getWorkLogJobs();
+        const job = jobs.find(j => j.id === jobId);
+        if (!job) return;
+        const rowsHtml = (job.items || []).map((it, i) => `
+            <tr>
+                <td style="padding:8px; border:1px solid #cbd5e0; text-align:center; font-weight:700;">${i + 1}</td>
+                <td style="padding:8px; border:1px solid #cbd5e0; font-weight:700; color:#0d47a1;">${it.title}</td>
+                <td style="padding:8px; border:1px solid #cbd5e0; font-size:13px;">${it.specs || ''}${it.prodNote ? `<br><strong style="color:#c05621;">הערת ייצור: ${it.prodNote}</strong>` : ''}</td>
+                <td style="padding:8px; border:1px solid #cbd5e0; text-align:center; font-weight:800; font-size:14.5px;">${it.finalDims || it.quoteDims || '-'}</td>
+                <td style="padding:8px; border:1px solid #cbd5e0; text-align:center; font-weight:700;">${it.qty || 1}</td>
+            </tr>
+        `).join('');
+
+        const htmlContent = `
+            <div style="font-family:'Rubik',sans-serif; direction:rtl; color:#1a202c;">
+                <div style="text-align:center; border-bottom:3px solid #0d47a1; padding-bottom:12px; margin-bottom:16px;">
+                    <h1 style="margin:0; color:#0d47a1; font-size:26px;">יהונתן אלומיניום — דף ריכוז מפתחים והזמנת חומר לספק / זגג</h1>
+                    <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-top:12px; background:#f8fafc; padding:10px 14px; border-radius:8px; border:1px solid #cbd5e0; font-weight:700; font-size:14px;">
+                        <span>פרויקט / לקוח: ${job.client} (#${job.qNum})</span>
+                        <span>ספק: ${job.supplierName || 'לפי בחירה'}</span>
+                        <span>תאריך הפקה: ${new Date().toLocaleDateString('he-IL')}</span>
+                    </div>
+                </div>
+                <table style="width:100%; border-collapse:collapse; font-size:13.5px; text-align:right;">
+                    <thead>
+                        <tr style="background:#0d47a1; color:white;">
+                            <th style="padding:8px; border:1px solid #cbd5e0; width:6%;">#</th>
+                            <th style="padding:8px; border:1px solid #cbd5e0; width:22%;">מוצר ומיקום</th>
+                            <th style="padding:8px; border:1px solid #cbd5e0;">מפרט מלא (פרופיל, גוון, זכוכית, תריס ורשת)</th>
+                            <th style="padding:8px; border:1px solid #cbd5e0; width:20%; text-align:center;">מידות סופיות (ס"מ)</th>
+                            <th style="padding:8px; border:1px solid #cbd5e0; width:9%; text-align:center;">כמות</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rowsHtml}</tbody>
+                </table>
+            </div>
+        `;
+        document.getElementById('printArea').innerHTML = htmlContent;
+        document.getElementById('printModalTitle').innerText = "דף ריכוז מפתחים לספק / זגג (ללא מחירים)";
+        document.getElementById('printPreviewBody').innerHTML = htmlContent;
+        document.getElementById('printPreviewModal').style.display = 'flex';
     }
 
     // --- רישום Service Worker עבור PWABuilder ואפליקציית מובייל ---
