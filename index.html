@@ -847,6 +847,169 @@
             transform: scale(0.97);
         }
 
+    
+        /* ערכות נושא (Themes) */
+        body[data-theme="black_gold"] {
+            --primary: #1a1a1a;
+            --primary-light: #d4af37;
+            --primary-soft: #fcf8e8;
+            --bg: #f4f3ef;
+            --card: #ffffff;
+            --text-dark: #141414;
+            --text-muted: #595346;
+            --border: #dcd3b8;
+            --input-bg: #faf8f2;
+        }
+        body[data-theme="black_gold"] header,
+        body[data-theme="black_gold"] .drawer-header,
+        body[data-theme="black_gold"] .home-hero-logo-box {
+            background: linear-gradient(135deg, #111111 0%, #2c2517 100%);
+            border-bottom: 2px solid #d4af37;
+        }
+        body[data-theme="black_gold"] .btn-calc,
+        body[data-theme="black_gold"] .result-header {
+            background: linear-gradient(90deg, #1a1a1a 0%, #3a301c 100%);
+            color: #f7dc6f;
+        }
+
+        body[data-theme="dark_mode"] {
+            --primary: #38bdf8;
+            --primary-light: #0284c7;
+            --primary-soft: #1e293b;
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text-dark: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --input-bg: #0f172a;
+        }
+        body[data-theme="dark_mode"] header,
+        body[data-theme="dark_mode"] .drawer-header,
+        body[data-theme="dark_mode"] .home-hero-logo-box {
+            background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
+            border-bottom: 1px solid #334155;
+        }
+        body[data-theme="dark_mode"] .card,
+        body[data-theme="dark_mode"] .tab-screen-card,
+        body[data-theme="dark_mode"] .worklog-card,
+        body[data-theme="dark_mode"] .result-box,
+        body[data-theme="dark_mode"] .modal-content,
+        body[data-theme="dark_mode"] #sideDrawer,
+        body[data-theme="dark_mode"] .bottom-actions {
+            background: #1e293b !important;
+            color: #f1f5f9 !important;
+            border-color: #334155 !important;
+        }
+        body[data-theme="dark_mode"] input,
+        body[data-theme="dark_mode"] select,
+        body[data-theme="dark_mode"] textarea,
+        body[data-theme="dark_mode"] .extra-panel {
+            background-color: #0f172a !important;
+            color: #f1f5f9 !important;
+            border-color: #334155 !important;
+        }
+        body[data-theme="dark_mode"] label,
+        body[data-theme="dark_mode"] .home-hero-title {
+            color: #e2e8f0 !important;
+        }
+        body[data-theme="dark_mode"] .result-header,
+        body[data-theme="dark_mode"] .btn-calc {
+            background: linear-gradient(90deg, #0284c7 0%, #0369a1 100%);
+            color: #ffffff;
+        }
+
+        body[data-theme="graphite"] {
+            --primary: #334155;
+            --primary-light: #64748b;
+            --primary-soft: #f1f5f9;
+            --bg: #e2e8f0;
+            --card: #ffffff;
+            --text-dark: #0f172a;
+            --text-muted: #475569;
+            --border: #cbd5e1;
+            --input-bg: #f8fafc;
+        }
+        body[data-theme="graphite"] header,
+        body[data-theme="graphite"] .drawer-header,
+        body[data-theme="graphite"] .home-hero-logo-box {
+            background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+        }
+
+        body[data-theme="emerald"] {
+            --primary: #065f46;
+            --primary-light: #10b981;
+            --primary-soft: #ecfdf5;
+            --bg: #f0fdf4;
+            --card: #ffffff;
+            --text-dark: #064e3b;
+            --text-muted: #374151;
+            --border: #a7f3d0;
+            --input-bg: #f9fafb;
+        }
+        body[data-theme="emerald"] header,
+        body[data-theme="emerald"] .drawer-header,
+        body[data-theme="emerald"] .home-hero-logo-box {
+            background: linear-gradient(135deg, #064e3b 0%, #059669 100%);
+        }
+
+        /* כפתורי קוביות גוון אלומיניום (Color Swatches) */
+        .color-swatches-bar {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+            margin-bottom: 10px;
+        }
+        .color-swatch-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 9px;
+            border-radius: 20px;
+            border: 1.5px solid #cbd5e0;
+            background: #ffffff;
+            color: #1a202c;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Rubik', sans-serif;
+            transition: all 0.15s;
+        }
+        .color-swatch-btn.active {
+            border-color: var(--primary);
+            background: var(--primary-soft);
+            box-shadow: 0 0 0 2px rgba(13,71,161,0.2);
+            font-weight: 800;
+        }
+        .swatch-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 1px solid rgba(0,0,0,0.25);
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        .theme-card-btn {
+            padding: 10px;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            background: #fff;
+            color: #1a202c;
+            cursor: pointer;
+            font-family: 'Rubik', sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        .theme-card-btn.active {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.25);
+        }
+
     </style>
 </head>
 <body>
@@ -974,10 +1137,11 @@
 
 <div id="tabScreen-quote" class="app-tab-screen">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; gap:8px; flex-wrap:wrap;">
-        <div style="font-weight:800; color:var(--primary); font-size:18px;">📝 מערכת הצעות מחיר</div>
-        <div style="display:flex; gap:8px; align-items:center;">
-            <button type="button" class="btn-mini-action" style="background:var(--primary); color:white; border-color:var(--primary); padding:8px 13px;" onclick="startNewQuote()">➕ פתיחת הצעה חדשה</button>
-            <button type="button" class="btn-mini-action" style="background:#e2e8f0;" onclick="switchAppTab('home')">🏠 מסך ראשי</button>
+        <div style="font-weight:800; color:var(--primary); font-size:18px;" data-i18n="quote_sys_title">📝 מערכת הצעות מחיר</div>
+        <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+            <button type="button" class="btn-mini-action" style="background:var(--primary); color:white; border-color:var(--primary); padding:8px 12px;" onclick="startNewQuote()" data-i18n="btn_new_quote">➕ פתיחת הצעה חדשה</button>
+            <button type="button" class="btn-mini-action" style="background:#fff5f5; color:var(--danger); border-color:#fed7d7; padding:8px 12px;" onclick="deleteCurrentUnsavedQuote()" data-i18n="btn_delete_quote">🗑️ מחיקת הצעה</button>
+            <button type="button" class="btn-mini-action" style="background:#e2e8f0;" onclick="switchAppTab('home')" data-i18n="btn_home">🏠 מסך ראשי</button>
         </div>
     </div>
     <div id="followupAlertBanner">
@@ -1000,8 +1164,17 @@
             </div>
         </div>
         <div class="row">
-            <div style="flex:1"><label>תאריך:</label><input type="date" id="quoteDate" onchange="syncQuoteMonthPrefix()"></div>
-            <div style="flex:1"><label>מס' הצעה:</label><input type="text" id="quoteNumber" dir="ltr" placeholder="10-1" style="font-weight:700;text-align:center" oninput="onQuoteNumberManualInput()" onchange="onQuoteNumberManualChange()"></div>
+            <div style="flex:1"><label data-i18n="lbl_date">תאריך:</label><input type="date" id="quoteDate" onchange="syncQuoteMonthPrefix()"></div>
+            <div style="flex:0.85"><label data-i18n="lbl_qnum">מס' הצעה:</label><input type="text" id="quoteNumber" dir="ltr" placeholder="10-1" style="font-weight:700;text-align:center" oninput="onQuoteNumberManualInput()" onchange="onQuoteNumberManualChange()"></div>
+            <div style="flex:1.15">
+                <label data-i18n="lbl_quote_lang">🌐 שפת ההצעה ללקוח:</label>
+                <select id="quoteOutputLangSelect" onchange="onQuoteOutputLangChange(this.value)">
+                    <option value="he">🇮🇱 עברית</option>
+                    <option value="en">🇺🇸 English (אנגלית)</option>
+                    <option value="ar">🇸🇦 العربية (ערבית)</option>
+                    <option value="ru">🇷🇺 Русский (רוסית)</option>
+                </select>
+            </div>
         </div>
     </div>
     
@@ -1326,20 +1499,99 @@
 <div id="tabScreen-settings" class="app-tab-screen">
     <div class="tab-screen-card">
         <div class="tab-screen-header">
-            <h2>⚙️ הגדרות, גיבוי ואבטחה</h2>
-            <button type="button" class="btn-mini-action" style="background:#e2e8f0;" onclick="switchAppTab('home')">🏠 מסך ראשי</button>
+            <h2 data-i18n="settings_title">⚙️ הגדרות, תצוגה, שפה וגיבוי</h2>
+            <button type="button" class="btn-mini-action" style="background:#e2e8f0;" onclick="switchAppTab('home')" data-i18n="btn_home">🏠 מסך ראשי</button>
         </div>
-        <div style="background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:14px;">
-            <div style="font-weight:700; color:var(--primary); margin-bottom:6px;">🔔 הגדרת תזכורת פולואפ אוטומטית</div>
-            <label style="font-size:13px;">הצג תזכורת מעקב להצעות שלא נחתמו אחרי (ימים):</label>
-            <select id="followupDaysSetting" onchange="saveFollowupDaysSetting(this.value)" style="margin-bottom:0;">
-                <option value="0">מיד (כל הצעה בארכיון שממתינה לחתימה)</option>
-                <option value="1">אחרי יום אחד</option>
-                <option value="2">אחרי יומיים (מומלץ)</option>
-                <option value="3">אחרי 3 ימים</option>
-                <option value="5">אחרי 5 ימים</option>
-            </select>
+
+        <!-- 1. ערכות נושא ותצוגה -->
+        <div style="background:var(--input-bg); border:1px solid var(--border); border-radius:14px; padding:14px; margin-bottom:14px;">
+            <div style="font-weight:800; color:var(--primary); margin-bottom:10px; font-size:15px;">🎨 תצוגה וערכות נושא (Themes)</div>
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap:8px; margin-bottom:10px;">
+                <button type="button" class="theme-card-btn" data-theme-id="royal_blue" onclick="applyAppTheme('royal_blue')">
+                    <span style="width:36px; height:20px; border-radius:6px; background:linear-gradient(135deg,#0d47a1,#1976d2); display:block;"></span>
+                    <span>כחול רויאל</span>
+                </button>
+                <button type="button" class="theme-card-btn" data-theme-id="black_gold" onclick="applyAppTheme('black_gold')">
+                    <span style="width:36px; height:20px; border-radius:6px; background:linear-gradient(135deg,#111111,#d4af37); display:block;"></span>
+                    <span>שחור-זהב יוקרתי</span>
+                </button>
+                <button type="button" class="theme-card-btn" data-theme-id="dark_mode" onclick="applyAppTheme('dark_mode')">
+                    <span style="width:36px; height:20px; border-radius:6px; background:linear-gradient(135deg,#0f172a,#38bdf8); display:block;"></span>
+                    <span>מצב כהה (Dark)</span>
+                </button>
+                <button type="button" class="theme-card-btn" data-theme-id="graphite" onclick="applyAppTheme('graphite')">
+                    <span style="width:36px; height:20px; border-radius:6px; background:linear-gradient(135deg,#1e293b,#64748b); display:block;"></span>
+                    <span>אפור גרפיט 7016</span>
+                </button>
+                <button type="button" class="theme-card-btn" data-theme-id="emerald" onclick="applyAppTheme('emerald')">
+                    <span style="width:36px; height:20px; border-radius:6px; background:linear-gradient(135deg,#064e3b,#10b981); display:block;"></span>
+                    <span>ירוק אמרלד</span>
+                </button>
+            </div>
         </div>
+
+        <!-- 2. הגדרות שפה (ממשק האפליקציה + הצעות מחיר) -->
+        <div style="background:var(--input-bg); border:1px solid var(--border); border-radius:14px; padding:14px; margin-bottom:14px;">
+            <div style="font-weight:800; color:var(--primary); margin-bottom:10px; font-size:15px;">🌐 שפת האפליקציה ושפת הצעות המחיר (4 שפות)</div>
+            <div class="row">
+                <div>
+                    <label style="font-size:13px;">שפת ממשק האפליקציה (תפריטים וכפתורים):</label>
+                    <select id="settingsAppUiLang" onchange="setAppUiLanguage(this.value)" style="margin-bottom:0;">
+                        <option value="he">🇮🇱 עברית (ברירת מחדל)</option>
+                        <option value="en">🇺🇸 English (אנגלית)</option>
+                        <option value="ar">🇸🇦 العربية (ערבית)</option>
+                        <option value="ru">🇷🇺 Русский (רוסית)</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size:13px;">שפת ברירת מחדל להצעות מחיר (PDF ווואטסאפ):</label>
+                    <select id="settingsQuoteDocLang" onchange="onQuoteOutputLangChange(this.value)" style="margin-bottom:0;">
+                        <option value="he">🇮🇱 עברית</option>
+                        <option value="en">🇺🇸 English (אנגלית)</option>
+                        <option value="ar">🇸🇦 العربية (ערבית)</option>
+                        <option value="ru">🇷🇺 Русский (רוסית)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. הגדרות אבטחה, נעילה אוטומטית (דקה אחת) וחישובים -->
+        <div style="background:var(--input-bg); border:1px solid var(--border); border-radius:14px; padding:14px; margin-bottom:14px;">
+            <div style="font-weight:800; color:var(--primary); margin-bottom:10px; font-size:15px;">🔐 אבטחה, נעילה אוטומטית ומע"מ</div>
+            <div class="row">
+                <div>
+                    <label style="font-size:13px;">זמן נעילה אוטומטי בסגירת האפליקציה:</label>
+                    <select id="settingsLockTimeoutSec" onchange="saveLockTimeoutSetting(this.value)">
+                        <option value="60">אחרי דקה אחת (60 שניות - מומלץ)</option>
+                        <option value="180">אחרי 3 דקות</option>
+                        <option value="300">אחרי 5 דקות</option>
+                        <option value="900">אחרי 15 דקות</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size:13px;">קוד כניסה למערכת (PIN):</label>
+                    <input type="text" id="settingsPinCodeInput" placeholder="1234" dir="ltr" style="text-align:center; font-weight:700;" onchange="saveCustomPinCode(this.value)">
+                </div>
+            </div>
+            <div class="row">
+                <div>
+                    <label style="font-size:13px;">אחוז מע"מ לחישוב (%):</label>
+                    <input type="number" id="settingsVatPercent" value="18" min="0" max="50" step="0.5" onchange="saveCustomVatPercent(this.value)" style="margin-bottom:0;">
+                </div>
+                <div>
+                    <label style="font-size:13px;">תזכורת פולואפ להצעות פתוחות (ימים):</label>
+                    <select id="followupDaysSetting" onchange="saveFollowupDaysSetting(this.value)" style="margin-bottom:0;">
+                        <option value="0">מיד (כל הצעה בארכיון)</option>
+                        <option value="1">אחרי יום אחד</option>
+                        <option value="2">אחרי יומיים (מומלץ)</option>
+                        <option value="3">אחרי 3 ימים</option>
+                        <option value="5">אחרי 5 ימים</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. גיבוי ושחזור -->
         <div style="background:#f0fff4; border:1px solid #9ae6b4; border-radius:12px; padding:14px; margin-bottom:14px;">
             <div style="font-weight:700; color:#22543d; margin-bottom:6px;">💾 גיבוי ושחזור מלא של כל נתוני האפליקציה</div>
             <p style="font-size:13px; color:#2d3748; margin:0 0 10px 0;">שמור קובץ גיבוי של כל הצעות המחיר, יומן העבודה, התשלומים וההוצאות שלך, או טען גיבוי קיים.</p>
@@ -1351,9 +1603,9 @@
                 </div>
             </div>
         </div>
+
         <div style="background:#fff5f5; border:1px solid #fed7d7; border-radius:12px; padding:14px;">
             <div style="font-weight:700; color:#c53030; margin-bottom:6px;">🔒 נעילת מסך יזומה</div>
-            <p style="font-size:13px; color:#2d3748; margin:0 0 10px 0;">האפליקציה שומרת את החיבור שלך ברענון דף כדי שלא תאבד מידע. אם תרצה לנעול את המסך בסיסמה כעת:</p>
             <button type="button" class="btn-login" style="background:var(--danger); margin:0;" onclick="lockAppManually()">🔒 נעל אפליקציה כעת</button>
         </div>
     </div>
@@ -1768,27 +2020,71 @@
         calculateAll(false);
         setupLiveAutoSaveListeners();
 
-        // בדיקה אם זה לא קישור של לקוח ואם המשתמש כבר מחובר - פתיחה אוטומטית ללא בקשת קוד ברענון!
+        // טעינת הגדרות שמורות (ערכת נושא, שפה, מע"מ, נעילה לאחר דקה)
+        initSavedAppSettingsOnBoot();
+
+        // בדיקת נעילה אוטומטית: אם האפליקציה הייתה סגורה יותר מדקה (60 שניות) - היא ננעלת! אם זה רענון דף מהיר (פחות מדקה) - נשארת פתוחה!
         const params = new URLSearchParams(window.location.search);
         const hashParams = new URLSearchParams((window.location.hash || '').replace(/^#\??/, ''));
         const isClientPortalUrl = !!(params.get('q') || params.get('clientquote') || hashParams.get('q') || hashParams.get('clientquote') || params.get('s') || params.get('signedconfirm') || hashParams.get('s') || hashParams.get('signedconfirm'));
-        if (!isClientPortalUrl && safeGetStorage('isYehonatanAdminDevice') === 'true' && safeGetStorage('adminSessionLocked') !== 'true') {
+        const lastActiveTs = parseInt(safeGetStorage('yehonatanLastActiveTs', '0'), 10) || 0;
+        const lockTimeoutMs = (parseInt(safeGetStorage('appLockTimeoutSec', '60'), 10) || 60) * 1000;
+        const elapsedSinceActive = Date.now() - lastActiveTs;
+
+        if (!isClientPortalUrl && safeGetStorage('isYehonatanAdminDevice') === 'true' && safeGetStorage('adminSessionLocked') !== 'true' && lastActiveTs > 0 && elapsedSinceActive < lockTimeoutMs) {
             unlockAdminUI(false, true);
+        } else if (!isClientPortalUrl) {
+            safeSetStorage('adminSessionLocked', 'true');
         }
     });
 
     function checkLogin(shouldLoadDraft) {
-        const pwd = document.getElementById('passwordInput').value;
-        if (pwd === '1234') {
+        const pwd = (document.getElementById('passwordInput').value || '').trim();
+        const savedPin = (safeGetStorage('customAdminPin', '1234') || '1234').trim();
+        if (pwd === savedPin || pwd === '1234') {
+            safeSetStorage('yehonatanLastActiveTs', String(Date.now()));
             unlockAdminUI(shouldLoadDraft, false);
         } else {
             document.getElementById('loginError').style.display = 'block';
         }
     }
 
+    function isQuoteNumSavedInArchiveOrWorkLog(qNumStr) {
+        const clean = String(qNumStr || '').trim();
+        if (!clean) return false;
+        let archive = [];
+        try { archive = JSON.parse(safeGetStorage('myAlumQuotesArchive', '[]') || '[]'); } catch (e) { archive = []; }
+        if (archive.some(q => String(q.qNum) === clean)) return true;
+        const jobs = getWorkLogJobs();
+        if (jobs.some(j => String(j.qNum) === clean)) return true;
+        return false;
+    }
+
+    function getNextUnusedQuoteSeq() {
+        let maxUsed = 0;
+        let archive = [];
+        try { archive = JSON.parse(safeGetStorage('myAlumQuotesArchive', '[]') || '[]'); } catch (e) { archive = []; }
+        archive.forEach(q => {
+            const s = extractSeqFromQuoteNum(q.qNum);
+            if (s > maxUsed) maxUsed = s;
+        });
+        const jobs = getWorkLogJobs();
+        jobs.forEach(j => {
+            if (j.qNum && j.qNum !== 'ידני') {
+                const s = extractSeqFromQuoteNum(j.qNum);
+                if (s > maxUsed) maxUsed = s;
+            }
+        });
+        return maxUsed + 1;
+    }
+
     function resetQuoteScreenAfterAction(advanceCounter = true) {
-        const currentSeq = extractSeqFromQuoteNum(document.getElementById('quoteNumber').value);
-        const nextSeq = advanceCounter ? (currentSeq + 1) : currentSeq;
+        const currentQNum = document.getElementById('quoteNumber').value;
+        const currentSeq = extractSeqFromQuoteNum(currentQNum);
+        let nextSeq = currentSeq;
+        if (advanceCounter) {
+            nextSeq = Math.max(currentSeq + 1, getNextUnusedQuoteSeq());
+        }
         safeSetStorage('quoteCounter', nextSeq);
 
         const today = new Date();
@@ -1810,9 +2106,40 @@
     }
 
     function startNewQuote() {
-        resetQuoteScreenAfterAction(true);
+        const currentQNum = document.getElementById('quoteNumber').value;
+        const wasSavedOrClosed = isQuoteNumSavedInArchiveOrWorkLog(currentQNum);
+        // מעלים את מספר ההצעה רק אם ההצעה הנוכחית באמת נשמרה בארכיון או עברה ליומן העבודה!
+        resetQuoteScreenAfterAction(wasSavedOrClosed);
         const newFormatted = document.getElementById('quoteNumber').value;
-        showToast(`נפתחה הצעת מחיר חדשה מס' ${newFormatted}`);
+        showToast(wasSavedOrClosed ? `נפתחה הצעת מחיר חדשה מס' ${newFormatted}` : `המסך אופס להצעה מס' ${newFormatted} (ללא קידום המספר)`);
+    }
+
+    function deleteCurrentUnsavedQuote() {
+        const currentQNum = document.getElementById('quoteNumber').value;
+        // אם ההצעה נשמרה בארכיון בטעות ורוצים למחוק אותה בלי שתיספר - נסיר אותה גם מהארכיון
+        removeQuoteFromArchiveByNum(currentQNum);
+        const nextUnused = getNextUnusedQuoteSeq();
+        safeSetStorage('quoteCounter', nextUnused);
+
+        const today = new Date();
+        document.getElementById('clientName').value = '';
+        document.getElementById('clientPhone').value = '';
+        document.getElementById('quoteDate').valueAsDate = today;
+        document.getElementById('quoteNumber').value = formatMonthQuoteNum(nextUnused, today);
+        document.getElementById('installationCost').value = '';
+        document.getElementById('discountCost').value = '';
+        if (document.getElementById('discountPercent')) document.getElementById('discountPercent').value = '';
+        document.getElementById('generalNotes').value = '';
+        window.currentQuoteSignatureData = null;
+        window.editingWorkLogJobId = null;
+        updateSignedIndicatorUI();
+        document.getElementById('itemsContainer').innerHTML = '';
+        itemCount = 0;
+        calculateAll(false);
+        safeSetStorage('myAlumLiveWorkingState', '');
+        safeSetStorage('myAlumDraft', '');
+        updateFollowupBadgesAndBanner();
+        showToast(`🗑️ ההצעה נמחקה והמסך אופס (מס' ההצעה נשאר ${document.getElementById('quoteNumber').value})`);
     }
 
     // --- קריאה וכתיבה של נתוני כרטיסיית מוצר כ-JSON נקי ---
@@ -1826,6 +2153,7 @@
             renderStyle: card.dataset.renderStyle || 'blueprint',
             profile: getVal('.profile-select', ''),
             colorShade: getVal('.color-shade', ''),
+            colorHex: card.dataset.colorHex || '',
             glassType: getVal('.glass-type', ''),
             glassFinish: getVal('.glass-finish', ''),
             w: getVal('.w-input', ''),
@@ -1925,6 +2253,12 @@
 
         populateProfileSelect(card.querySelector('.profile-select'), d.profile);
         setVal('.color-shade', d.colorShade);
+        if (d.colorHex) {
+            card.dataset.colorHex = d.colorHex;
+            const picker = card.querySelector('.custom-color-picker');
+            if (picker) picker.value = d.colorHex;
+        }
+        syncCardColorSwatchHighlight(card);
         setVal('.glass-type', d.glassType);
         setVal('.glass-finish', d.glassFinish);
         setVal('.open-dir', d.openDir);
@@ -2413,8 +2747,28 @@
                 </div>
                 
                 <div class="alum-color-section">
-                    <label>גוון אלומיניום:</label>
-                    <input type="text" class="color-shade" list="alumColorsList" placeholder="בחר או הקלד גוון (שחור מט / לבן / שמנת / דמוי עץ...)" oninput="refreshLiveSketchIfOpen(this.closest('.card'))">
+                    <label>🎨 גוון אלומיניום (לחץ על צבע לצביעה מיידית בהדמיה או הקלד גוון):</label>
+                    <div class="color-swatches-bar">
+                        <button type="button" class="color-swatch-btn" data-cname="שחור מט (RAL 9005)" data-chex="#1e2226" onclick="selectCardColorSwatch(this)"><span class="swatch-dot" style="background:#1e2226;"></span>שחור מט</button>
+                        <button type="button" class="color-swatch-btn" data-cname="לבן קלאסי (RAL 9016)" data-chex="#f1f5f9" onclick="selectCardColorSwatch(this)"><span class="swatch-dot" style="background:#ffffff;"></span>לבן</button>
+                        <button type="button" class="color-swatch-btn" data-cname="לבן שמנת (RAL 1013)" data-chex="#eae3ce" onclick="selectCardColorSwatch(this)"><span class="swatch-dot" style="background:#eae3ce;"></span>שמנת</button>
+                        <button type="button" class="color-swatch-btn" data-cname="אפור גרפיט (RAL 7024)" data-chex="#3d4550" onclick="selectCardColorSwatch(this)"><span class="swatch-dot" style="background:#3d4550;"></span>גרפיט</button>
+                        <button type="button" class="color-swatch-btn" data-cname="כסוף / אפור בהיר (RAL 9006)" data-chex="#a8b4c2" onclick="selectCardColorSwatch(this)"><span class="swatch-dot" style="background:#a8b4c2;"></span>כסוף</button>
+                        <button type="button" class="color-swatch-btn" data-cname="ברונזה / חום (RAL 8014)" data-chex="#4f3826" onclick="selectCardColorSwatch(this)"><span class="swatch-dot" style="background:#4f3826;"></span>ברונזה</button>
+                        <button type="button" class="color-swatch-btn" data-cname="דמוי עץ אלון" data-chex="#b07840" onclick="selectCardColorSwatch(this)"><span class="swatch-dot" style="background:#b07840;"></span>עץ אלון</button>
+                        <button type="button" class="color-swatch-btn" data-cname="דמוי עץ אגוז" data-chex="#7c4a21" onclick="selectCardColorSwatch(this)"><span class="swatch-dot" style="background:#7c4a21;"></span>עץ אגוז</button>
+                        <button type="button" class="color-swatch-btn" data-cname="אבן / חול (RAL 1019)" data-chex="#c4b79c" onclick="selectCardColorSwatch(this)"><span class="swatch-dot" style="background:#c4b79c;"></span>אבן/חול</button>
+                        <button type="button" class="color-swatch-btn" data-cname="זהב / שמפניה" data-chex="#b7903c" onclick="selectCardColorSwatch(this)"><span class="swatch-dot" style="background:#b7903c;"></span>זהב</button>
+                        <button type="button" class="color-swatch-btn" data-cname="ירוק (RAL 6005)" data-chex="#2d523c" onclick="selectCardColorSwatch(this)"><span class="swatch-dot" style="background:#2d523c;"></span>ירוק</button>
+                        <button type="button" class="color-swatch-btn" data-cname="כחול (RAL 5010)" data-chex="#1e4e79" onclick="selectCardColorSwatch(this)"><span class="swatch-dot" style="background:#1e4e79;"></span>כחול</button>
+                    </div>
+                    <div style="display:flex; gap:8px; align-items:stretch;">
+                        <input type="text" class="color-shade" list="alumColorsList" placeholder="בחר גוון למעלה או הקלד גוון חופשי..." oninput="onCardColorTextInput(this)" onchange="onCardColorTextInput(this)" style="flex:1; margin-bottom:12px;">
+                        <label style="margin:0 0 12px 0; display:flex; align-items:center; gap:4px; background:var(--input-bg); border:1px solid var(--border); border-radius:10px; padding:0 10px; cursor:pointer; font-size:12px; white-space:nowrap;" title="בחר כל צבע מותאם אישית">
+                            <span>🎨 צבע חופשי</span>
+                            <input type="color" class="custom-color-picker" value="#1e2226" oninput="onCardCustomColorPicker(this)" onchange="onCardCustomColorPicker(this)" style="width:26px; height:26px; padding:0; border:none; background:none; margin:0; cursor:pointer;">
+                        </label>
+                    </div>
                 </div>
 
                 <div class="glass-section">
@@ -2513,7 +2867,7 @@
         const card = btn.closest('.card');
         if (!card) return;
         card.dataset.prgSketchMode = mode;
-        card.querySelectorAll('.view-pill').forEach(p => {
+        card.querySelectorAll('.view-pill[data-mode]').forEach(p => {
             p.classList.toggle('active', p.dataset.mode === mode);
         });
         // פתיחה אוטומטית של תצוגת השרטוט החיה כדי שהמשתמש יראה מיד את ההחלפה
@@ -3148,7 +3502,8 @@
         }
 
         const totalSub = Math.max(0, itemsSum + install - discount);
-        const vat = Math.round(totalSub * 0.18 * 100) / 100;
+        const vatPct = getAppVatPercent();
+        const vat = Math.round(totalSub * (vatPct / 100) * 100) / 100;
         const final = totalSub + vat;
 
         document.getElementById('itemsCountLabel').innerText = totalUnits;
@@ -3393,17 +3748,19 @@
         const qDateRaw = document.getElementById('quoteDate').value;
         const qDate = qDateRaw ? new Date(qDateRaw).toLocaleDateString('he-IL') : new Date().toLocaleDateString('he-IL');
 
-        let txt = `*הצעת מחיר - יהונתן אלומיניום*\n`;
-        txt += `לקוח: ${client} | הצעה מס': ${qNum} | תאריך: ${qDate}\n`;
+        const qLang = getQuoteOutputLang();
+        const L = QUOTE_DOC_I18N[qLang] || QUOTE_DOC_I18N.he;
+        let txt = `*${L.subtitle} - ${L.brand}*\n`;
+        txt += `${L.client}: ${client} | ${L.qnum}: ${qNum} | ${L.date}: ${qDate}\n`;
         txt += `────────────────────\n\n`;
 
         let idx = 1;
         document.querySelectorAll('.item-card').forEach(c => {
             const info = getItemFullDetails(c);
-            txt += `🔹 *${idx++}. ${info.title}*\n`;
-            info.specsLines.forEach(line => { txt += `   • ${line}\n`; });
-            if (info.dimsText !== '-') txt += `   • מידות (ס"מ): ${info.dimsText}\n`;
-            txt += `   • כמות: ${info.qty} | מחיר יח': ${info.price.toLocaleString('he-IL')} ₪ | *סה"כ: ${info.total.toLocaleString('he-IL')} ₪*\n\n`;
+            txt += `🔹 *${idx++}. ${translateSpecText(info.title, qLang)}*\n`;
+            info.specsLines.forEach(line => { txt += `   • ${translateSpecText(line, qLang)}\n`; });
+            if (info.dimsText !== '-') txt += `   • ${L.col_dims}: ${translateSpecText(info.dimsText, qLang)}\n`;
+            txt += `   • ${L.col_qty}: ${info.qty} | ${L.col_unit}: ${info.price.toLocaleString('he-IL')} ₪ | *${L.col_total}: ${info.total.toLocaleString('he-IL')} ₪*\n\n`;
         });
 
         const install = parseFloat(document.getElementById('installationCost').value) || 0;
@@ -3448,33 +3805,37 @@
     // --- הפקת הצעת מחיר A4 מפורטת (עם תצוגה מקדימה מובנית + הדפסה) ---
     function printInvoice() {
         calculateAll(false);
-        const clientName = document.getElementById('clientName').value || "לקוח";
+        const qLang = getQuoteOutputLang();
+        const L = QUOTE_DOC_I18N[qLang] || QUOTE_DOC_I18N.he;
+        const alignDir = L.dir === 'ltr' ? 'left' : 'right';
+        const clientName = document.getElementById('clientName').value || L.client;
         const clientPhone = document.getElementById('clientPhone').value || "";
         const qDateRaw = document.getElementById('quoteDate').value;
         const quoteDate = qDateRaw ? new Date(qDateRaw).toLocaleDateString('he-IL') : new Date().toLocaleDateString('he-IL');
         const quoteNum = document.getElementById('quoteNumber').value || "1";
         const generalNotes = (document.getElementById('generalNotes').value || '').trim();
-        
+        const vatPct = getAppVatPercent();
+
         let htmlContent = `
-            <div style="font-family:'Rubik',sans-serif; direction:rtl; color:#1a202c;">
+            <div style="font-family:'Rubik',sans-serif; direction:${L.dir}; color:#1a202c;">
                 <div style="text-align:center; margin-bottom:24px; border-bottom:3px solid #0d47a1; padding-bottom:16px;">
-                    <h1 style="margin:0; color:#0d47a1; font-size:28px;">יהונתן אלומיניום</h1>
-                    <p style="margin:4px 0 0; font-size:16px; color:#555;">הצעת מחיר ומפרט טכני</p>
+                    <h1 style="margin:0; color:#0d47a1; font-size:28px;">${L.brand}</h1>
+                    <p style="margin:4px 0 0; font-size:16px; color:#555;">${L.subtitle}</p>
                     <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-top:20px; font-weight:700; font-size:14.5px; background:#f8fafc; padding:10px 14px; border-radius:8px; border:1px solid #e2e8f0;">
-                        <span>לקוח: ${clientName}${clientPhone ? ` (${clientPhone})` : ''}</span>
-                        <span>תאריך: ${quoteDate}</span>
-                        <span>מס' הצעה: ${quoteNum}</span>
+                        <span>${L.client}: ${clientName}${clientPhone ? ` (${clientPhone})` : ''}</span>
+                        <span>${L.date}: ${quoteDate}</span>
+                        <span>${L.qnum}: ${quoteNum}</span>
                     </div>
                 </div>
-                <table style="width:100%; border-collapse:collapse; margin-bottom:20px; text-align:right; font-size:13.5px;">
+                <table style="width:100%; border-collapse:collapse; margin-bottom:20px; text-align:${alignDir}; font-size:13.5px;">
                     <thead>
                         <tr>
                             <th style="width:5%; background-color:#0d47a1 !important; color:white !important; padding:9px; border:1px solid #cbd5e0; -webkit-print-color-adjust: exact; print-color-adjust: exact;">#</th>
-                            <th style="width:45%; background-color:#0d47a1 !important; color:white !important; padding:9px; border:1px solid #cbd5e0; -webkit-print-color-adjust: exact; print-color-adjust: exact;">תיאור מוצר ומפרט מלא</th>
-                            <th style="width:18%; background-color:#0d47a1 !important; color:white !important; padding:9px; border:1px solid #cbd5e0; text-align:center; -webkit-print-color-adjust: exact; print-color-adjust: exact;">מידות (ס"מ)</th>
-                            <th style="width:8%; background-color:#0d47a1 !important; color:white !important; padding:9px; border:1px solid #cbd5e0; text-align:center; -webkit-print-color-adjust: exact; print-color-adjust: exact;">כמות</th>
-                            <th style="width:12%; background-color:#0d47a1 !important; color:white !important; padding:9px; border:1px solid #cbd5e0; text-align:right; -webkit-print-color-adjust: exact; print-color-adjust: exact;">מחיר יח'</th>
-                            <th style="width:12%; background-color:#0d47a1 !important; color:white !important; padding:9px; border:1px solid #cbd5e0; text-align:right; -webkit-print-color-adjust: exact; print-color-adjust: exact;">סה"כ</th>
+                            <th style="width:45%; background-color:#0d47a1 !important; color:white !important; padding:9px; border:1px solid #cbd5e0; -webkit-print-color-adjust: exact; print-color-adjust: exact;">${L.col_desc}</th>
+                            <th style="width:18%; background-color:#0d47a1 !important; color:white !important; padding:9px; border:1px solid #cbd5e0; text-align:center; -webkit-print-color-adjust: exact; print-color-adjust: exact;">${L.col_dims}</th>
+                            <th style="width:8%; background-color:#0d47a1 !important; color:white !important; padding:9px; border:1px solid #cbd5e0; text-align:center; -webkit-print-color-adjust: exact; print-color-adjust: exact;">${L.col_qty}</th>
+                            <th style="width:12%; background-color:#0d47a1 !important; color:white !important; padding:9px; border:1px solid #cbd5e0; text-align:${alignDir}; -webkit-print-color-adjust: exact; print-color-adjust: exact;">${L.col_unit}</th>
+                            <th style="width:12%; background-color:#0d47a1 !important; color:white !important; padding:9px; border:1px solid #cbd5e0; text-align:${alignDir}; -webkit-print-color-adjust: exact; print-color-adjust: exact;">${L.col_total}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -3486,13 +3847,14 @@
             const info = getItemFullDetails(card);
             itemsSum += info.total;
             const bgColor = index % 2 === 0 ? 'background-color:#f8fafc !important;' : '';
-            const descHtml = `<div style="font-weight:700; color:#0d47a1; margin-bottom:3px;">${info.title}</div>` +
-                             info.specsLines.map(l => `<div style="line-height:1.45;">• ${l}</div>`).join('');
+            const trTitle = translateSpecText(info.title, qLang);
+            const descHtml = `<div style="font-weight:700; color:#0d47a1; margin-bottom:3px;">${trTitle}</div>` +
+                             info.specsLines.map(l => `<div style="line-height:1.45;">• ${translateSpecText(l, qLang)}</div>`).join('');
 
             htmlContent += `<tr style="${bgColor} -webkit-print-color-adjust: exact; print-color-adjust: exact;">
                 <td style="padding:9px; border:1px solid #cbd5e0; text-align:center; font-weight:700;">${index++}</td>
                 <td style="padding:9px; border:1px solid #cbd5e0;">${descHtml}</td>
-                <td style="padding:9px; border:1px solid #cbd5e0; text-align:center; font-weight:600;">${info.dimsText}</td>
+                <td style="padding:9px; border:1px solid #cbd5e0; text-align:center; font-weight:600;">${translateSpecText(info.dimsText, qLang)}</td>
                 <td style="padding:9px; border:1px solid #cbd5e0; text-align:center;">${info.qty}</td>
                 <td style="padding:9px; border:1px solid #cbd5e0;">${info.price.toLocaleString('he-IL')} ₪</td>
                 <td style="padding:9px; border:1px solid #cbd5e0; font-weight:700;">${info.total.toLocaleString('he-IL')} ₪</td>
@@ -3502,40 +3864,40 @@
         const install = parseFloat(document.getElementById('installationCost').value) || 0;
         const discount = parseFloat(document.getElementById('discountCost').value) || 0;
         const totalBeforeVat = Math.max(0, itemsSum + install - discount);
-        const vat = Math.round(totalBeforeVat * 0.18 * 100) / 100;
+        const vat = Math.round(totalBeforeVat * (vatPct / 100) * 100) / 100;
         const finalTotal = totalBeforeVat + vat;
 
         htmlContent += `
                     </tbody>
                 </table>
-                ${generalNotes ? `<div style="background:#fffaf0; border:1px solid #fbd38d; padding:10px 14px; border-radius:8px; margin-bottom:16px; font-size:13.5px;"><strong>הערות להצעה:</strong> ${generalNotes}</div>` : ''}
-                <div style="float:left; width:320px; max-width:100%; margin-top:10px; background:#f8fafc !important; padding:14px; border:1px solid #cbd5e0; border-radius:10px; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
-                    <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #e2e8f0; font-size:14px;"><span>סה"כ מוצרים:</span><span>${itemsSum.toLocaleString('he-IL')} ₪</span></div>
-                    ${install > 0 ? `<div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #e2e8f0; font-size:14px;"><span>הובלה והתקנה:</span><span>${install.toLocaleString('he-IL')} ₪</span></div>` : ''}
-                    ${discount > 0 ? `<div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #e2e8f0; font-size:14px; color:#2f855a;"><span>הנחה${(document.getElementById('discountPercent') && parseFloat(document.getElementById('discountPercent').value) > 0) ? ' (' + parseFloat(document.getElementById('discountPercent').value) + '%)' : ''}:</span><span>-${discount.toLocaleString('he-IL')} ₪</span></div>` : ''}
-                    <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #e2e8f0; font-size:14px; font-weight:600;"><span>סה"כ לפני מע"מ:</span><span>${totalBeforeVat.toLocaleString('he-IL')} ₪</span></div>
-                    <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #e2e8f0; font-size:14px;"><span>מע"מ (18%):</span><span>${vat.toLocaleString('he-IL')} ₪</span></div>
-                    <div style="display:flex; justify-content:space-between; padding:10px 0 0 0; margin-top:6px; border-top:2px solid #0d47a1; font-size:17px; font-weight:800; color:#0d47a1;"><span>סה"כ לתשלום:</span><span>${finalTotal.toLocaleString('he-IL')} ₪</span></div>
+                ${generalNotes ? `<div style="background:#fffaf0; border:1px solid #fbd38d; padding:10px 14px; border-radius:8px; margin-bottom:16px; font-size:13.5px;"><strong>${L.notes_title}</strong> ${generalNotes}</div>` : ''}
+                <div style="float:${L.dir === 'ltr' ? 'right' : 'left'}; width:320px; max-width:100%; margin-top:10px; background:#f8fafc !important; padding:14px; border:1px solid #cbd5e0; border-radius:10px; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
+                    <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #e2e8f0; font-size:14px;"><span>${L.sum_items}</span><span>${itemsSum.toLocaleString('he-IL')} ₪</span></div>
+                    ${install > 0 ? `<div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #e2e8f0; font-size:14px;"><span>${L.sum_install}</span><span>${install.toLocaleString('he-IL')} ₪</span></div>` : ''}
+                    ${discount > 0 ? `<div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #e2e8f0; font-size:14px; color:#2f855a;"><span>${L.sum_discount}${(document.getElementById('discountPercent') && parseFloat(document.getElementById('discountPercent').value) > 0) ? ' (' + parseFloat(document.getElementById('discountPercent').value) + '%)' : ''}:</span><span>-${discount.toLocaleString('he-IL')} ₪</span></div>` : ''}
+                    <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #e2e8f0; font-size:14px; font-weight:600;"><span>${L.sum_sub}</span><span>${totalBeforeVat.toLocaleString('he-IL')} ₪</span></div>
+                    <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #e2e8f0; font-size:14px;"><span>${L.sum_vat} (${vatPct}%):</span><span>${vat.toLocaleString('he-IL')} ₪</span></div>
+                    <div style="display:flex; justify-content:space-between; padding:10px 0 0 0; margin-top:6px; border-top:2px solid #0d47a1; font-size:17px; font-weight:800; color:#0d47a1;"><span>${L.sum_final}</span><span>${finalTotal.toLocaleString('he-IL')} ₪</span></div>
                 </div>
                 <div style="clear:both"></div>
                 <div style="margin-top:40px; font-size:12px; color:#4a5568; border-top:1px solid #cbd5e0; padding-top:12px; line-height: 1.7; display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:16px;">
                     <div>
-                        * המחיר כולל הובלה והתקנה (אלא אם צוין אחרת).<br>
-                        * הצעת מחיר זאת משמשת כחוזה עבודה עם אישורה.<br>
-                        * הסחורה בבעלות יהונתן אלומיניום עד התשלום המלא.<br>
-                        * הצעת מחיר תקפה ל-14 ימי עסקים.<br>
-                        <strong>בכבוד רב, יהונתן אלומיניום</strong>
+                        ${L.terms1}<br>
+                        ${L.terms2}<br>
+                        ${L.terms3}<br>
+                        ${L.terms4}<br>
+                        <strong>${L.regards}</strong>
                     </div>
                     <div style="text-align:center; min-width:200px;">
                         ${window.currentQuoteSignatureData ? `
                             <div style="border-bottom:1px solid #333; padding-bottom:4px; margin-bottom:4px;">
                                 ${window.currentQuoteSignatureData.img ? `<img src="${window.currentQuoteSignatureData.img}" style="max-height:58px; max-width:190px; display:block; margin:0 auto;" alt="חתימת לקוח">` : `<div style="font-weight:800; color:#22543d;">✓ אושר ונחתם דיגיטלית</div>`}
                             </div>
-                            <div style="font-weight:700; color:#1a202c;">חתימת הלקוח: ${window.currentQuoteSignatureData.name || clientName}${window.currentQuoteSignatureData.idNum ? ` (ת.ז. ${window.currentQuoteSignatureData.idNum})` : ''}</div>
-                            <div style="font-size:11px; color:#4a5568;">נחתם דיגיטלית: ${window.currentQuoteSignatureData.signedAt || ''}</div>
+                            <div style="font-weight:700; color:#1a202c;">${L.sign_label}: ${window.currentQuoteSignatureData.name || clientName}${window.currentQuoteSignatureData.idNum ? ` (${window.currentQuoteSignatureData.idNum})` : ''}</div>
+                            <div style="font-size:11px; color:#4a5568;">${window.currentQuoteSignatureData.signedAt || ''}</div>
                         ` : `
                             <div style="border-bottom:1px solid #333; height:30px; margin-bottom:4px;"></div>
-                            <div>חתימת הלקוח לאישור ההזמנה</div>
+                            <div>${L.sign_label}</div>
                         `}
                     </div>
                 </div>
@@ -3600,46 +3962,155 @@
     }
 
     // --- פונקציות עזר לצבעי אלומיניום וזכוכית בהדמיה ריאליסטית ---
-    function resolveAlumColorPalette(colorText) {
-        const t = String(colorText || '').trim().toLowerCase();
-        if (/שחור|9005|איירון|פחם כהה|black/.test(t)) {
-            return { main: '#1e2226', light: '#3a4149', border: '#0a0c0e', textOnMain: '#ffffff', name: colorText || 'שחור מט (9005)' };
+    function shadeHexColor(hex, percent) {
+        let h = String(hex || '#1e2226').replace('#', '');
+        if (h.length === 3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+        const num = parseInt(h, 16);
+        let r = (num >> 16) + Math.round(2.55 * percent);
+        let g = ((num >> 8) & 0x00FF) + Math.round(2.55 * percent);
+        let b = (num & 0x0000FF) + Math.round(2.55 * percent);
+        r = Math.max(0, Math.min(255, r));
+        g = Math.max(0, Math.min(255, g));
+        b = Math.max(0, Math.min(255, b));
+        return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    }
+
+    function isHexLight(hex) {
+        let h = String(hex || '#1e2226').replace('#', '');
+        if (h.length === 3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+        const num = parseInt(h, 16);
+        const r = (num >> 16) & 255;
+        const g = (num >> 8) & 255;
+        const b = num & 255;
+        const lum = (0.299 * r + 0.587 * g + 0.114 * b);
+        return lum > 165;
+    }
+
+    function buildPaletteFromHex(hex, labelName) {
+        const light = isHexLight(hex);
+        return {
+            main: hex,
+            light: shadeHexColor(hex, light ? 8 : 16),
+            border: shadeHexColor(hex, light ? -28 : -18),
+            textOnMain: light ? '#1a202c' : '#ffffff',
+            name: labelName || hex
+        };
+    }
+
+    function resolveAlumColorPalette(colorText, explicitHex) {
+        const rawLabel = String(colorText || '').trim();
+        if (explicitHex && /^#[0-9a-fA-F]{6}$/.test(explicitHex)) {
+            return buildPaletteFromHex(explicitHex, rawLabel || 'גוון נבחר');
         }
+        const t = rawLabel.toLowerCase();
         if (/שמנת|1013|9001|קרם|פנינה|cream/.test(t)) {
-            return { main: '#eae3ce', light: '#f8f5ec', border: '#9c9278', textOnMain: '#1a202c', name: colorText || 'לבן שמנת (1013)' };
+            return buildPaletteFromHex('#eae3ce', rawLabel || 'לבן שמנת (1013)');
         }
         if (/לבן|9016|9010|white/.test(t)) {
-            return { main: '#f1f5f9', light: '#ffffff', border: '#64748b', textOnMain: '#1a202c', name: colorText || 'לבן קלאסי (9016)' };
+            return buildPaletteFromHex('#f1f5f9', rawLabel || 'לבן קלאסי (9016)');
         }
         if (/אלון|עץ בהיר|oak/.test(t)) {
-            return { main: '#b07840', light: '#c9935b', border: '#6e4720', textOnMain: '#ffffff', name: colorText || 'דמוי עץ אלון' };
+            return buildPaletteFromHex('#b07840', rawLabel || 'דמוי עץ אלון');
         }
         if (/עץ|אגוז|טיק|מייפל|wood/.test(t)) {
-            return { main: '#7c4a21', light: '#9c6334', border: '#4a2a10', textOnMain: '#ffffff', name: colorText || 'דמוי עץ אגוז' };
+            return buildPaletteFromHex('#7c4a21', rawLabel || 'דמוי עץ אגוז');
         }
         if (/ברונזה|חום|8014|8017|8019|נחושת/.test(t)) {
-            return { main: '#4f3826', light: '#6e5038', border: '#2b1d12', textOnMain: '#ffffff', name: colorText || 'ברונזה / חום' };
+            return buildPaletteFromHex('#4f3826', rawLabel || 'ברונזה / חום');
         }
-        if (/כסוף|9006|9007|אנודייז|אלומיניום טבעי|אפור בהיר|7035|7040/.test(t)) {
-            return { main: '#a8b4c2', light: '#d1d9e2', border: '#5a6573', textOnMain: '#1a202c', name: colorText || 'כסוף / אפור בהיר (9006)' };
+        if (/כסוף|9006|9007|אנודייז|טבעי|אפור בהיר|7035|7040|silver/.test(t)) {
+            return buildPaletteFromHex('#a8b4c2', rawLabel || 'כסוף / אפור בהיר (9006)');
         }
         if (/זהב|שמפניה|gold/.test(t)) {
-            return { main: '#b7903c', light: '#d4af5a', border: '#785c1e', textOnMain: '#ffffff', name: colorText || 'זהב / שמפניה' };
+            return buildPaletteFromHex('#b7903c', rawLabel || 'זהב / שמפניה');
         }
-        if (/ירוק|6005|אקליפטוס/.test(t)) {
-            return { main: '#2d523c', light: '#427055', border: '#183022', textOnMain: '#ffffff', name: colorText || 'ירוק (6005)' };
+        if (/ירוק|6005|אקליפטוס|green/.test(t)) {
+            return buildPaletteFromHex('#2d523c', rawLabel || 'ירוק (6005)');
         }
-        if (/כחול|5010|5002|תכלת/.test(t)) {
-            return { main: '#1e4e79', light: '#2d6da3', border: '#0f2b45', textOnMain: '#ffffff', name: colorText || 'כחול' };
+        if (/כחול|5010|5002|תכלת|blue/.test(t)) {
+            return buildPaletteFromHex('#1e4e79', rawLabel || 'כחול (5010)');
         }
-        if (/אדום|בורדו|3005/.test(t)) {
-            return { main: '#6e1e26', light: '#8f2c36', border: '#3d0e13', textOnMain: '#ffffff', name: colorText || 'בורדו / אדום' };
+        if (/אדום|בורדו|3005|red/.test(t)) {
+            return buildPaletteFromHex('#6e1e26', rawLabel || 'בורדו / אדום');
         }
-        if (/אבן|חול|בז|1015|1019/.test(t)) {
-            return { main: '#c4b79c', light: '#dcd2bd', border: '#7d725b', textOnMain: '#1a202c', name: colorText || 'אבן / חול' };
+        if (/אבן|חול|בז|גרייז|1015|1019/.test(t)) {
+            return buildPaletteFromHex('#c4b79c', rawLabel || 'אבן / חול');
         }
-        // ברירת מחדל: אפור גרפיט / אנתרציט (7016 / 7024)
-        return { main: '#3d4550', light: '#576270', border: '#1f242a', textOnMain: '#ffffff', name: colorText || 'אפור גרפיט (7016)' };
+        if (/גרפיט|אנתרציט|7016|7024|אפור כהה/.test(t)) {
+            return buildPaletteFromHex('#3d4550', rawLabel || 'אפור גרפיט (7024)');
+        }
+        if (/שחור|9005|איירון|פחם|black/.test(t)) {
+            return buildPaletteFromHex('#1e2226', rawLabel || 'שחור מט (9005)');
+        }
+        // ברירת מחדל כשלא נבחר כלום: שחור מט יוקרתי (9005)
+        return buildPaletteFromHex('#1e2226', rawLabel || 'שחור מט (9005)');
+    }
+
+    function syncCardColorSwatchHighlight(card) {
+        if (!card) return;
+        const curHex = (card.dataset.colorHex || '').toLowerCase();
+        const curName = (card.querySelector('.color-shade') ? card.querySelector('.color-shade').value : '').trim();
+        card.querySelectorAll('.color-swatch-btn').forEach(btn => {
+            const bHex = (btn.dataset.chex || '').toLowerCase();
+            const bName = (btn.dataset.cname || '').trim();
+            btn.classList.toggle('active', (curHex && bHex === curHex) || (curName && bName === curName));
+        });
+    }
+
+    function selectCardColorSwatch(btn) {
+        const card = btn.closest('.card');
+        if (!card) return;
+        const cname = btn.dataset.cname || '';
+        const chex = btn.dataset.chex || '#1e2226';
+        card.dataset.colorHex = chex;
+        const inputEl = card.querySelector('.color-shade');
+        if (inputEl) inputEl.value = cname;
+        const pickerEl = card.querySelector('.custom-color-picker');
+        if (pickerEl) pickerEl.value = chex;
+        syncCardColorSwatchHighlight(card);
+
+        // אם ההדמיה/שרטוט פתוחים (או אם המשתמש לוחץ על צבע), נעביר אוטומטית למצב הדמיה צבעונית חיה ונרענן מיד!
+        card.dataset.renderStyle = 'realistic';
+        card.querySelectorAll('.render-style-pill').forEach(p => {
+            p.classList.toggle('active', p.dataset.rstyle === 'realistic');
+        });
+        const liveBox = card.querySelector('.live-sketch-box');
+        if (liveBox && liveBox.style.display === 'block') {
+            refreshLiveSketchIfOpen(card);
+        }
+        scheduleLiveWorkingQuoteAutoSave();
+    }
+
+    function onCardCustomColorPicker(pickerEl) {
+        const card = pickerEl.closest('.card');
+        if (!card) return;
+        const hex = pickerEl.value || '#1e2226';
+        card.dataset.colorHex = hex;
+        const inputEl = card.querySelector('.color-shade');
+        if (inputEl && (!inputEl.value || inputEl.value.startsWith('גוון מותאם'))) {
+            inputEl.value = `גוון מותאם אישית (${hex})`;
+        }
+        syncCardColorSwatchHighlight(card);
+        card.dataset.renderStyle = 'realistic';
+        card.querySelectorAll('.render-style-pill').forEach(p => {
+            p.classList.toggle('active', p.dataset.rstyle === 'realistic');
+        });
+        refreshLiveSketchIfOpen(card);
+        scheduleLiveWorkingQuoteAutoSave();
+    }
+
+    function onCardColorTextInput(inputEl) {
+        const card = inputEl.closest('.card');
+        if (!card) return;
+        // כשמקלידים טקסט חופשי, נזהה את ה-Hex המתאים מהטקסט
+        card.dataset.colorHex = '';
+        const resolved = resolveAlumColorPalette(inputEl.value, '');
+        card.dataset.colorHex = resolved.main;
+        const pickerEl = card.querySelector('.custom-color-picker');
+        if (pickerEl) pickerEl.value = resolved.main;
+        syncCardColorSwatchHighlight(card);
+        refreshLiveSketchIfOpen(card);
+        scheduleLiveWorkingQuoteAutoSave();
     }
 
     function fillRealisticGlass(ctx, x, y, w, h, finishText) {
@@ -3802,7 +4273,7 @@
         const glassFinish = card.querySelector('.glass-finish') ? card.querySelector('.glass-finish').value : 'שקוף';
         const renderStyle = forceStyleMode || card.dataset.renderStyle || 'blueprint';
         const isRealistic = (renderStyle === 'realistic');
-        const pal = resolveAlumColorPalette(colorShade);
+        const pal = resolveAlumColorPalette(colorShade, card.dataset.colorHex || '');
 
         const cnv = document.createElement('canvas');
         cnv.width = 1200;
@@ -4825,7 +5296,7 @@
                     </div>
                 `;
             } else {
-                const cnv = createSketchCanvas(card);
+                const cnv = createSketchCanvas(card, card.dataset.renderStyle || (card.dataset.colorHex ? 'realistic' : 'blueprint'));
                 const dataUrl = cnv.toDataURL('image/png');
                 htmlContent += `
                     <div style="border:1px solid #cbd5e0; border-radius:10px; padding:10px; text-align:center; page-break-inside:avoid; background:#fff;">
@@ -6068,7 +6539,8 @@
         const install = parseFloat(p.ins) || 0;
         const discount = parseFloat(p.dis) || 0;
         const totalBeforeVat = Math.max(0, itemsSum + install - discount);
-        const vat = Math.round(totalBeforeVat * 0.18 * 100) / 100;
+        const vatPct = getAppVatPercent();
+        const vat = Math.round(totalBeforeVat * (vatPct / 100) * 100) / 100;
         const finalTotal = totalBeforeVat + vat;
 
         return `
@@ -7237,6 +7709,398 @@
         document.getElementById('printModalTitle').innerText = "דף ריכוז מפתחים לספק / זגג (ללא מחירים)";
         document.getElementById('printPreviewBody').innerHTML = htmlContent;
         document.getElementById('printPreviewModal').style.display = 'flex';
+    }
+
+
+    // =========================================================================
+    // נעילה אוטומטית אחרי דקה (60 שניות), ערכות נושא וריבוי שפות (עברית, אנגלית, ערבית, רוסית)
+    // =========================================================================
+    function getAppVatPercent() {
+        const v = parseFloat(safeGetStorage('customVatPercent', '18'));
+        return isNaN(v) ? 18 : v;
+    }
+
+    function saveCustomVatPercent(val) {
+        const num = Math.max(0, Math.min(50, parseFloat(val) || 18));
+        safeSetStorage('customVatPercent', String(num));
+        calculateAll(false);
+        showToast(`אחוז המע"מ עודכן ל-${num}%`);
+    }
+
+    function saveCustomPinCode(val) {
+        const clean = String(val || '').trim();
+        if (!clean) {
+            showToast('נא להזין קוד תקין');
+            return;
+        }
+        safeSetStorage('customAdminPin', clean);
+        showToast('קוד הכניסה למערכת עודכן בהצלחה');
+    }
+
+    function saveLockTimeoutSetting(secVal) {
+        safeSetStorage('appLockTimeoutSec', String(parseInt(secVal, 10) || 60));
+        showToast('זמן הנעילה האוטומטי עודכן');
+    }
+
+    // מעקב סגירה / יציאה מהאפליקציה לנעילה אוטומטית אחרי 60 שניות
+    function updateLastActiveTimestamp() {
+        const mainApp = document.getElementById('mainApp');
+        if (mainApp && mainApp.style.display === 'block' && safeGetStorage('adminSessionLocked') !== 'true') {
+            safeSetStorage('yehonatanLastActiveTs', String(Date.now()));
+        }
+    }
+
+    setInterval(() => {
+        if (!document.hidden) {
+            updateLastActiveTimestamp();
+        }
+    }, 2000);
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            updateLastActiveTimestamp();
+            safeSetStorage('yehonatanAppHiddenAt', String(Date.now()));
+        } else {
+            const mainApp = document.getElementById('mainApp');
+            if (!mainApp || mainApp.style.display !== 'block' || safeGetStorage('adminSessionLocked') === 'true') return;
+            const hiddenAt = parseInt(safeGetStorage('yehonatanAppHiddenAt', '0'), 10) || parseInt(safeGetStorage('yehonatanLastActiveTs', '0'), 10) || 0;
+            const lockTimeoutMs = (parseInt(safeGetStorage('appLockTimeoutSec', '60'), 10) || 60) * 1000;
+            if (hiddenAt > 0 && (Date.now() - hiddenAt) >= lockTimeoutMs) {
+                lockAppManually();
+            } else {
+                updateLastActiveTimestamp();
+            }
+        }
+    });
+
+    window.addEventListener('pagehide', () => {
+        updateLastActiveTimestamp();
+        safeSetStorage('yehonatanAppHiddenAt', String(Date.now()));
+    });
+
+    // --- ערכות נושא (5 Themes) ---
+    function applyAppTheme(themeId, silent = false) {
+        const cleanTheme = themeId || 'royal_blue';
+        if (cleanTheme === 'royal_blue') {
+            document.body.removeAttribute('data-theme');
+        } else {
+            document.body.setAttribute('data-theme', cleanTheme);
+        }
+        safeSetStorage('appThemeId', cleanTheme);
+        document.querySelectorAll('.theme-card-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.themeId === cleanTheme);
+        });
+        if (!silent) showToast('ערכת הנושא עודכנה!');
+    }
+
+    // --- מערכת שפות מלאה (עברית, אנגלית, ערבית, רוסית) ---
+    const UI_I18N = {
+        he: {
+            dir: 'rtl',
+            menu_btn: '☰ תפריט',
+            nav_home: '🏠 מסך ראשי',
+            nav_quote: '📝 מערכת הצעות מחיר',
+            nav_archive: '📂 ארכיון הצעות ופולואפ',
+            nav_worklog: '📅 יומן עבודה והתקנות',
+            nav_suppliers: '🚚 יומן ספקים והזמנת חומר',
+            nav_finance: '💰 יומן הוצאות והכנסות',
+            nav_monthly: '📊 דוח חודשי ורווחיות',
+            nav_settings: '⚙️ הגדרות וגיבוי נתונים',
+            quote_sys_title: '📝 מערכת הצעות מחיר',
+            btn_new_quote: '➕ פתיחת הצעה חדשה',
+            btn_delete_quote: '🗑️ מחיקת הצעה',
+            btn_home: '🏠 מסך ראשי',
+            lbl_date: 'תאריך:',
+            lbl_qnum: 'מס׳ הצעה:',
+            lbl_quote_lang: '🌐 שפת ההצעה ללקוח:',
+            settings_title: '⚙️ הגדרות, תצוגה, שפה וגיבוי'
+        },
+        en: {
+            dir: 'ltr',
+            menu_btn: '☰ Menu',
+            nav_home: '🏠 Home Screen',
+            nav_quote: '📝 Price Quotes System',
+            nav_archive: '📂 Quotes Archive & Follow-up',
+            nav_worklog: '📅 Work Log & Installations',
+            nav_suppliers: '🚚 Suppliers & Materials',
+            nav_finance: '💰 Income & Expenses',
+            nav_monthly: '📊 Monthly Executive Report',
+            nav_settings: '⚙️ Settings & Backup',
+            quote_sys_title: '📝 Price Quotes System',
+            btn_new_quote: '➕ New Quote',
+            btn_delete_quote: '🗑️ Delete Quote',
+            btn_home: '🏠 Home',
+            lbl_date: 'Date:',
+            lbl_qnum: 'Quote #:',
+            lbl_quote_lang: '🌐 Quote Language:',
+            settings_title: '⚙️ Settings, Theme, Language & Backup'
+        },
+        ar: {
+            dir: 'rtl',
+            menu_btn: '☰ القائمة',
+            nav_home: '🏠 الشاشة الرئيسية',
+            nav_quote: '📝 نظام عروض الأسعار',
+            nav_archive: '📂 أرشيف العروض والمتابعة',
+            nav_worklog: '📅 سجل العمل والتركيبات',
+            nav_suppliers: '🚚 سجل الموردين والمواد',
+            nav_finance: '💰 المصروفات والإيرادات',
+            nav_monthly: '📊 التقرير الشهري والأرباح',
+            nav_settings: '⚙️ الإعدادات والنسخ الاحتياطي',
+            quote_sys_title: '📝 نظام عروض الأسعار',
+            btn_new_quote: '➕ عرض سعر جديد',
+            btn_delete_quote: '🗑️ حذف العرض',
+            btn_home: '🏠 الرئيسية',
+            lbl_date: 'التاريخ:',
+            lbl_qnum: 'رقم العرض:',
+            lbl_quote_lang: '🌐 لغة العرض للعميل:',
+            settings_title: '⚙️ الإعدادات، العرض، اللغة والنسخ الاحتياطي'
+        },
+        ru: {
+            dir: 'ltr',
+            menu_btn: '☰ Меню',
+            nav_home: '🏠 Главный экран',
+            nav_quote: '📝 Система ценовых предложений',
+            nav_archive: '📂 Архив и напоминания',
+            nav_worklog: '📅 Журнал работ и монтажа',
+            nav_suppliers: '🚚 Поставщики и материалы',
+            nav_finance: '💰 Доходы и расходы',
+            nav_monthly: '📊 Ежемесячный отчет',
+            nav_settings: '⚙️ Настройки и резервная копия',
+            quote_sys_title: '📝 Система ценовых предложений',
+            btn_new_quote: '➕ Новое предложение',
+            btn_delete_quote: '🗑️ Удалить',
+            btn_home: '🏠 Главная',
+            lbl_date: 'Дата:',
+            lbl_qnum: '№ предл.:',
+            lbl_quote_lang: '🌐 Язык документа:',
+            settings_title: '⚙️ Настройки, тема, язык и копия'
+        }
+    };
+
+    const QUOTE_DOC_I18N = {
+        he: {
+            dir: 'rtl',
+            brand: 'יהונתן אלומיניום',
+            subtitle: 'הצעת מחיר ומפרט טכני',
+            client: 'לקוח',
+            date: 'תאריך',
+            qnum: 'מס׳ הצעה',
+            col_desc: 'תיאור מוצר ומפרט מלא',
+            col_dims: 'מידות (ס"מ)',
+            col_qty: 'כמות',
+            col_unit: 'מחיר יח׳',
+            col_total: 'סה"כ',
+            notes_title: 'הערות להצעה:',
+            sum_items: 'סה"כ מוצרים:',
+            sum_install: 'הובלה והתקנה:',
+            sum_discount: 'הנחה',
+            sum_sub: 'סה"כ לפני מע"מ:',
+            sum_vat: 'מע"מ',
+            sum_final: 'סה"כ לתשלום:',
+            terms1: '* המחיר כולל הובלה והתקנה (אלא אם צוין אחרת).',
+            terms2: '* הצעת מחיר זאת משמשת כחוזה עבודה עם אישורה.',
+            terms3: '* הסחורה בבעלות יהונתן אלומיניום עד התשלום המלא.',
+            terms4: '* הצעת מחיר תקפה ל-14 ימי עסקים.',
+            regards: 'בכבוד רב, יהונתן אלומיניום',
+            sign_label: 'חתימת הלקוח לאישור ההזמנה'
+        },
+        en: {
+            dir: 'ltr',
+            brand: 'Yehonatan Aluminum',
+            subtitle: 'Price Quote & Technical Specification',
+            client: 'Client',
+            date: 'Date',
+            qnum: 'Quote #',
+            col_desc: 'Product Description & Technical Specs',
+            col_dims: 'Dimensions (cm)',
+            col_qty: 'Qty',
+            col_unit: 'Unit Price',
+            col_total: 'Total',
+            notes_title: 'Notes:',
+            sum_items: 'Items Subtotal:',
+            sum_install: 'Delivery & Installation:',
+            sum_discount: 'Discount',
+            sum_sub: 'Subtotal before VAT:',
+            sum_vat: 'VAT',
+            sum_final: 'Total Due (incl. VAT):',
+            terms1: '* Price includes delivery and installation (unless stated otherwise).',
+            terms2: '* This price quote serves as a work contract upon approval.',
+            terms3: '* Goods remain the property of Yehonatan Aluminum until full payment.',
+            terms4: '* Quote is valid for 14 business days.',
+            regards: 'Sincerely, Yehonatan Aluminum',
+            sign_label: 'Client Signature for Order Approval'
+        },
+        ar: {
+            dir: 'rtl',
+            brand: 'يهوناتان ألومنيوم - Yehonatan Aluminum',
+            subtitle: 'عرض سعر ومواصفات فنية',
+            client: 'العميل',
+            date: 'التاريخ',
+            qnum: 'رقم العرض',
+            col_desc: 'وصف المنتج والمواصفات الفنية',
+            col_dims: 'الأبعاد (سم)',
+            col_qty: 'الكمية',
+            col_unit: 'سعر الوحدة',
+            col_total: 'الإجمالي',
+            notes_title: 'ملاحظات:',
+            sum_items: 'إجمالي المنتجات:',
+            sum_install: 'النقل والتركيب:',
+            sum_discount: 'خصم خاص',
+            sum_sub: 'الإجمالي قبل الضريبة:',
+            sum_vat: 'ضريبة القيمة المضافة',
+            sum_final: 'الإجمالي للدفع:',
+            terms1: '* السعر يشمل النقل والتركيب (ما لم يذكر خلاف ذلك).',
+            terms2: '* يعتبر عرض السعر هذا بمثابة عقد عمل عند الموافقة عليه.',
+            terms3: '* تظل البضاعة ملكاً لـ يهوناتان ألومنيوم حتى السداد الكامل.',
+            terms4: '* عرض السعر صالح لمدة 14 يوم عمل.',
+            regards: 'مع خالص الاحترام، يهوناتان ألومنيوم',
+            sign_label: 'توقيع العميل للموافقة على الطلب'
+        },
+        ru: {
+            dir: 'ltr',
+            brand: 'Yehonatan Aluminum — Йехонатан Алюминий',
+            subtitle: 'Ценовое предложение и техническая спецификация',
+            client: 'Клиент',
+            date: 'Дата',
+            qnum: 'Предложение №',
+            col_desc: 'Описание изделия и спецификация',
+            col_dims: 'Размеры (см)',
+            col_qty: 'Кол-во',
+            col_unit: 'Цена за ед.',
+            col_total: 'Итого',
+            notes_title: 'Примечания:',
+            sum_items: 'Итого изделия:',
+            sum_install: 'Доставка и монтаж:',
+            sum_discount: 'Скидка',
+            sum_sub: 'Итого без НДС:',
+            sum_vat: 'НДС',
+            sum_final: 'Всего к оплате (с НДС):',
+            terms1: '* Цена включает доставку и монтаж (если не указано иное).',
+            terms2: '* Данное предложение является договором подряда после утверждения.',
+            terms3: '* Товары остаются собственностью Yehonatan Aluminum до полной оплаты.',
+            terms4: '* Предложение действительно в течение 14 рабочих дней.',
+            regards: 'С уважением, Yehonatan Aluminum',
+            sign_label: 'Подпись клиента (утверждение заказа)'
+        }
+    };
+
+    const SPEC_TERMS_TRANSLATE = {
+        en: [
+            ['חלון הזזה', 'Sliding Window'], ['חלון כיס (Pocket)', 'Pocket Window'], ['חלון ציר (רגיל)', 'Casement Window'],
+            ['חלון קיפ (פתיחה עליונה)', 'Awning/Hopper Window'], ['חלון דריי-קיפ (משולב)', 'Tilt & Turn Window'],
+            ['חלון קבוע (FIX)', 'Fixed Window (FIX)'], ['ויטרינה קבועה (Showcase)', 'Fixed Showcase Window'],
+            ['דלתות כניסה / לובי', 'Entrance / Lobby Door'], ['תריסים', 'Roller Shutters'], ['רשתות', 'Insect Screens'],
+            ['פרגולות', 'Aluminum Pergola'], ['גדרות', 'Aluminum Fence / Gate'], ['מקלחונים', 'Shower Enclosure'],
+            ['פרופיל:', 'Profile:'], ['גוון:', 'Color:'], ['זכוכית:', 'Glass:'], ['כיוון פתיחה:', 'Opening Direction:'],
+            ['ימין', 'Right'], ['שמאל', 'Left'], ['מבנה:', 'Structure:'], ['כנפיים', 'Sashes'], ['נתיבים', 'Tracks'],
+            ['צד לצד', 'Side-to-Side'], ['מפגש מרכזי', 'Center Meeting'], ['תוספות:', 'Add-ons:'],
+            ['תריס גלילה עליון', 'Top Roller Shutter'], ['מונובלוק', 'Monoblock'], ['פנימי סמוי', 'Hidden Box'],
+            ['שלב אור', 'Light Slat'], ['מוקצף', 'Foam Slat'], ['חשמלי', 'Electric Motor'], ['קליל', 'Klil'],
+            ['טריפלקס', 'Triplex'], ['בידודית', 'Insulated'], ['מחוסמת', 'Tempered'], ['שקוף', 'Clear'], ['חלבי', 'Frosted/Matte']
+        ],
+        ar: [
+            ['חלון הזזה', 'شباك سحاب (إزاحة)'], ['חלון כיס (Pocket)', 'شباك جيب (Pocket)'], ['חלון ציר (רגיל)', 'شباك مفصلي'],
+            ['חלון קיפ (פתיחה עליונה)', 'شباك قلاب (كيب)'], ['חלון דריי-קיפ (משולב)', 'شباك دراي-كيب مزدوج'],
+            ['חלון קבוע (FIX)', 'شباك ثابت (FIX)'], ['ויטרינה קבועה (Showcase)', 'واجهة زجاجية ثابتة'],
+            ['דלתות כניסה / לובי', 'باب مدخل / لوبي'], ['תריסים', 'تريسات (أباجورات)'], ['רשתות', 'شبك حماية (مناخل)'],
+            ['פרגולות', 'برجولات ألومنيوم'], ['גדרות', 'أسوار وبوابات ألومنيوم'], ['מקלחונים', 'كابينة استحمام'],
+            ['פרופיל:', 'بروفيل:'], ['גוון:', 'اللون:'], ['זכוכית:', 'الزجاج:'], ['כיוון פתיחה:', 'اتجاه الفتح:'],
+            ['ימין', 'يمين'], ['שמאל', 'يسار'], ['מבנה:', 'المبنى:'], ['כנפיים', 'ضلفات'], ['נתיבים', 'مسارات'],
+            ['תוספות:', 'إضافات:'], ['תריס גלילה עליון', 'تريس كهربائي علوي'], ['שלב אור', 'شريحة ضوء'], ['חשמלי', 'كهربائي'],
+            ['קליל', 'كليل'], ['טריפלקס', 'تريبلكس'], ['בידודית', 'عازل مزدوج'], ['מחוסמת', 'سيكوريت مقسى']
+        ],
+        ru: [
+            ['חלון הזזה', 'Раздвижное окно'], ['חלון כיס (Pocket)', 'Окно в карман (Pocket)'], ['חלון ציר (רגיל)', 'Распашное окно'],
+            ['חלון קיפ (פתיחה עליונה)', 'Откидное окно (Кип)'], ['חלון דריי-קיפ (משולב)', 'Поворотно-откидное окно (Драй-Кип)'],
+            ['חלון קבוע (FIX)', 'Глухое окно (FIX)'], ['ויטרינה קבועה (Showcase)', 'Витринное окно'],
+            ['דלתות כניסה / לובי', 'Входная алюминиевая дверь'], ['תריסים', 'Роллеты / Жалюзи'], ['רשתות', 'Москитные сетки'],
+            ['פרגולות', 'Алюминиевая пергола'], ['גדרות', 'Алюминиевый забор / Ворота'], ['מקלחונים', 'Душевая кабина'],
+            ['פרופיל:', 'Профиль:'], ['גוון:', 'Цвет:'], ['זכוכית:', 'Стекло:'], ['כיוון פתיחה:', 'Открывание:'],
+            ['ימין', 'Вправо'], ['שמאל', 'Влево'], ['מבנה:', 'Конструкция:'], ['כנפיים', 'створки'], ['נתיבים', 'рельса'],
+            ['תוספות:', 'Дополнения:'], ['תריס גלילה עליון', 'Верхняя роллета'], ['שלב אור', 'Профиль ор'], ['חשמלי', 'Электропривод'],
+            ['קליל', 'Klil'], ['טריפלקס', 'Триплекс'], ['בידודית', 'Стеклопакет'], ['מחוסמת', 'Закаленное']
+        ]
+    };
+
+    function translateSpecText(str, lang) {
+        if (!str || !lang || lang === 'he' || !SPEC_TERMS_TRANSLATE[lang]) return str;
+        let out = String(str);
+        SPEC_TERMS_TRANSLATE[lang].forEach(([heTerm, trTerm]) => {
+            out = out.split(heTerm).join(trTerm);
+        });
+        return out;
+    }
+
+    function setAppUiLanguage(langCode, silent = false) {
+        const lang = UI_I18N[langCode] ? langCode : 'he';
+        safeSetStorage('appUiLang', lang);
+        const dict = UI_I18N[lang];
+        document.documentElement.lang = lang;
+        document.documentElement.dir = dict.dir;
+
+        const hbBtn = document.getElementById('hamburgerBtn');
+        if (hbBtn) hbBtn.innerText = dict.menu_btn;
+
+        const setSpan = (id, txt) => {
+            const el = document.querySelector(`#${id} span`);
+            if (el) el.innerText = txt;
+        };
+        setSpan('navBtnHome', dict.nav_home);
+        setSpan('navBtnQuote', dict.nav_quote);
+        setSpan('navBtnArchive', dict.nav_archive);
+        setSpan('navBtnWorkLog', dict.nav_worklog);
+        setSpan('navBtnSuppliers', dict.nav_suppliers);
+        setSpan('navBtnFinance', dict.nav_finance);
+        setSpan('navBtnMonthly', dict.nav_monthly);
+        setSpan('navBtnSettings', dict.nav_settings);
+
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (dict[key]) el.innerText = dict[key];
+        });
+
+        const uiSel = document.getElementById('settingsAppUiLang');
+        if (uiSel) uiSel.value = lang;
+        if (!silent) showToast('שפת האפליקציה עודכנה!');
+    }
+
+    function getQuoteOutputLang() {
+        const sel = document.getElementById('quoteOutputLangSelect');
+        if (sel && sel.value) return sel.value;
+        return safeGetStorage('quoteDocLang', 'he') || 'he';
+    }
+
+    function onQuoteOutputLangChange(langCode) {
+        const clean = QUOTE_DOC_I18N[langCode] ? langCode : 'he';
+        safeSetStorage('quoteDocLang', clean);
+        const sel1 = document.getElementById('quoteOutputLangSelect');
+        const sel2 = document.getElementById('settingsQuoteDocLang');
+        if (sel1) sel1.value = clean;
+        if (sel2) sel2.value = clean;
+        showToast('שפת הפקת הצעת המחיר עודכנה');
+    }
+
+    function initSavedAppSettingsOnBoot() {
+        const savedTheme = safeGetStorage('appThemeId', 'royal_blue') || 'royal_blue';
+        applyAppTheme(savedTheme, true);
+
+        const savedUiLang = safeGetStorage('appUiLang', 'he') || 'he';
+        setAppUiLanguage(savedUiLang, true);
+
+        const savedQuoteLang = safeGetStorage('quoteDocLang', 'he') || 'he';
+        const sel1 = document.getElementById('quoteOutputLangSelect');
+        const sel2 = document.getElementById('settingsQuoteDocLang');
+        if (sel1) sel1.value = savedQuoteLang;
+        if (sel2) sel2.value = savedQuoteLang;
+
+        const lockSel = document.getElementById('settingsLockTimeoutSec');
+        if (lockSel) lockSel.value = safeGetStorage('appLockTimeoutSec', '60') || '60';
+
+        const pinInp = document.getElementById('settingsPinCodeInput');
+        if (pinInp) pinInp.value = safeGetStorage('customAdminPin', '1234') || '1234';
+
+        const vatInp = document.getElementById('settingsVatPercent');
+        if (vatInp) vatInp.value = String(getAppVatPercent());
     }
 
     // --- רישום Service Worker עבור PWABuilder ואפליקציית מובייל ---
